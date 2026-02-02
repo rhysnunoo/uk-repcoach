@@ -1,0 +1,98 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# ===================
+# SECURITY - CRITICAL
+# ===================
+# Environment files (API keys, secrets, credentials)
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env*.local
+!.env.local.example
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# Credential files
+**/credentials.json
+**/secrets.json
+**/serviceAccountKey.json
+**/*secret*
+**/*credential*
+
+# ===================
+# Dependencies
+# ===================
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# ===================
+# Build outputs
+# ===================
+/.next/
+/out/
+/build
+/dist
+
+# ===================
+# Testing
+# ===================
+/coverage
+*.lcov
+
+# ===================
+# Debug & Logs
+# ===================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+logs/
+
+# ===================
+# OS files
+# ===================
+.DS_Store
+Thumbs.db
+Desktop.ini
+nul
+
+# ===================
+# IDE & Editors
+# ===================
+.idea
+.vscode
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+
+# ===================
+# Vercel
+# ===================
+.vercel
+
+# ===================
+# TypeScript
+# ===================
+*.tsbuildinfo
+next-env.d.ts
+
+# ===================
+# Misc
+# ===================
+*.bak
+*.tmp
+*.temp
