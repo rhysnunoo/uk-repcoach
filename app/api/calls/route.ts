@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
-import {
-  transcribeFileWithDiarization,
-  isAssemblyAIConfigured
-} from '@/lib/transcription/assemblyai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -282,32 +278,22 @@ async function processCallAsync(callId: string, storagePath: string) {
     let transcript: { speaker: 'rep' | 'prospect'; text: string; start_time: number; end_time: number }[];
     let durationSeconds: number | null = null;
 
-    // Use AssemblyAI if configured (better speaker diarization)
-    if (isAssemblyAIConfigured()) {
-      console.log(`[processCallAsync] Using AssemblyAI for transcription with speaker diarization...`);
-      const fileBuffer = Buffer.from(await fileData.arrayBuffer());
-      const result = await transcribeFileWithDiarization(fileBuffer, 'audio.mp3');
-      transcript = result.transcript;
-      durationSeconds = Math.round(result.duration);
-      console.log(`[processCallAsync] AssemblyAI transcription complete: ${transcript.length} segments, ${durationSeconds}s, ${(result.confidence * 100).toFixed(1)}% confidence`);
-    } else {
-      // Fallback to Whisper (less accurate speaker detection)
-      console.log(`[processCallAsync] Using Whisper transcription (no AssemblyAI key)...`);
-      const transcriptionResponse = await openai.audio.transcriptions.create({
-        file: new File([fileData], 'audio.mp3', { type: 'audio/mpeg' }),
-        model: 'whisper-1',
-        response_format: 'verbose_json',
-        timestamp_granularities: ['segment'],
-      });
-      console.log(`[processCallAsync] Whisper transcription complete, duration: ${transcriptionResponse.duration}s`);
+    // Use OpenAI Whisper for transcription
+    console.log(`[processCallAsync] Using Whisper transcription...`);
+    const transcriptionResponse = await openai.audio.transcriptions.create({
+      file: new File([fileData], 'audio.mp3', { type: 'audio/mpeg' }),
+      model: 'whisper-1',
+      response_format: 'verbose_json',
+      timestamp_granularities: ['segment'],
+    });
+    console.log(`[processCallAsync] Whisper transcription complete, duration: ${transcriptionResponse.duration}s`);
 
-      // Parse transcript into segments with speaker inference (heuristic-based)
-      transcript = inferSpeakers(transcriptionResponse);
-      durationSeconds = transcriptionResponse.duration
-        ? Math.round(transcriptionResponse.duration)
-        : null;
-      console.log(`[processCallAsync] Parsed ${transcript.length} transcript segments using heuristic speaker detection`);
-    }
+    // Parse transcript into segments with speaker inference (heuristic-based)
+    transcript = inferSpeakers(transcriptionResponse);
+    durationSeconds = transcriptionResponse.duration
+      ? Math.round(transcriptionResponse.duration)
+      : null;
+    console.log(`[processCallAsync] Parsed ${transcript.length} transcript segments using heuristic speaker detection`);
 
     // Update with transcript
     await adminClient

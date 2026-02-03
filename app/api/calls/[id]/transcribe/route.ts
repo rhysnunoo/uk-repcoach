@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { transcribeWithDiarization, isAssemblyAIConfigured } from '@/lib/transcription/assemblyai';
+import { transcribeWithWhisper } from '@/lib/openai/transcribe';
 import { scoreCall } from '@/lib/scoring/score';
 
 interface TranscribeRouteParams {
@@ -12,14 +12,6 @@ export async function POST(request: NextRequest, { params }: TranscribeRoutePara
   const adminClient = createAdminClient();
 
   try {
-    // Check if AssemblyAI is configured
-    if (!isAssemblyAIConfigured()) {
-      return NextResponse.json(
-        { error: 'Transcription service not configured' },
-        { status: 503 }
-      );
-    }
-
     // Get recording URL from body or from the call record
     let recordingUrl: string | null = null;
 
@@ -33,7 +25,7 @@ export async function POST(request: NextRequest, { params }: TranscribeRoutePara
     // Fetch the call
     const { data: call, error: callError } = await adminClient
       .from('calls')
-      .select('id, recording_url, status, transcript')
+      .select('id, recording_url, status, transcript, duration_seconds')
       .eq('id', callId)
       .single();
 
@@ -69,14 +61,16 @@ export async function POST(request: NextRequest, { params }: TranscribeRoutePara
 
     console.log(`[Transcribe] Starting transcription for call ${callId}...`);
 
-    // Transcribe with AssemblyAI
-    const result = await transcribeWithDiarization(recordingUrl);
+    // Transcribe with OpenAI Whisper
+    const result = await transcribeWithWhisper(recordingUrl, {
+      prompt: 'This is a sales call between a sales representative and a prospect.',
+    });
 
     // Update call with transcript and duration
     const { error: updateError } = await adminClient
       .from('calls')
       .update({
-        transcript: result.transcript,
+        transcript: result.segments,
         duration_seconds: result.duration || call.duration_seconds,
         status: 'scoring', // Ready for scoring
       })
@@ -109,9 +103,8 @@ export async function POST(request: NextRequest, { params }: TranscribeRoutePara
     return NextResponse.json({
       message: 'Transcription complete',
       callId,
-      segmentCount: result.transcript.length,
+      segmentCount: result.segments.length,
       duration: result.duration,
-      confidence: result.confidence,
     });
   } catch (error) {
     console.error('[Transcribe] Error:', error);

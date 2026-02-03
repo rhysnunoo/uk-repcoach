@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
-import {
-  transcribeFileWithDiarization,
-  isAssemblyAIConfigured
-} from '@/lib/transcription/assemblyai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -55,40 +51,23 @@ export async function POST(request: NextRequest, { params }: RetryTranscriptionP
     }
 
     try {
-      let transcript: { speaker: 'rep' | 'prospect'; text: string; start_time: number; end_time: number }[];
-      let durationSeconds: number | null = null;
+      // Use OpenAI Whisper for transcription
+      console.log(`[retry-transcription] Using Whisper for call ${callId}...`);
+      const transcriptionResponse = await openai.audio.transcriptions.create({
+        file: new File([fileData], 'audio.mp3', { type: 'audio/mpeg' }),
+        model: 'whisper-1',
+        response_format: 'verbose_json',
+        timestamp_granularities: ['segment'],
+      });
 
-      // Use AssemblyAI if configured (better speaker diarization)
-      if (isAssemblyAIConfigured()) {
-        console.log(`[retry-transcription] Using AssemblyAI for call ${callId}...`);
-        const fileBuffer = Buffer.from(await fileData.arrayBuffer());
-        const result = await transcribeFileWithDiarization(fileBuffer, 'audio.mp3');
-        transcript = result.transcript;
-        durationSeconds = Math.round(result.duration);
-        console.log(`[retry-transcription] AssemblyAI complete: ${transcript.length} segments`);
-      } else {
-        // Fallback to Whisper
-        console.log(`[retry-transcription] Using Whisper for call ${callId}...`);
-        const transcriptionResponse = await openai.audio.transcriptions.create({
-          file: new File([fileData], 'audio.mp3', { type: 'audio/mpeg' }),
-          model: 'whisper-1',
-          response_format: 'verbose_json',
-          timestamp_granularities: ['segment'],
-        });
+      // Parse transcript with content-based speaker detection
+      const segments = transcriptionResponse.segments || [];
+      const transcript = inferSpeakers(segments);
+      const durationSeconds = transcriptionResponse.duration
+        ? Math.round(transcriptionResponse.duration)
+        : null;
 
-        // Parse transcript with simple alternating speaker pattern
-        const segments = transcriptionResponse.segments || [];
-        transcript = segments.map((segment, index) => ({
-          speaker: (index % 2 === 0 ? 'rep' : 'prospect') as 'rep' | 'prospect',
-          text: segment.text.trim(),
-          start_time: segment.start,
-          end_time: segment.end,
-        }));
-
-        durationSeconds = transcriptionResponse.duration
-          ? Math.round(transcriptionResponse.duration)
-          : null;
-      }
+      console.log(`[retry-transcription] Whisper complete: ${transcript.length} segments`);
 
       // Update with transcript
       await adminClient
@@ -123,4 +102,87 @@ export async function POST(request: NextRequest, { params }: RetryTranscriptionP
     console.error('Retry transcription error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
+}
+
+interface WhisperSegment {
+  start: number;
+  end: number;
+  text: string;
+}
+
+/**
+ * Infer speakers from Whisper segments using content analysis
+ */
+function inferSpeakers(segments: WhisperSegment[]): { speaker: 'rep' | 'prospect'; text: string; start_time: number; end_time: number }[] {
+  // Rep indicator patterns (sales language)
+  const repPatterns = [
+    /\b(my name is|i'm .* (from|with|calling))/i,
+    /\b(our (company|service|program|product|team))/i,
+    /\b(we (offer|provide|specialize|help|can))/i,
+    /\b(let me (explain|tell|share|walk|show))/i,
+    /\b(payment|pricing|sign up|enroll|schedule|appointment)/i,
+    /\b(great question|absolutely|definitely|exactly right)/i,
+  ];
+
+  // Prospect indicator patterns (customer language)
+  const prospectPatterns = [
+    /\b(my (son|daughter|child|kid|husband|wife))/i,
+    /\b(how much|what's the (cost|price))/i,
+    /\b(let me (think|talk to|check))/i,
+    /\b(i('m| am) (not sure|interested|busy))/i,
+    /\b(what (is|are|does)|how (does|do))\b.*\?/i,
+  ];
+
+  let lastSpeaker: 'rep' | 'prospect' = 'rep';
+
+  return segments.map((segment) => {
+    const text = segment.text.trim();
+    if (!text) {
+      return {
+        speaker: lastSpeaker,
+        text,
+        start_time: segment.start,
+        end_time: segment.end,
+      };
+    }
+
+    let repScore = 0;
+    let prospectScore = 0;
+
+    repPatterns.forEach(pattern => {
+      if (pattern.test(text)) repScore += 2;
+    });
+
+    prospectPatterns.forEach(pattern => {
+      if (pattern.test(text)) prospectScore += 2;
+    });
+
+    // Questions often from prospects
+    if (/\?$/.test(text.trim())) {
+      prospectScore += 1;
+    }
+
+    // Short responses like "okay", "yes" - likely prospect
+    if (text.length < 20 && /^(okay|yes|yeah|uh|um|right|sure|no|hmm)/i.test(text)) {
+      prospectScore += 1;
+    }
+
+    let speaker: 'rep' | 'prospect';
+    if (repScore > prospectScore) {
+      speaker = 'rep';
+    } else if (prospectScore > repScore) {
+      speaker = 'prospect';
+    } else {
+      speaker = lastSpeaker === 'rep' ? 'prospect' : 'rep';
+    }
+
+    lastSpeaker = speaker;
+
+    return {
+      speaker,
+      text,
+      start_time: segment.start,
+      end_time: segment.end,
+    };
+  });
 }
