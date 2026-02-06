@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getProfile, createClient } from '@/lib/supabase/server';
 import { AppLayout } from '@/components/layout/app-layout';
-import { RingoverSettings } from '@/components/settings/ringover-settings';
 import { UserManagement } from '@/components/settings/user-management';
 import { DataManagement } from '@/components/settings/data-management';
 
@@ -24,13 +23,6 @@ export default async function SettingsPage() {
     .from('profiles')
     .select('*')
     .order('full_name');
-
-  // Fetch Ringover sync history
-  const { data: ringoverSyncLogs } = await supabase
-    .from('ringover_sync_log')
-    .select('*')
-    .order('started_at', { ascending: false })
-    .limit(10);
 
   // Fetch calls for data management (admin only)
   const { data: calls } = profile.role === 'admin'
@@ -56,12 +48,9 @@ export default async function SettingsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Manage integrations and user settings
+            Manage team members and roles
           </p>
         </div>
-
-        {/* Ringover Integration */}
-        <RingoverSettings syncLogs={ringoverSyncLogs || []} />
 
         {/* User Management */}
         <UserManagement profiles={profiles || []} />

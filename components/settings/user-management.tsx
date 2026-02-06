@@ -54,8 +54,7 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
               <th>User</th>
               <th>Email</th>
               <th>Role</th>
-              <th>HubSpot Linked</th>
-              <th>Actions</th>
+              <th>Change Role</th>
             </tr>
           </thead>
           <tbody>
@@ -63,19 +62,11 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
               <tr key={profile.id}>
                 <td>
                   <div className="flex items-center gap-3">
-                    {profile.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt=""
-                        className="w-8 h-8 object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-500 text-sm font-medium">
-                          {(profile.full_name || profile.email)[0].toUpperCase()}
-                        </span>
-                      </div>
-                    )}
+                    <div className="w-8 h-8 bg-primary/10 flex items-center justify-center rounded-full">
+                      <span className="text-primary text-sm font-medium">
+                        {(profile.full_name || profile.email)[0].toUpperCase()}
+                      </span>
+                    </div>
                     <span className="font-medium">
                       {profile.full_name || 'No name'}
                     </span>
@@ -84,13 +75,6 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
                 <td className="text-sm text-gray-600">{profile.email}</td>
                 <td>
                   <RoleBadge role={profile.role} />
-                </td>
-                <td>
-                  {profile.hubspot_owner_id ? (
-                    <span className="badge bg-green-100 text-green-800">Yes</span>
-                  ) : (
-                    <span className="badge bg-gray-100 text-gray-600">No</span>
-                  )}
                 </td>
                 <td>
                   <select
