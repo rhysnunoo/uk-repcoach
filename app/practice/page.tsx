@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { getProfile } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { AppLayout } from '@/components/layout/app-layout';
-import { personas } from '@/lib/practice/personas';
 import { StartPracticeForm } from '@/components/practice/start-practice-form';
 
 export default async function PracticePage() {
@@ -101,36 +100,6 @@ export default async function PracticePage() {
           </div>
         </div>
 
-        {/* Persona Guide */}
-        <div className="card">
-          <h3 className="card-header">Available Personas</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.values(personas).map((persona) => (
-              <div
-                key={persona.type}
-                className="border border-gray-200 p-4 space-y-2"
-              >
-                <h4 className="font-semibold text-gray-900">{persona.name}</h4>
-                <p className="text-sm text-gray-600">{persona.description}</p>
-                <div className="flex flex-wrap gap-1">
-                  {persona.traits.slice(0, 3).map((trait) => (
-                    <span
-                      key={trait}
-                      className="badge bg-gray-100 text-gray-700"
-                    >
-                      {trait}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-500 pt-2">
-                  <span>Warmth: {Math.round(persona.initial_warmth * 100)}%</span>
-                  <span>Difficulty: {getDifficultyLabel(persona.objection_likelihood)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Recent Sessions */}
         <div className="card">
           <h3 className="card-header">Recent Practice Sessions</h3>
@@ -216,10 +185,4 @@ function getScoreColor(score: number): string {
   if (score >= 80) return 'text-green-600';
   if (score >= 70) return 'text-yellow-600';
   return 'text-red-600';
-}
-
-function getDifficultyLabel(likelihood: number): string {
-  if (likelihood >= 0.7) return 'Hard';
-  if (likelihood >= 0.4) return 'Medium';
-  return 'Easy';
 }
