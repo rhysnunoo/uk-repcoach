@@ -123,7 +123,7 @@ export function RingoverUploader() {
           <li>Upload both files below</li>
         </ol>
         <p className="text-xs text-blue-600 mt-2">
-          This method is free and doesn't require the Empower module.
+          This method is free and does not require the Empower module.
         </p>
       </div>
 

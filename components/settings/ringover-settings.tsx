@@ -178,7 +178,7 @@ export function RingoverSettings({ syncLogs }: RingoverSettingsProps) {
           </div>
           <div className="flex items-start gap-2">
             <span className="bg-green-200 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">2</span>
-            <p className="text-sm text-gray-700">Click "Add Webhook"</p>
+            <p className="text-sm text-gray-700">Click &quot;Add Webhook&quot;</p>
           </div>
           <div className="flex items-start gap-2">
             <span className="bg-green-200 text-green-800 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shrink-0">3</span>
