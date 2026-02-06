@@ -94,22 +94,13 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
         </table>
       </div>
 
-      <div className="mt-4 p-4 bg-blue-50 border border-blue-200">
-        <h4 className="font-medium text-blue-900 mb-2">Role Descriptions</h4>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>
-            <strong>Rep:</strong> Can view own calls, scores, and practice sessions
-          </li>
-          <li>
-            <strong>Manager:</strong> Can view all team data, run syncs, configure settings, and toggle between team/personal dashboard views (player coach)
-          </li>
-          <li>
-            <strong>Admin:</strong> Full access including script management, plus all manager capabilities
-          </li>
+      <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+        <h4 className="font-medium text-gray-900 mb-2">Roles</h4>
+        <ul className="text-sm text-gray-700 space-y-1">
+          <li><strong>Rep:</strong> View own calls, scores, and practice</li>
+          <li><strong>Manager:</strong> View all team data and manage settings</li>
+          <li><strong>Admin:</strong> Full access including data management</li>
         </ul>
-        <p className="text-xs text-blue-700 mt-3">
-          <strong>Player Coaches:</strong> Managers and Admins who also make calls can switch between Team and Personal views on the dashboard to see their own performance stats.
-        </p>
       </div>
     </div>
   );
