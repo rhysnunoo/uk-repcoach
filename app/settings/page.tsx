@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getProfile, createClient } from '@/lib/supabase/server';
 import { AppLayout } from '@/components/layout/app-layout';
-import { HubspotSettings } from '@/components/settings/hubspot-settings';
 import { RingoverSettings } from '@/components/settings/ringover-settings';
 import { UserManagement } from '@/components/settings/user-management';
 import { DataManagement } from '@/components/settings/data-management';
@@ -25,13 +24,6 @@ export default async function SettingsPage() {
     .from('profiles')
     .select('*')
     .order('full_name');
-
-  // Fetch HubSpot sync history
-  const { data: syncLogs } = await supabase
-    .from('hubspot_sync_log')
-    .select('*')
-    .order('started_at', { ascending: false })
-    .limit(10);
 
   // Fetch Ringover sync history
   const { data: ringoverSyncLogs } = await supabase
@@ -67,9 +59,6 @@ export default async function SettingsPage() {
             Manage integrations and user settings
           </p>
         </div>
-
-        {/* HubSpot Integration */}
-        <HubspotSettings syncLogs={syncLogs || []} />
 
         {/* Ringover Integration */}
         <RingoverSettings syncLogs={ringoverSyncLogs || []} />
