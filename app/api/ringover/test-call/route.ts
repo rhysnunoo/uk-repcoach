@@ -3,9 +3,9 @@ import { getProfile } from '@/lib/supabase/server';
 
 // Test endpoint to see what data Ringover returns for calls
 // Only accessible to admins
-// Version 4 - try multiple auth formats
+// Version 5 - try multiple endpoints
 export async function GET() {
-  const VERSION = 'v4-multi-auth';
+  const VERSION = 'v5-endpoints';
   try {
     const profile = await getProfile();
     if (!profile || profile.role !== 'admin') {
@@ -22,47 +22,49 @@ export async function GET() {
       });
     }
 
-    // Try multiple auth formats
-    const callsUrl = 'https://public-api.ringover.com/v2/calls?limit=3';
-    const authFormats = [
-      { name: 'raw', value: apiKey },
-      { name: 'Bearer', value: `Bearer ${apiKey}` },
-      { name: 'Basic', value: `Basic ${apiKey}` },
+    // Try multiple endpoints to see which ones the key has access to
+    const endpoints = [
+      '/calls?limit=1',
+      '/users',
+      '/me',
+      '/channels',
+      '/groups',
     ];
 
     const results: Record<string, { status: number; body: string }> = {};
 
-    for (const format of authFormats) {
-      const response = await fetch(callsUrl, {
+    for (const endpoint of endpoints) {
+      const url = `https://public-api.ringover.com/v2${endpoint}`;
+      const response = await fetch(url, {
         headers: {
-          'Authorization': format.value,
+          'Authorization': apiKey,
           'Content-Type': 'application/json',
         },
       });
       const text = await response.text();
-      results[format.name] = { status: response.status, body: text.substring(0, 200) };
+      results[endpoint] = { status: response.status, body: text.substring(0, 300) };
 
-      // If one works, return success
+      // If one works, show the data
       if (response.ok) {
         let data;
         try { data = JSON.parse(text); } catch { data = text; }
         return NextResponse.json({
           version: VERSION,
-          message: 'Success!',
-          workingAuthFormat: format.name,
+          message: 'Found working endpoint!',
+          workingEndpoint: endpoint,
           data: data,
-          sampleCall: data?.call_log_list?.[0] || null,
         });
       }
     }
 
-    // None worked - return all results for debugging
+    // None worked
     return NextResponse.json({
       version: VERSION,
-      error: 'All auth formats failed',
+      error: 'No endpoints accessible with this API key',
       keyPreview: `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`,
       keyLength: apiKey.length,
-      results: results,
+      endpointResults: results,
+      hint: 'Check Ringover dashboard - you may need an API key with different permissions, or there might be different key types (User API key vs Organization API key)',
     });
 
     // Parse call data
@@ -85,7 +87,7 @@ export async function GET() {
   } catch (error) {
     console.error('Test call error:', error);
     return NextResponse.json(
-      { version: 'v4-multi-auth', error: error instanceof Error ? error.message : 'Failed to fetch calls' },
+      { version: 'v5-endpoints', error: error instanceof Error ? error.message : 'Failed to fetch calls' },
       { status: 500 }
     );
   }
