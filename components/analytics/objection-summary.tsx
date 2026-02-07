@@ -180,7 +180,7 @@ export function ObjectionSummary() {
                   <div key={idx} className="p-3 bg-gray-50 rounded">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <p className="text-sm text-gray-900 italic">"{obj.objection}"</p>
+                        <p className="text-sm text-gray-900 italic">&ldquo;{obj.objection}&rdquo;</p>
                         <p className="text-xs text-gray-500 mt-1">
                           {CATEGORY_LABELS[obj.category] || obj.category} - {obj.frequency}x
                         </p>
@@ -203,7 +203,7 @@ export function ObjectionSummary() {
                 {stats.bestResponses.slice(0, 3).map((resp, idx) => (
                   <div key={idx} className="p-3 border border-green-200 bg-green-50 rounded">
                     <p className="text-xs text-gray-500 mb-1">
-                      Objection: <span className="italic">"{resp.objection}"</span>
+                      Objection: <span className="italic">&ldquo;{resp.objection}&rdquo;</span>
                     </p>
                     <p className="text-sm text-gray-900">{resp.response}</p>
                     <div className="flex items-center justify-between mt-2">
