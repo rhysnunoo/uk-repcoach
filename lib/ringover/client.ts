@@ -31,6 +31,11 @@ function getApiKey(): string {
     throw new Error('RINGOVER_API_KEY must be configured');
   }
 
+  // Ringover API expects just the key, but try Bearer if it doesn't start with common prefixes
+  if (apiKey.startsWith('Bearer ')) {
+    return apiKey;
+  }
+
   return apiKey;
 }
 

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getProfile } from '@/lib/supabase/server';
-import { fetchRingoverCalls, fetchCallDetails } from '@/lib/ringover/client';
 
 // Test endpoint to see what data Ringover returns for calls
 // Only accessible to admins
@@ -11,31 +10,60 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch recent calls
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-    const calls = await fetchRingoverCalls(oneWeekAgo, new Date(), 5);
-
-    if (calls.length === 0) {
-      return NextResponse.json({ message: 'No calls found in the last week' });
+    // Debug: Check if API key is set
+    const apiKey = process.env.RINGOVER_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({
+        error: 'RINGOVER_API_KEY not set',
+        envKeys: Object.keys(process.env).filter(k => k.includes('RINGOVER'))
+      });
     }
 
-    // Get details for the first call
-    const firstCall = calls[0];
-    const callDetails = await fetchCallDetails(firstCall.call_id);
+    // Test direct API call with detailed error info
+    const testUrl = 'https://public-api.ringover.com/v2/team';
+    const response = await fetch(testUrl, {
+      headers: {
+        'Authorization': apiKey,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      return NextResponse.json({
+        error: 'Ringover API failed',
+        status: response.status,
+        statusText: response.statusText,
+        responseBody: responseText,
+        keyPreview: `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`,
+        keyLength: apiKey.length,
+      });
+    }
+
+    // If we got here, try to parse and fetch calls
+    const teamData = JSON.parse(responseText);
+
+    // Now fetch calls
+    const callsResponse = await fetch('https://public-api.ringover.com/v2/calls?limit=5', {
+      headers: {
+        'Authorization': apiKey,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const callsText = await callsResponse.text();
+    let callsData;
+    try {
+      callsData = JSON.parse(callsText);
+    } catch {
+      callsData = callsText;
+    }
 
     return NextResponse.json({
-      message: 'Recent Ringover call data',
-      callCount: calls.length,
-      sampleCall: firstCall,
-      callDetails: callDetails,
-      // Show all keys to see what fields are available
-      availableFields: {
-        callKeys: Object.keys(firstCall),
-        contactKeys: firstCall.contact ? Object.keys(firstCall.contact) : null,
-        userKeys: firstCall.user ? Object.keys(firstCall.user) : null,
-      }
+      message: 'Ringover API connection successful',
+      team: teamData,
+      calls: callsData,
     });
   } catch (error) {
     console.error('Test call error:', error);
