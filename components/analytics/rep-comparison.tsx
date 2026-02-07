@@ -102,8 +102,16 @@ export function RepComparison() {
     setSelectedReps(prev =>
       prev.includes(repId)
         ? prev.filter(id => id !== repId)
-        : [...prev, repId].slice(0, 5) // Max 5 reps for comparison
+        : [...prev, repId]
     );
+  };
+
+  const selectAllReps = () => {
+    setSelectedReps(data?.reps.map(r => r.rep_id) || []);
+  };
+
+  const clearSelection = () => {
+    setSelectedReps([]);
   };
 
   if (loading) {
@@ -212,16 +220,31 @@ export function RepComparison() {
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Select Reps to Compare</h3>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="input w-auto"
-          >
-            <option value="score">Sort by Score</option>
-            <option value="calls">Sort by Calls</option>
-            <option value="conversion">Sort by Conversion</option>
-            <option value="trend">Sort by Trend</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={selectAllReps}
+              className="text-sm text-primary hover:text-primary-600"
+            >
+              Select All
+            </button>
+            <span className="text-gray-300">|</span>
+            <button
+              onClick={clearSelection}
+              className="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Clear
+            </button>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="input w-auto ml-4"
+            >
+              <option value="score">Sort by Score</option>
+              <option value="calls">Sort by Calls</option>
+              <option value="conversion">Sort by Conversion</option>
+              <option value="trend">Sort by Trend</option>
+            </select>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {sortedReps.map((rep, idx) => (
@@ -249,9 +272,6 @@ export function RepComparison() {
             </button>
           ))}
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          Select up to 5 reps to compare their performance
-        </p>
       </div>
 
       {selectedRepData.length > 0 && (
