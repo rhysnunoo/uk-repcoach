@@ -3,7 +3,9 @@ import { getProfile } from '@/lib/supabase/server';
 
 // Test endpoint to see what data Ringover returns for calls
 // Only accessible to admins
+// Version 2 - with debug info
 export async function GET() {
+  const VERSION = 'v2-debug';
   try {
     const profile = await getProfile();
     if (!profile || profile.role !== 'admin') {
@@ -14,6 +16,7 @@ export async function GET() {
     const apiKey = process.env.RINGOVER_API_KEY;
     if (!apiKey) {
       return NextResponse.json({
+        version: VERSION,
         error: 'RINGOVER_API_KEY not set',
         envKeys: Object.keys(process.env).filter(k => k.includes('RINGOVER'))
       });
@@ -32,6 +35,7 @@ export async function GET() {
 
     if (!response.ok) {
       return NextResponse.json({
+        version: VERSION,
         error: 'Ringover API failed',
         status: response.status,
         statusText: response.statusText,
@@ -61,6 +65,7 @@ export async function GET() {
     }
 
     return NextResponse.json({
+      version: VERSION,
       message: 'Ringover API connection successful',
       team: teamData,
       calls: callsData,
@@ -68,7 +73,7 @@ export async function GET() {
   } catch (error) {
     console.error('Test call error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch calls' },
+      { version: 'v2-debug', error: error instanceof Error ? error.message : 'Failed to fetch calls' },
       { status: 500 }
     );
   }
