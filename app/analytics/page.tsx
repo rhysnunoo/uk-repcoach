@@ -15,6 +15,21 @@ const RepComparison = dynamic(
   }
 );
 
+const ObjectionSummary = dynamic(
+  () => import('@/components/analytics/objection-summary').then(m => ({ default: m.ObjectionSummary })),
+  {
+    loading: () => (
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Objection Analysis</h3>
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
 export default async function AnalyticsPage() {
   const profile = await getProfile();
 
@@ -33,6 +48,8 @@ export default async function AnalyticsPage() {
         </div>
 
         <RepComparison />
+
+        <ObjectionSummary />
       </div>
     </AppLayout>
   );
