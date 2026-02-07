@@ -142,8 +142,10 @@ export function parseRingoverTranscript(content: string): {
 function parseFormat2(lines: string[]): { parsedLines: ParsedRingoverLine[]; mainAgent: string | null } {
   const parsedLines: ParsedRingoverLine[] = [];
 
-  // Pattern for timestamp line: "5s - Speaker Name" or "1m 30s - Speaker Name" or "1min 5s - Speaker Name"
-  const timestampPattern = /^(\d+(?:m(?:in)?)?(?:\s*\d+)?s?)\s*-\s*(.+)$/;
+  // Pattern for timestamp line: "13s - Speaker Name" or "1m 30s - Speaker Name"
+  // More flexible pattern to handle various formats
+  const timestampPattern = /^(\d+)\s*s?\s*-\s*(.+)$/;
+  const timestampPatternWithMin = /^(\d+)\s*m(?:in)?\s*(\d+)\s*s?\s*-\s*(.+)$/;
 
   // First, find where the actual transcript starts (after header)
   let transcriptStartIndex = 0;
@@ -157,40 +159,71 @@ function parseFormat2(lines: string[]): { parsedLines: ParsedRingoverLine[]; mai
 
   // Extract main agent name from header if available
   let mainAgent: string | null = null;
-  for (let i = 0; i < transcriptStartIndex; i++) {
+  let externalUser: string | null = null;
+  for (let i = 0; i < Math.min(transcriptStartIndex || 20, lines.length); i++) {
     const line = lines[i].trim();
     const agentMatch = line.match(/^Main agent:\s*(.+)$/i);
     if (agentMatch) {
       mainAgent = agentMatch[1].trim();
-      break;
+    }
+    const externalMatch = line.match(/^External user:\s*(.+)$/i);
+    if (externalMatch) {
+      externalUser = externalMatch[1].trim();
     }
   }
 
-  // Parse transcript lines
-  let currentSpeaker: string | null = null;
-  let currentSeconds = 0;
+  // Parse transcript lines - collect all lines first
+  const entries: { seconds: number; speaker: string; textLines: string[] }[] = [];
+  let currentEntry: { seconds: number; speaker: string; textLines: string[] } | null = null;
 
   for (let i = transcriptStartIndex; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
 
-    const timestampMatch = line.match(timestampPattern);
+    // Try to match timestamp patterns
+    let timestampMatch = line.match(timestampPatternWithMin);
+    let seconds = 0;
+    let speaker = '';
 
     if (timestampMatch) {
-      // This is a timestamp + speaker line
-      const [, timeStr, speaker] = timestampMatch;
-      currentSpeaker = speaker.trim();
-      currentSeconds = parseTimeString(timeStr);
-    } else if (currentSpeaker) {
-      // This is the text for the previous speaker
-      parsedLines.push({
-        timestamp: formatSeconds(currentSeconds),
-        speaker: currentSpeaker,
-        text: line,
-        seconds: currentSeconds,
-      });
-      currentSpeaker = null; // Reset for next pair
+      // Format: "1m 30s - Speaker" or "1min 30s - Speaker"
+      seconds = parseInt(timestampMatch[1]) * 60 + parseInt(timestampMatch[2]);
+      speaker = timestampMatch[3].trim();
+    } else {
+      timestampMatch = line.match(timestampPattern);
+      if (timestampMatch) {
+        // Format: "13s - Speaker" or "13 - Speaker"
+        seconds = parseInt(timestampMatch[1]);
+        speaker = timestampMatch[2].trim();
+      }
     }
+
+    if (timestampMatch && speaker) {
+      // Save previous entry if exists
+      if (currentEntry && currentEntry.textLines.length > 0) {
+        entries.push(currentEntry);
+      }
+      // Start new entry
+      currentEntry = { seconds, speaker, textLines: [] };
+    } else if (currentEntry) {
+      // This is text content for the current speaker
+      currentEntry.textLines.push(line);
+    }
+  }
+
+  // Don't forget the last entry
+  if (currentEntry && currentEntry.textLines.length > 0) {
+    entries.push(currentEntry);
+  }
+
+  // Convert entries to parsed lines
+  for (const entry of entries) {
+    parsedLines.push({
+      timestamp: formatSeconds(entry.seconds),
+      speaker: entry.speaker,
+      text: entry.textLines.join(' '),
+      seconds: entry.seconds,
+    });
   }
 
   return { parsedLines, mainAgent };
