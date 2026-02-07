@@ -12,7 +12,6 @@ import { CallStatusPoller } from '@/components/calls/call-status-poller';
 import { SpeakerCorrection } from '@/components/calls/speaker-correction';
 import { CallErrorState } from '@/components/calls/call-error-state';
 import { CallOutcomeSelector, OutcomeBadge } from '@/components/calls/call-outcome-selector';
-import { CallBookmarks } from '@/components/calls/call-bookmarks';
 import { CallRepSelector } from '@/components/calls/call-rep-selector';
 import type { Score, TranscriptSegment } from '@/types/database';
 
@@ -191,18 +190,6 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
               <div className="card">
                 <h3 className="card-header">CLOSER Breakdown</h3>
                 <ScoreCard scores={phaseScores} />
-              </div>
-            )}
-
-            {/* Bookmarks */}
-            {call.transcript && (
-              <div className="card">
-                <h3 className="card-header">Bookmarks & Clips</h3>
-                <CallBookmarks
-                  callId={id}
-                  transcript={call.transcript as TranscriptSegment[]}
-                  isManager={isManager}
-                />
               </div>
             )}
 
