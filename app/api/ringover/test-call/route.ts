@@ -3,9 +3,9 @@ import { getProfile } from '@/lib/supabase/server';
 
 // Test endpoint to see what data Ringover returns for calls
 // Only accessible to admins
-// Version 2 - with debug info
+// Version 3 - test /calls endpoint
 export async function GET() {
-  const VERSION = 'v2-debug';
+  const VERSION = 'v3-calls';
   try {
     const profile = await getProfile();
     if (!profile || profile.role !== 'admin') {
@@ -22,9 +22,9 @@ export async function GET() {
       });
     }
 
-    // Test direct API call with detailed error info
-    const testUrl = 'https://public-api.ringover.com/v2/team';
-    const response = await fetch(testUrl, {
+    // Test direct API call to fetch calls
+    const callsUrl = 'https://public-api.ringover.com/v2/calls?limit=3';
+    const response = await fetch(callsUrl, {
       headers: {
         'Authorization': apiKey,
         'Content-Type': 'application/json',
@@ -42,38 +42,31 @@ export async function GET() {
         responseBody: responseText,
         keyPreview: `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`,
         keyLength: apiKey.length,
+        testedUrl: callsUrl,
       });
     }
 
-    // If we got here, try to parse and fetch calls
-    const teamData = JSON.parse(responseText);
-
-    // Now fetch calls
-    const callsResponse = await fetch('https://public-api.ringover.com/v2/calls?limit=5', {
-      headers: {
-        'Authorization': apiKey,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const callsText = await callsResponse.text();
+    // Parse call data
     let callsData;
     try {
-      callsData = JSON.parse(callsText);
+      callsData = JSON.parse(responseText);
     } catch {
-      callsData = callsText;
+      callsData = responseText;
     }
 
+    // Show the raw structure so we can see all available fields
     return NextResponse.json({
       version: VERSION,
-      message: 'Ringover API connection successful',
-      team: teamData,
-      calls: callsData,
+      message: 'Ringover API connection successful!',
+      rawResponse: callsData,
+      // If there are calls, show the first one's structure
+      sampleCall: callsData?.call_log_list?.[0] || null,
+      availableFields: callsData?.call_log_list?.[0] ? Object.keys(callsData.call_log_list[0]) : [],
     });
   } catch (error) {
     console.error('Test call error:', error);
     return NextResponse.json(
-      { version: 'v2-debug', error: error instanceof Error ? error.message : 'Failed to fetch calls' },
+      { version: 'v3-calls', error: error instanceof Error ? error.message : 'Failed to fetch calls' },
       { status: 500 }
     );
   }
