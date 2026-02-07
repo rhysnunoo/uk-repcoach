@@ -33,12 +33,14 @@ export async function PATCH(request: NextRequest) {
   try {
     const currentUser = await getProfile();
     if (!currentUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized - please log in' }, { status: 401 });
     }
+
+    console.log('[Profile PATCH] Current user role:', currentUser.role);
 
     // Only managers and admins can update profiles
     if (currentUser.role !== 'manager' && currentUser.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: `Forbidden - your role is ${currentUser.role}` }, { status: 403 });
     }
 
     const body = await request.json();
@@ -58,7 +60,7 @@ export async function PATCH(request: NextRequest) {
     if (role !== undefined) {
       // Only admins can change roles
       if (currentUser.role !== 'admin') {
-        return NextResponse.json({ error: 'Only admins can change roles' }, { status: 403 });
+        return NextResponse.json({ error: `Only admins can change roles (you are ${currentUser.role})` }, { status: 403 });
       }
       const validRoles = ['rep', 'manager', 'admin'];
       if (!validRoles.includes(role)) {
@@ -78,7 +80,7 @@ export async function PATCH(request: NextRequest) {
 
     if (updateError) {
       console.error('Failed to update profile:', updateError);
-      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+      return NextResponse.json({ error: 'Database error: ' + updateError.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

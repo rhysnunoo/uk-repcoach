@@ -26,6 +26,8 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         setProfiles((prev) =>
           prev.map((p) =>
@@ -33,7 +35,7 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
           )
         );
       } else {
-        alert('Failed to update role');
+        alert(data.error || 'Failed to update role');
       }
     } catch (error) {
       console.error('Failed to update role:', error);
