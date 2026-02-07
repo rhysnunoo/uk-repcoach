@@ -124,6 +124,19 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
           />
         )}
 
+        {/* Summary TLDR */}
+        {call.summary && call.status === 'complete' && (
+          <div className="bg-blue-50 border border-blue-200 p-4">
+            <h3 className="text-sm font-semibold text-blue-900 mb-2 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Summary
+            </h3>
+            <p className="text-sm text-blue-800">{call.summary}</p>
+          </div>
+        )}
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Transcript */}

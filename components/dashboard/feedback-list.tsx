@@ -68,88 +68,87 @@ export function FeedbackList({ scores }: FeedbackListProps) {
             </div>
 
             <div className="p-4 space-y-4">
-              {/* Coaching Tip */}
-              <div className={`p-3 ${score.score < 60 ? 'bg-orange-50 border-l-4 border-orange-400' : 'bg-blue-50 border-l-4 border-blue-400'}`}>
-                <p className="text-sm font-medium text-gray-800">
-                  {getCoachingTip(score.phase, score.score)}
-                </p>
-              </div>
-
-              {/* Feedback */}
+              {/* Feedback Summary */}
               <div>
-                <p className="text-sm text-gray-600">{score.feedback}</p>
+                <p className="text-sm text-gray-700">{score.feedback}</p>
               </div>
 
-              {/* Side-by-side: You Said vs Script Says */}
-              {(negativeQuotes.length > 0 || (score.improvements && score.improvements.length > 0)) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* You Said */}
-                  {negativeQuotes.length > 0 && (
-                    <div className="bg-red-50 p-3 border border-red-200">
-                      <h4 className="text-sm font-semibold text-red-800 mb-2 flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-red-500 rounded-full"></span>
-                        You Said
-                      </h4>
-                      <div className="space-y-2">
-                        {negativeQuotes.slice(0, 2).map((quote, idx) => (
-                          <p key={idx} className="text-sm text-red-700 italic">
-                            &quot;{quote.text.length > 150 ? quote.text.slice(0, 150) + '...' : quote.text}&quot;
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Script Says */}
-                  {coaching && coaching.recommendedPhrases.length > 0 && (
-                    <div className="bg-green-50 p-3 border border-green-200">
-                      <h4 className="text-sm font-semibold text-green-800 mb-2 flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
-                        Script Says
-                      </h4>
-                      <div className="space-y-2">
-                        {coaching.recommendedPhrases.slice(0, 2).map((phrase, idx) => (
-                          <p key={idx} className="text-sm text-green-700">
-                            {phrase}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Highlights */}
+              {/* What You Did Well - FIRST */}
               {score.highlights && score.highlights.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-green-700 mb-2">
+                <div className="bg-green-50 p-3 border border-green-200">
+                  <h4 className="text-sm font-semibold text-green-800 mb-2 flex items-center gap-2">
+                    <span className="text-green-500">✓</span>
                     What You Did Well
                   </h4>
                   <ul className="space-y-1">
                     {score.highlights.map((highlight, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <span className="text-green-500 mt-0.5">✓</span>
-                        <span className="text-gray-700">{highlight}</span>
+                      <li key={idx} className="text-sm text-green-700">
+                        • {highlight}
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              {/* Improvements with Script Examples */}
+              {/* Areas to Improve - SECOND */}
               {score.improvements && score.improvements.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-orange-700 mb-2">
+                <div className="bg-orange-50 p-3 border border-orange-200">
+                  <h4 className="text-sm font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                    <span className="text-orange-500">→</span>
                     Areas to Improve
                   </h4>
                   <ul className="space-y-1">
                     {score.improvements.map((improvement, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <span className="text-orange-500 mt-0.5">→</span>
-                        <span className="text-gray-700">{improvement}</span>
+                      <li key={idx} className="text-sm text-orange-700">
+                        • {improvement}
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {/* Side-by-side: You Said vs Script Says - THIRD (examples) */}
+              {(negativeQuotes.length > 0 && coaching && coaching.recommendedPhrases.length > 0) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* You Said */}
+                  <div className="bg-red-50 p-3 border border-red-200">
+                    <h4 className="text-sm font-semibold text-red-800 mb-2 flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 bg-red-500 rounded-full"></span>
+                      You Said
+                    </h4>
+                    <div className="space-y-2">
+                      {negativeQuotes.slice(0, 2).map((quote, idx) => (
+                        <p key={idx} className="text-sm text-red-700 italic">
+                          &quot;{quote.text.length > 150 ? quote.text.slice(0, 150) + '...' : quote.text}&quot;
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Script Says */}
+                  <div className="bg-green-50 p-3 border border-green-200">
+                    <h4 className="text-sm font-semibold text-green-800 mb-2 flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                      Try Instead
+                    </h4>
+                    <div className="space-y-2">
+                      {coaching.recommendedPhrases.slice(0, 2).map((phrase, idx) => (
+                        <p key={idx} className="text-sm text-green-700">
+                          {phrase}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Coaching Tip - AT THE END, less prominent */}
+              {score.score < 70 && (
+                <div className="p-3 bg-gray-50 border-l-4 border-gray-300">
+                  <p className="text-xs font-medium text-gray-500 uppercase mb-1">Coaching Tip</p>
+                  <p className="text-sm text-gray-700">
+                    {getCoachingTip(score.phase, score.score)}
+                  </p>
                 </div>
               )}
 

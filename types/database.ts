@@ -131,6 +131,7 @@ export interface Call {
   contact_phone: string | null;
   outcome: string | null;
   overall_score: number | null;
+  summary: string | null;
   error_message: string | null;
   bookmarks: CallBookmark[] | null;
   created_at: string;
@@ -450,6 +451,7 @@ export type Database = {
           contact_phone: string | null;
           outcome: string | null;
           overall_score: number | null;
+          summary: string | null;
           error_message: string | null;
           bookmarks: CallBookmark[] | null;
           created_at: string;
@@ -473,6 +475,7 @@ export type Database = {
           contact_phone?: string | null;
           outcome?: string | null;
           overall_score?: number | null;
+          summary?: string | null;
           error_message?: string | null;
           bookmarks?: CallBookmark[] | null;
         };
@@ -494,6 +497,7 @@ export type Database = {
           contact_phone?: string | null;
           outcome?: string | null;
           overall_score?: number | null;
+          summary?: string | null;
           error_message?: string | null;
           bookmarks?: CallBookmark[] | null;
         };

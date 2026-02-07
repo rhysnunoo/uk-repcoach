@@ -134,12 +134,13 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
     throw new Error('Failed to save scores');
   }
 
-  // Update call with overall score
+  // Update call with overall score and summary
   await adminClient
     .from('calls')
     .update({
       status: 'complete',
       overall_score: overallScore,
+      summary: scoringResponse.summary,
       error_message: null,
     })
     .eq('id', callId);
