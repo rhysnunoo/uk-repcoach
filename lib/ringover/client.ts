@@ -31,11 +31,6 @@ function getApiKey(): string {
     throw new Error('RINGOVER_API_KEY must be configured');
   }
 
-  // Ringover API expects just the key, but try Bearer if it doesn't start with common prefixes
-  if (apiKey.startsWith('Bearer ')) {
-    return apiKey;
-  }
-
   return apiKey;
 }
 
@@ -64,7 +59,8 @@ async function ringoverFetch<T>(
 
 export async function testRingoverConnection(): Promise<boolean> {
   try {
-    await ringoverFetch('/team');
+    // Use /groups endpoint as it's confirmed to work
+    await ringoverFetch('/groups');
     return true;
   } catch (error) {
     console.error('Ringover connection test failed:', error);
@@ -74,26 +70,53 @@ export async function testRingoverConnection(): Promise<boolean> {
 
 export interface RingoverUser {
   user_id: number;
+  team_id: number;
   email: string;
   firstname: string;
   lastname: string;
   concat_name: string;
-  numbers: Array<{
-    number: string;
-    country: string;
-  }>;
+  initial?: string;
+  color?: string;
+  company?: string;
+  picture?: string;
 }
 
-interface RingoverTeamResponse {
-  team: {
-    users: RingoverUser[];
-  };
+export interface RingoverGroup {
+  group_id: number;
+  name: string;
+  total_users_count: number;
+  color: string | null;
+  is_jumper: boolean;
 }
 
+interface RingoverGroupsResponse {
+  list_count: number;
+  list: RingoverGroup[];
+}
+
+export async function fetchRingoverGroups(): Promise<RingoverGroup[]> {
+  try {
+    const response = await ringoverFetch<RingoverGroupsResponse>('/groups');
+    return response.list || [];
+  } catch (error) {
+    console.error('Failed to fetch Ringover groups:', error);
+    throw error;
+  }
+}
+
+// Extract unique users from recent calls (since /team endpoint doesn't work)
 export async function fetchRingoverUsers(): Promise<RingoverUser[]> {
   try {
-    const response = await ringoverFetch<RingoverTeamResponse>('/team');
-    return response.team?.users || [];
+    const calls = await fetchRingoverCalls(undefined, undefined, 100);
+    const usersMap = new Map<number, RingoverUser>();
+
+    for (const call of calls) {
+      if (call.user && !usersMap.has(call.user.user_id)) {
+        usersMap.set(call.user.user_id, call.user);
+      }
+    }
+
+    return Array.from(usersMap.values());
   } catch (error) {
     console.error('Failed to fetch Ringover users:', error);
     throw error;
@@ -103,42 +126,49 @@ export async function fetchRingoverUsers(): Promise<RingoverUser[]> {
 export interface RingoverCall {
   call_id: string;
   cdr_id: number;
-  user_id: number;
-  direction: 'INBOUND' | 'OUTBOUND';
-  status: 'ANSWERED' | 'MISSED' | 'VOICEMAIL' | 'BUSY' | 'FAILED';
+  channel_id?: string;
+  type?: string; // 'IVR', etc.
+  direction: 'in' | 'out';
+  is_answered: boolean;
+  last_state: 'ANSWERED' | 'MISSED' | 'CANCELLED' | 'VOICEMAIL' | 'BUSY' | 'FAILED';
   start_time: string; // ISO timestamp
-  answer_time: string | null;
+  answered_time: string | null;
   end_time: string;
-  duration: number; // seconds
-  wait_duration: number;
-  talk_duration: number;
+  incall_duration: number | null; // seconds
+  total_duration: number; // seconds
+  contact_number: string;
+  queue_duration?: number;
+  ringing_duration?: number;
+  hold_duration?: number;
+  hangup_by?: 'CALLER' | 'CALLEE';
   from_number: string;
   to_number: string;
-  from_name: string | null;
-  to_name: string | null;
-  recording_url: string | null;
+  note?: string | null;
+  record: string | null; // recording URL
   contact?: {
     contact_id: number;
     firstname: string | null;
     lastname: string | null;
     company: string | null;
-  };
-  user?: {
-    user_id: number;
-    firstname: string;
-    lastname: string;
-    email: string;
-  };
+  } | null;
+  user?: RingoverUser | null;
+  ivr?: {
+    ivr_id: number;
+    name: string;
+    color: string;
+    is_open: boolean;
+  } | null;
+  amd?: boolean; // Answering machine detection
+  groups?: number[] | null;
 }
 
 interface RingoverCallsResponse {
-  call_log_list: RingoverCall[];
-  pagination?: {
-    total: number;
-    page: number;
-    limit: number;
-    pages: number;
-  };
+  user_id: number;
+  team_id: number;
+  total_call_count: number;
+  total_missed_call_count: number;
+  call_list_count: number;
+  call_list: RingoverCall[];
 }
 
 export async function fetchRingoverCalls(
@@ -146,43 +176,20 @@ export async function fetchRingoverCalls(
   endDate?: Date,
   limit: number = 100
 ): Promise<RingoverCall[]> {
-  const allCalls: RingoverCall[] = [];
-  let page = 1;
-
   try {
-    while (true) {
-      let endpoint = `/calls?limit=${limit}&page=${page}`;
+    let endpoint = `/calls?limit=${limit}`;
 
-      if (startDate) {
-        endpoint += `&start_date=${startDate.toISOString()}`;
-      }
-
-      if (endDate) {
-        endpoint += `&end_date=${endDate.toISOString()}`;
-      }
-
-      const response = await ringoverFetch<RingoverCallsResponse>(endpoint);
-
-      if (!response.call_log_list || response.call_log_list.length === 0) {
-        break;
-      }
-
-      allCalls.push(...response.call_log_list);
-
-      // Check if we've fetched all pages
-      if (response.pagination) {
-        if (page >= response.pagination.pages) {
-          break;
-        }
-      } else {
-        // No pagination info, assume single page
-        break;
-      }
-
-      page++;
+    if (startDate) {
+      endpoint += `&start_date=${startDate.toISOString()}`;
     }
 
-    return allCalls;
+    if (endDate) {
+      endpoint += `&end_date=${endDate.toISOString()}`;
+    }
+
+    const response = await ringoverFetch<RingoverCallsResponse>(endpoint);
+
+    return response.call_list || [];
   } catch (error) {
     console.error('Failed to fetch Ringover calls:', error);
     throw error;

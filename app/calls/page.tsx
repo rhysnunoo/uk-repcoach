@@ -190,15 +190,15 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
                         </td>
                       )}
                       <td className="font-medium">
-                        {call.hubspot_contact_id ? (
+                        {call.contact_phone ? (
                           <a
-                            href={`https://app.hubspot.com/contacts/${process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID || ''}/contact/${call.hubspot_contact_id}`}
+                            href={`https://app.hubspot.com/contacts/${process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID}/objects/0-1/views/all/list?query=${encodeURIComponent(call.contact_phone)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline"
-                            title="View in HubSpot"
+                            title="Search in HubSpot"
                           >
-                            {call.contact_name || 'Unknown'}
+                            {call.contact_name || call.contact_phone}
                             <span className="ml-1 text-xs">↗</span>
                           </a>
                         ) : (
