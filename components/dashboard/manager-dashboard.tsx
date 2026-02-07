@@ -268,27 +268,6 @@ export const ManagerDashboard = memo(function ManagerDashboard({
         )}
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link href="/settings" className="card hover:border-primary transition-colors">
-          <h4 className="font-semibold text-gray-900">HubSpot Sync</h4>
-          <p className="text-sm text-gray-600 mt-1">
-            Configure automatic call syncing
-          </p>
-        </Link>
-        <Link href="/scripts" className="card hover:border-primary transition-colors">
-          <h4 className="font-semibold text-gray-900">Manage Scripts</h4>
-          <p className="text-sm text-gray-600 mt-1">
-            View and update sales scripts
-          </p>
-        </Link>
-        <Link href="/calls" className="card hover:border-primary transition-colors">
-          <h4 className="font-semibold text-gray-900">Review Calls</h4>
-          <p className="text-sm text-gray-600 mt-1">
-            Listen to calls and add notes
-          </p>
-        </Link>
-      </div>
     </div>
   );
 });
