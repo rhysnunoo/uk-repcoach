@@ -143,36 +143,48 @@ function parseFormat2(lines: string[]): { parsedLines: ParsedRingoverLine[]; mai
   const parsedLines: ParsedRingoverLine[] = [];
 
   // Pattern for timestamp line: "13s - Speaker Name" or "1m 30s - Speaker Name"
-  // More flexible pattern to handle various formats
-  const timestampPattern = /^(\d+)\s*s?\s*-\s*(.+)$/;
+  const timestampPattern = /^(\d+)\s*s\s*-\s*(.+)$/;
   const timestampPatternWithMin = /^(\d+)\s*m(?:in)?\s*(\d+)\s*s?\s*-\s*(.+)$/;
 
-  // First, find where the actual transcript starts (after header)
-  let transcriptStartIndex = 0;
+  // First, find where the actual transcript starts (after "Transcription:" header)
+  let transcriptStartIndex = -1;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim().toLowerCase();
-    if (line === 'transcription:' || line === 'transcript:') {
+    // More flexible matching for "Transcription:" line
+    if (line.startsWith('transcription') || line.startsWith('transcript')) {
       transcriptStartIndex = i + 1;
       break;
     }
   }
 
-  // Extract main agent name from header if available
+  // If we didn't find "Transcription:", find the first timestamp line
+  if (transcriptStartIndex === -1) {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (timestampPattern.test(line) || timestampPatternWithMin.test(line)) {
+        transcriptStartIndex = i;
+        break;
+      }
+    }
+  }
+
+  // If still not found, can't parse
+  if (transcriptStartIndex === -1) {
+    return { parsedLines: [], mainAgent: null };
+  }
+
+  // Extract main agent name from header (lines before transcript start)
   let mainAgent: string | null = null;
-  let externalUser: string | null = null;
-  for (let i = 0; i < Math.min(transcriptStartIndex || 20, lines.length); i++) {
+  for (let i = 0; i < transcriptStartIndex; i++) {
     const line = lines[i].trim();
     const agentMatch = line.match(/^Main agent:\s*(.+)$/i);
     if (agentMatch) {
       mainAgent = agentMatch[1].trim();
-    }
-    const externalMatch = line.match(/^External user:\s*(.+)$/i);
-    if (externalMatch) {
-      externalUser = externalMatch[1].trim();
+      break;
     }
   }
 
-  // Parse transcript lines - collect all lines first
+  // Parse transcript lines - collect timestamp entries with their text
   const entries: { seconds: number; speaker: string; textLines: string[] }[] = [];
   let currentEntry: { seconds: number; speaker: string; textLines: string[] } | null = null;
 
@@ -181,25 +193,28 @@ function parseFormat2(lines: string[]): { parsedLines: ParsedRingoverLine[]; mai
     if (!line) continue;
 
     // Try to match timestamp patterns
-    let timestampMatch = line.match(timestampPatternWithMin);
     let seconds = 0;
     let speaker = '';
+    let isTimestampLine = false;
 
-    if (timestampMatch) {
-      // Format: "1m 30s - Speaker" or "1min 30s - Speaker"
-      seconds = parseInt(timestampMatch[1]) * 60 + parseInt(timestampMatch[2]);
-      speaker = timestampMatch[3].trim();
+    // Try format with minutes first: "1m 30s - Speaker"
+    let match = line.match(timestampPatternWithMin);
+    if (match) {
+      seconds = parseInt(match[1]) * 60 + parseInt(match[2]);
+      speaker = match[3].trim();
+      isTimestampLine = true;
     } else {
-      timestampMatch = line.match(timestampPattern);
-      if (timestampMatch) {
-        // Format: "13s - Speaker" or "13 - Speaker"
-        seconds = parseInt(timestampMatch[1]);
-        speaker = timestampMatch[2].trim();
+      // Try simple format: "13s - Speaker"
+      match = line.match(timestampPattern);
+      if (match) {
+        seconds = parseInt(match[1]);
+        speaker = match[2].trim();
+        isTimestampLine = true;
       }
     }
 
-    if (timestampMatch && speaker) {
-      // Save previous entry if exists
+    if (isTimestampLine && speaker) {
+      // Save previous entry if exists and has text
       if (currentEntry && currentEntry.textLines.length > 0) {
         entries.push(currentEntry);
       }
@@ -207,7 +222,13 @@ function parseFormat2(lines: string[]): { parsedLines: ParsedRingoverLine[]; mai
       currentEntry = { seconds, speaker, textLines: [] };
     } else if (currentEntry) {
       // This is text content for the current speaker
-      currentEntry.textLines.push(line);
+      // Skip lines that look like headers (contain ":" followed by descriptive text)
+      if (!line.includes('Main agent:') &&
+          !line.includes('External user:') &&
+          !line.includes('Start time:') &&
+          !line.includes('Total time:')) {
+        currentEntry.textLines.push(line);
+      }
     }
   }
 
