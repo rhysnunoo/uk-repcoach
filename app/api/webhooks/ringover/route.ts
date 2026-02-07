@@ -49,7 +49,15 @@ interface RingoverWebhookPayload {
     contact?: {
       number: string;
       name?: string;
+      // CRM integration fields (when Ringover is connected to HubSpot)
+      hubspot_contact_id?: string;
+      hubspot_id?: string;
+      crm_id?: string;
+      external_id?: string;
     };
+    // Some Ringover integrations put CRM data at root level
+    hubspot_contact_id?: string;
+    crm_contact_id?: string;
     raw_digits?: string;
     status?: string;
   };
@@ -78,6 +86,7 @@ export async function POST(request: NextRequest) {
 
     const payload: RingoverWebhookPayload = await request.json();
     console.log('[Ringover Webhook] Event:', payload.event);
+    console.log('[Ringover Webhook] Contact data:', JSON.stringify(payload.data.contact, null, 2));
 
     // Only process call.ended events
     if (payload.event !== 'call.ended' && payload.event !== 'call_ended') {
@@ -165,6 +174,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Extract HubSpot contact ID if available (from CRM integration)
+    const hubspotContactId = callData.hubspot_contact_id ||
+      callData.crm_contact_id ||
+      callData.contact?.hubspot_contact_id ||
+      callData.contact?.hubspot_id ||
+      callData.contact?.crm_id ||
+      callData.contact?.external_id ||
+      null;
+
     // Create call record with 'transcribing' status
     const { data: newCall, error: insertError } = await adminClient
       .from('calls')
@@ -178,6 +196,7 @@ export async function POST(request: NextRequest) {
         call_date: callDate,
         contact_name: callData.contact?.name || contactPhone || 'Unknown',
         contact_phone: contactPhone,
+        hubspot_contact_id: hubspotContactId,
       })
       .select()
       .single();

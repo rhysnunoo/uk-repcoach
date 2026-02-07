@@ -189,7 +189,22 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
                           {repMap[call.rep_id]?.full_name || repMap[call.rep_id]?.email || 'Unknown'}
                         </td>
                       )}
-                      <td className="font-medium">{call.contact_name || 'Unknown'}</td>
+                      <td className="font-medium">
+                        {call.hubspot_contact_id ? (
+                          <a
+                            href={`https://app.hubspot.com/contacts/${process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID || ''}/contact/${call.hubspot_contact_id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                            title="View in HubSpot"
+                          >
+                            {call.contact_name || 'Unknown'}
+                            <span className="ml-1 text-xs">↗</span>
+                          </a>
+                        ) : (
+                          call.contact_name || 'Unknown'
+                        )}
+                      </td>
                       <td className="text-gray-600">
                         {call.duration_seconds
                           ? formatDuration(call.duration_seconds)
