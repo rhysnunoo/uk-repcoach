@@ -13,6 +13,7 @@ import { SpeakerCorrection } from '@/components/calls/speaker-correction';
 import { CallErrorState } from '@/components/calls/call-error-state';
 import { CallOutcomeSelector, OutcomeBadge } from '@/components/calls/call-outcome-selector';
 import { CallBookmarks } from '@/components/calls/call-bookmarks';
+import { CallRepSelector } from '@/components/calls/call-rep-selector';
 import type { Score, TranscriptSegment } from '@/types/database';
 
 interface CallDetailPageProps {
@@ -59,6 +60,16 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
     .select('*')
     .eq('call_id', id)
     .order('created_at', { ascending: false });
+
+  // Fetch reps for managers to reassign calls
+  let reps: { id: string; full_name: string | null; email: string }[] = [];
+  if (isManager) {
+    const { data: repData } = await adminClient
+      .from('profiles')
+      .select('id, full_name, email')
+      .order('full_name');
+    reps = repData || [];
+  }
 
   // Calculate phase scores for chart
   const phaseScores = (scores || []).map((s) => ({
@@ -185,11 +196,23 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
             {/* Call Info */}
             <div className="card">
               <h3 className="card-header">Call Information</h3>
+
+              {/* Rep Reassignment for Managers */}
+              {isManager && reps.length > 0 && (
+                <div className="mb-4 pb-4 border-b border-gray-200">
+                  <CallRepSelector
+                    callId={id}
+                    currentRepId={call.rep_id}
+                    reps={reps}
+                  />
+                </div>
+              )}
+
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Source</dt>
                   <dd className="font-medium">
-                    {call.source === 'hubspot' ? 'HubSpot' : 'Manual Upload'}
+                    {call.source === 'hubspot' ? 'HubSpot' : call.source === 'ringover' ? 'Ringover' : 'Manual Upload'}
                   </dd>
                 </div>
                 <div className="flex justify-between">

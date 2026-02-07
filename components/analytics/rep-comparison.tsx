@@ -274,148 +274,64 @@ export function RepComparison() {
         </div>
       </div>
 
+      {/* Charts Row - only show when reps are selected */}
       {selectedRepData.length > 0 && (
-        <>
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Overall Comparison Bar Chart */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Score & Conversion</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip
-                      formatter={(value: number, name: string) => [
-                        `${value}%`,
-                        name === 'score' ? 'Avg Score' : 'Conversion Rate',
-                      ]}
-                    />
-                    <Legend />
-                    <Bar dataKey="score" name="Avg Score" fill="#3b82f6" />
-                    <Bar dataKey="conversion" name="Conversion" fill="#10b981" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Radar Chart - Phase Comparison */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">CLOSER Phase Performance</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart data={radarData}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="phase" tick={{ fontSize: 10 }} />
-                    <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                    {selectedRepData.map((rep, idx) => (
-                      <Radar
-                        key={rep.rep_id}
-                        name={rep.rep_name}
-                        dataKey={rep.rep_name}
-                        stroke={COLORS[idx % COLORS.length]}
-                        fill={COLORS[idx % COLORS.length]}
-                        fillOpacity={0.2}
-                      />
-                    ))}
-                    <Legend />
-                    <Tooltip />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-
-          {/* Detailed Table */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Overall Comparison Bar Chart */}
           <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Detailed Comparison</h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rep</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Calls</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Avg Score</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Trend</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Conversion</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Practice</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Call</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Weakest Phase</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {selectedRepData.map((rep, idx) => {
-                    // Find weakest phase
-                    const weakestPhase = Object.entries(rep.phase_scores)
-                      .filter(([, score]) => score > 0)
-                      .sort((a, b) => a[1] - b[1])[0];
-
-                    return (
-                      <tr key={rep.rep_id}>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: COLORS[idx % COLORS.length] }}
-                            />
-                            <span className="font-medium text-gray-900">{rep.rep_name}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-center text-sm text-gray-600">
-                          {rep.total_calls}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`text-sm font-bold ${getScoreColor(rep.avg_score)}`}>
-                            {rep.avg_score}%
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`text-sm font-medium ${rep.trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {rep.trend >= 0 ? '+' : ''}{rep.trend}%
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`text-sm font-medium ${getScoreColor(rep.conversion_rate)}`}>
-                            {rep.conversion_rate}%
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-center text-sm text-gray-600">
-                          {rep.practice_sessions}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-500">
-                          {rep.last_call_date
-                            ? format(new Date(rep.last_call_date), 'MMM d')
-                            : '-'}
-                        </td>
-                        <td className="px-4 py-3">
-                          {weakestPhase ? (
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-gray-700">
-                                {PHASE_LABELS[weakestPhase[0]] || weakestPhase[0]}
-                              </span>
-                              <span className="text-xs text-red-600 font-medium">
-                                ({weakestPhase[1]}%)
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-gray-400">-</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Score & Conversion</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      `${value}%`,
+                      name === 'score' ? 'Avg Score' : 'Conversion Rate',
+                    ]}
+                  />
+                  <Legend />
+                  <Bar dataKey="score" name="Avg Score" fill="#3b82f6" />
+                  <Bar dataKey="conversion" name="Conversion" fill="#10b981" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
-        </>
+
+          {/* Radar Chart - Phase Comparison */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">CLOSER Phase Performance</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={radarData}>
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="phase" tick={{ fontSize: 10 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                  {selectedRepData.map((rep, idx) => (
+                    <Radar
+                      key={rep.rep_id}
+                      name={rep.rep_name}
+                      dataKey={rep.rep_name}
+                      stroke={COLORS[idx % COLORS.length]}
+                      fill={COLORS[idx % COLORS.length]}
+                      fillOpacity={0.2}
+                    />
+                  ))}
+                  <Legend />
+                  <Tooltip />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* Full Leaderboard */}
+      {/* Rep Leaderboard */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Full Leaderboard</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Rep Leaderboard</h3>
+        <p className="text-sm text-gray-500 mb-4">Click a row to select/deselect for chart comparison</p>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -425,41 +341,76 @@ export function RepComparison() {
                 <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Avg Score</th>
                 <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Calls</th>
                 <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Conversion</th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">30d Trend</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Trend</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Weakest Phase</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sortedReps.map((rep, idx) => (
-                <tr
-                  key={rep.rep_id}
-                  className={`${selectedReps.includes(rep.rep_id) ? 'bg-blue-50' : ''} hover:bg-gray-50 cursor-pointer`}
-                  onClick={() => toggleRep(rep.rep_id)}
-                >
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    {idx === 0 && sortBy === 'score' ? '1st' :
-                     idx === 1 && sortBy === 'score' ? '2nd' :
-                     idx === 2 && sortBy === 'score' ? '3rd' :
-                     `#${idx + 1}`}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-900">{rep.rep_name}</td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`font-bold ${getScoreColor(rep.avg_score)}`}>
-                      {rep.avg_score}%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center text-gray-600">{rep.total_calls}</td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={getScoreColor(rep.conversion_rate)}>
-                      {rep.conversion_rate}%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`${rep.trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {rep.trend >= 0 ? '+' : ''}{rep.trend}%
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {sortedReps.map((rep, idx) => {
+                const isSelected = selectedReps.includes(rep.rep_id);
+                const selectedIndex = selectedReps.indexOf(rep.rep_id);
+
+                // Find weakest phase
+                const weakestPhase = Object.entries(rep.phase_scores)
+                  .filter(([, score]) => score > 0)
+                  .sort((a, b) => a[1] - b[1])[0];
+
+                return (
+                  <tr
+                    key={rep.rep_id}
+                    className={`${isSelected ? 'bg-blue-50' : ''} hover:bg-gray-50 cursor-pointer`}
+                    onClick={() => toggleRep(rep.rep_id)}
+                  >
+                    <td className="px-4 py-3 text-sm text-gray-500">
+                      {idx === 0 ? '1st' :
+                       idx === 1 ? '2nd' :
+                       idx === 2 ? '3rd' :
+                       `#${idx + 1}`}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        {isSelected && (
+                          <span
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: COLORS[selectedIndex % COLORS.length] }}
+                          />
+                        )}
+                        <span className="font-medium text-gray-900">{rep.rep_name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`font-bold ${getScoreColor(rep.avg_score)}`}>
+                        {rep.avg_score}%
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center text-gray-600">{rep.total_calls}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={getScoreColor(rep.conversion_rate)}>
+                        {rep.conversion_rate}%
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`${rep.trend >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {rep.trend >= 0 ? '+' : ''}{rep.trend}%
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {weakestPhase ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-700">
+                            {PHASE_LABELS[weakestPhase[0]] || weakestPhase[0]}
+                          </span>
+                          <span className="text-xs text-red-600 font-medium">
+                            ({weakestPhase[1]}%)
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-400">-</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
