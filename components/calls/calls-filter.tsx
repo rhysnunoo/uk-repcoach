@@ -3,15 +3,23 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useCallback } from 'react';
 
-interface CallsFilterProps {
-  showRepFilter?: boolean;
+interface Rep {
+  id: string;
+  full_name: string | null;
+  email: string;
 }
 
-export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
+interface CallsFilterProps {
+  showRepFilter?: boolean;
+  reps?: Rep[];
+}
+
+export function CallsFilter({ showRepFilter = false, reps = [] }: CallsFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [search, setSearch] = useState(searchParams.get('search') || '');
+  const [repId, setRepId] = useState(searchParams.get('repId') || '');
   const [scoreMin, setScoreMin] = useState(searchParams.get('scoreMin') || '');
   const [scoreMax, setScoreMax] = useState(searchParams.get('scoreMax') || '');
   const [status, setStatus] = useState(searchParams.get('status') || '');
@@ -23,6 +31,7 @@ export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
     const params = new URLSearchParams();
 
     if (search) params.set('search', search);
+    if (repId) params.set('repId', repId);
     if (scoreMin) params.set('scoreMin', scoreMin);
     if (scoreMax) params.set('scoreMax', scoreMax);
     if (status) params.set('status', status);
@@ -31,10 +40,11 @@ export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
     if (dateTo) params.set('dateTo', dateTo);
 
     router.push(`/calls?${params.toString()}`);
-  }, [router, search, scoreMin, scoreMax, status, outcome, dateFrom, dateTo]);
+  }, [router, search, repId, scoreMin, scoreMax, status, outcome, dateFrom, dateTo]);
 
   const clearFilters = useCallback(() => {
     setSearch('');
+    setRepId('');
     setScoreMin('');
     setScoreMax('');
     setStatus('');
@@ -44,14 +54,35 @@ export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
     router.push('/calls');
   }, [router]);
 
-  const hasFilters = search || scoreMin || scoreMax || status || outcome || dateFrom || dateTo;
+  const hasFilters = search || repId || scoreMin || scoreMax || status || outcome || dateFrom || dateTo;
 
   return (
     <div className="card mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Rep Filter - First and most prominent for managers */}
+        {showRepFilter && (
+          <div>
+            <label className="label">Rep</label>
+            <select
+              value={repId}
+              onChange={(e) => {
+                setRepId(e.target.value);
+              }}
+              className="input"
+            >
+              <option value="">All reps</option>
+              {reps.map((rep) => (
+                <option key={rep.id} value={rep.id}>
+                  {rep.full_name || rep.email}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Search */}
         <div>
-          <label className="label">Search</label>
+          <label className="label">Search Contact</label>
           <input
             type="text"
             value={search}
@@ -60,32 +91,6 @@ export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
             placeholder="Contact name..."
             className="input"
           />
-        </div>
-
-        {/* Score Range */}
-        <div>
-          <label className="label">Score Range</label>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              value={scoreMin}
-              onChange={(e) => setScoreMin(e.target.value)}
-              placeholder="Min"
-              min="0"
-              max="100"
-              className="input"
-            />
-            <span className="text-gray-500">-</span>
-            <input
-              type="number"
-              value={scoreMax}
-              onChange={(e) => setScoreMax(e.target.value)}
-              placeholder="Max"
-              min="0"
-              max="100"
-              className="input"
-            />
-          </div>
         </div>
 
         {/* Status */}
@@ -124,6 +129,32 @@ export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
           </select>
         </div>
 
+        {/* Score Range */}
+        <div>
+          <label className="label">Score Range</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              value={scoreMin}
+              onChange={(e) => setScoreMin(e.target.value)}
+              placeholder="Min"
+              min="0"
+              max="100"
+              className="input"
+            />
+            <span className="text-gray-500">-</span>
+            <input
+              type="number"
+              value={scoreMax}
+              onChange={(e) => setScoreMax(e.target.value)}
+              placeholder="Max"
+              min="0"
+              max="100"
+              className="input"
+            />
+          </div>
+        </div>
+
         {/* Date Range */}
         <div>
           <label className="label">From Date</label>
@@ -146,9 +177,9 @@ export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex items-end gap-2 lg:col-span-2">
+        <div className="flex items-end gap-2">
           <button onClick={applyFilters} className="btn-primary">
-            Apply Filters
+            Apply
           </button>
           {hasFilters && (
             <button onClick={clearFilters} className="btn-secondary">
@@ -156,54 +187,6 @@ export function CallsFilter({ showRepFilter = false }: CallsFilterProps) {
             </button>
           )}
         </div>
-      </div>
-
-      {/* Quick Filters */}
-      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-200">
-        <span className="text-sm text-gray-500 mr-2">Quick filters:</span>
-        <button
-          onClick={() => {
-            setScoreMax('60');
-            setScoreMin('');
-            setStatus('complete');
-            setTimeout(applyFilters, 0);
-          }}
-          className="text-sm text-primary hover:text-primary-dark"
-        >
-          Low scores (&lt;60%)
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          onClick={() => {
-            setScoreMin('80');
-            setScoreMax('');
-            setStatus('complete');
-            setTimeout(applyFilters, 0);
-          }}
-          className="text-sm text-primary hover:text-primary-dark"
-        >
-          High scores (&gt;80%)
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          onClick={() => {
-            setOutcome('annual');
-            setTimeout(applyFilters, 0);
-          }}
-          className="text-sm text-primary hover:text-primary-dark"
-        >
-          Closed deals
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          onClick={() => {
-            setStatus('error');
-            setTimeout(applyFilters, 0);
-          }}
-          className="text-sm text-primary hover:text-primary-dark"
-        >
-          Errors
-        </button>
       </div>
     </div>
   );

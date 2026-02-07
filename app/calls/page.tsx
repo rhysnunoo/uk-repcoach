@@ -10,6 +10,7 @@ import { OutcomeBadge } from '@/components/calls/call-outcome-selector';
 interface CallsPageProps {
   searchParams: Promise<{
     search?: string;
+    repId?: string;
     scoreMin?: string;
     scoreMax?: string;
     status?: string;
@@ -32,6 +33,25 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
   const adminClient = createAdminClient();
   const isManager = profile.role === 'manager' || profile.role === 'admin';
 
+  // Fetch profiles for rep filter dropdown (managers/admins only)
+  let reps: { id: string; full_name: string | null; email: string }[] = [];
+  let repMap: Record<string, { full_name: string | null; email: string }> = {};
+
+  if (isManager) {
+    const { data: profiles } = await adminClient
+      .from('profiles')
+      .select('id, full_name, email')
+      .order('full_name', { ascending: true });
+
+    if (profiles) {
+      reps = profiles;
+      repMap = profiles.reduce((acc, p) => {
+        acc[p.id] = { full_name: p.full_name, email: p.email };
+        return acc;
+      }, {} as Record<string, { full_name: string | null; email: string }>);
+    }
+  }
+
   // Build query with filters
   let query = adminClient
     .from('calls')
@@ -40,6 +60,9 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
 
   if (!isManager) {
     query = query.eq('rep_id', profile.id);
+  } else if (params.repId) {
+    // Manager filtering by specific rep
+    query = query.eq('rep_id', params.repId);
   }
 
   // Apply search filter
@@ -133,7 +156,7 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
         </div>
 
         {/* Filters */}
-        <CallsFilter showRepFilter={isManager} />
+        <CallsFilter showRepFilter={isManager} reps={reps} />
 
         {/* Calls Table */}
         <div className="card">
@@ -162,8 +185,8 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
                         </span>
                       </td>
                       {isManager && (
-                        <td className="font-medium text-xs">
-                          {call.rep_id.slice(0, 8)}...
+                        <td className="font-medium text-sm">
+                          {repMap[call.rep_id]?.full_name || repMap[call.rep_id]?.email || 'Unknown'}
                         </td>
                       )}
                       <td className="font-medium">{call.contact_name || 'Unknown'}</td>
