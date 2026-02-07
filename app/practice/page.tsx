@@ -85,21 +85,6 @@ export default async function PracticePage() {
           </div>
         </div>
 
-        {/* Team Challenges */}
-        <div className="card mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="card-header">Team Challenges</h3>
-              <p className="text-sm text-gray-600">
-                Compete with your team on practice challenges and climb the leaderboard
-              </p>
-            </div>
-            <Link href="/practice/challenges" className="btn-primary">
-              View Challenges
-            </Link>
-          </div>
-        </div>
-
         {/* Recent Sessions */}
         <div className="card">
           <h3 className="card-header">Recent Practice Sessions</h3>

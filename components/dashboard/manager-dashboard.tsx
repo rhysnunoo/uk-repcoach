@@ -181,59 +181,6 @@ export const ManagerDashboard = memo(function ManagerDashboard({
         </div>
       </div>
 
-      {/* Team Leaderboard */}
-      <div className="card">
-        <h3 className="card-header">Team Leaderboard</h3>
-        {repScores.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Rep</th>
-                  <th>Calls</th>
-                  <th>Avg Score</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {repScores
-                  .sort((a, b) => b.avgScore - a.avgScore)
-                  .map((rep, index) => (
-                    <tr key={rep.repId}>
-                      <td>
-                        <span className="flex items-center justify-center w-6 h-6 bg-gray-100 text-sm font-bold">
-                          {index + 1}
-                        </span>
-                      </td>
-                      <td className="font-medium">{rep.repId.slice(0, 8)}...</td>
-                      <td>{rep.callCount}</td>
-                      <td>
-                        <span className={`font-semibold ${getScoreColor(rep.avgScore)}`}>
-                          {rep.avgScore.toFixed(0)}%
-                        </span>
-                      </td>
-                      <td>
-                        <StatusIndicator score={rep.avgScore} />
-                      </td>
-                      <td>
-                        <button className="text-primary hover:text-primary-600 text-sm">
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center py-8">
-            No team data available yet
-          </p>
-        )}
-      </div>
-
       {/* Alerts Panel */}
       <div className="card">
         <h3 className="card-header">Alerts & Coaching Opportunities</h3>
