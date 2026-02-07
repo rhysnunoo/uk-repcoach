@@ -3,9 +3,9 @@ import { getProfile } from '@/lib/supabase/server';
 
 // Test endpoint to see what data Ringover returns for calls
 // Only accessible to admins
-// Version 3 - test /calls endpoint
+// Version 4 - try multiple auth formats
 export async function GET() {
-  const VERSION = 'v3-calls';
+  const VERSION = 'v4-multi-auth';
   try {
     const profile = await getProfile();
     if (!profile || profile.role !== 'admin') {
@@ -22,29 +22,48 @@ export async function GET() {
       });
     }
 
-    // Test direct API call to fetch calls
+    // Try multiple auth formats
     const callsUrl = 'https://public-api.ringover.com/v2/calls?limit=3';
-    const response = await fetch(callsUrl, {
-      headers: {
-        'Authorization': apiKey,
-        'Content-Type': 'application/json',
-      },
-    });
+    const authFormats = [
+      { name: 'raw', value: apiKey },
+      { name: 'Bearer', value: `Bearer ${apiKey}` },
+      { name: 'Basic', value: `Basic ${apiKey}` },
+    ];
 
-    const responseText = await response.text();
+    const results: Record<string, { status: number; body: string }> = {};
 
-    if (!response.ok) {
-      return NextResponse.json({
-        version: VERSION,
-        error: 'Ringover API failed',
-        status: response.status,
-        statusText: response.statusText,
-        responseBody: responseText,
-        keyPreview: `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`,
-        keyLength: apiKey.length,
-        testedUrl: callsUrl,
+    for (const format of authFormats) {
+      const response = await fetch(callsUrl, {
+        headers: {
+          'Authorization': format.value,
+          'Content-Type': 'application/json',
+        },
       });
+      const text = await response.text();
+      results[format.name] = { status: response.status, body: text.substring(0, 200) };
+
+      // If one works, return success
+      if (response.ok) {
+        let data;
+        try { data = JSON.parse(text); } catch { data = text; }
+        return NextResponse.json({
+          version: VERSION,
+          message: 'Success!',
+          workingAuthFormat: format.name,
+          data: data,
+          sampleCall: data?.call_log_list?.[0] || null,
+        });
+      }
     }
+
+    // None worked - return all results for debugging
+    return NextResponse.json({
+      version: VERSION,
+      error: 'All auth formats failed',
+      keyPreview: `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}`,
+      keyLength: apiKey.length,
+      results: results,
+    });
 
     // Parse call data
     let callsData;
@@ -66,7 +85,7 @@ export async function GET() {
   } catch (error) {
     console.error('Test call error:', error);
     return NextResponse.json(
-      { version: 'v3-calls', error: error instanceof Error ? error.message : 'Failed to fetch calls' },
+      { version: 'v4-multi-auth', error: error instanceof Error ? error.message : 'Failed to fetch calls' },
       { status: 500 }
     );
   }
