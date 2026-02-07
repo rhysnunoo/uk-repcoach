@@ -103,6 +103,7 @@ export async function POST(request: NextRequest) {
       prospectIdentifier: parsed.prospectIdentifier,
       segmentCount: parsed.segments.length,
       duration: parsed.duration,
+      parserVersion: 3, // Increment this to verify deployment
     });
 
   } catch (error) {
