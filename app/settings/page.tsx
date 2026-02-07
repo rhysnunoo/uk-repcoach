@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
-import { getProfile, createClient } from '@/lib/supabase/server';
+import { getProfile } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { AppLayout } from '@/components/layout/app-layout';
 import { UserManagement } from '@/components/settings/user-management';
-import { DataManagement } from '@/components/settings/data-management';
 
 export default async function SettingsPage() {
   const profile = await getProfile();
@@ -16,31 +16,16 @@ export default async function SettingsPage() {
     redirect('/dashboard');
   }
 
-  const supabase = await createClient();
-
-  // Fetch all profiles for user management
-  const { data: profiles } = await supabase
+  // Use admin client to fetch all profiles (bypasses RLS)
+  const adminClient = createAdminClient();
+  const { data: profiles, error } = await adminClient
     .from('profiles')
     .select('*')
     .order('full_name');
 
-  // Fetch calls for data management (admin only)
-  const { data: calls } = profile.role === 'admin'
-    ? await supabase
-        .from('calls')
-        .select('*, rep:profiles!calls_rep_id_fkey(id, email, full_name)')
-        .order('call_date', { ascending: false })
-        .limit(100)
-    : { data: [] };
-
-  // Fetch practice sessions for data management (admin only)
-  const { data: practiceSessions } = profile.role === 'admin'
-    ? await supabase
-        .from('practice_sessions')
-        .select('*, rep:profiles!practice_sessions_rep_id_fkey(id, email, full_name)')
-        .order('started_at', { ascending: false })
-        .limit(100)
-    : { data: [] };
+  if (error) {
+    console.error('Failed to fetch profiles:', error);
+  }
 
   return (
     <AppLayout profile={profile}>
@@ -52,16 +37,7 @@ export default async function SettingsPage() {
           </p>
         </div>
 
-        {/* User Management */}
         <UserManagement profiles={profiles || []} />
-
-        {/* Data Management - Admin Only */}
-        {profile.role === 'admin' && (
-          <DataManagement
-            calls={calls || []}
-            practiceSessions={practiceSessions || []}
-          />
-        )}
       </div>
     </AppLayout>
   );
