@@ -6,9 +6,11 @@ import { personas } from '@/lib/practice/personas';
 import { scorePracticeSession } from '@/lib/scoring/practice-scoring';
 import type { PracticeMessage, SessionState, PersonaType, ScriptContent } from '@/types/database';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 interface PracticeRouteParams {
   params: Promise<{ id: string }>;
@@ -75,8 +77,8 @@ export async function POST(request: NextRequest, { params }: PracticeRouteParams
     // Generate response from GPT-4
     const systemPrompt = buildSystemPrompt(persona, scriptContent, currentState);
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+    const completion = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o',
       messages: [
         { role: 'system', content: systemPrompt },
         ...conversationHistory,

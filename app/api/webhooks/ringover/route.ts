@@ -71,14 +71,13 @@ export async function POST(request: NextRequest) {
 
   try {
     // Verify webhook secret if configured
-    // Can be passed via query param, header, or authorization
+    // Verify via header only (never accept secrets in query strings — they leak in logs)
     const webhookSecret = process.env.RINGOVER_WEBHOOK_SECRET;
     if (webhookSecret) {
-      const querySecret = request.nextUrl.searchParams.get('secret');
       const headerSecret = request.headers.get('x-webhook-secret') ||
                            request.headers.get('authorization')?.replace('Bearer ', '');
 
-      if (querySecret !== webhookSecret && headerSecret !== webhookSecret) {
+      if (headerSecret !== webhookSecret) {
         console.log('[Ringover Webhook] Invalid or missing secret');
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
@@ -257,12 +256,9 @@ async function processCallTranscription(callId: string, recordingUrl: string) {
       throw updateError;
     }
 
-    // Trigger scoring
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    await fetch(`${baseUrl}/api/calls/${callId}/score`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // Trigger scoring directly (avoid self-fetch anti-pattern)
+    const { scoreCall } = await import('@/lib/scoring/score');
+    await scoreCall(callId);
 
     console.log('[Ringover Webhook] Scoring triggered for call:', callId);
 
@@ -273,8 +269,8 @@ async function processCallTranscription(callId: string, recordingUrl: string) {
     await adminClient
       .from('calls')
       .update({
-        status: 'pending',
-        outcome: 'transcription_failed',
+        status: 'error',
+        error_message: 'Transcription failed',
       })
       .eq('id', callId);
   }

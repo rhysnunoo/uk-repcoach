@@ -36,35 +36,42 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   // Fetch calls for last 30 days (for trends)
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Fetch all calls for managers (for team view)
-  const { data: allCalls } = isManager
-    ? await adminClient
-        .from('calls')
-        .select('*')
-        .gte('call_date', thirtyDaysAgo)
-        .order('call_date', { ascending: false })
-        .limit(100)
-    : { data: null };
+  // Fetch calls and practice sessions in parallel
+  const [allCallsResult, personalCallsResult, practiceSessionsResult] = await Promise.all([
+    // Fetch all calls for managers (for team view)
+    isManager
+      ? adminClient
+          .from('calls')
+          .select('*')
+          .gte('call_date', thirtyDaysAgo)
+          .order('call_date', { ascending: false })
+          .limit(100)
+      : Promise.resolve({ data: null }),
 
-  // Fetch personal calls (for reps, and for managers in personal view)
-  const { data: personalCalls } = await adminClient
-    .from('calls')
-    .select('*')
-    .eq('rep_id', profile.id)
-    .gte('call_date', thirtyDaysAgo)
-    .order('call_date', { ascending: false })
-    .limit(100);
+    // Fetch personal calls (for reps, and for managers in personal view)
+    adminClient
+      .from('calls')
+      .select('*')
+      .eq('rep_id', profile.id)
+      .gte('call_date', thirtyDaysAgo)
+      .order('call_date', { ascending: false })
+      .limit(100),
+
+    // Fetch recent practice sessions (always personal)
+    adminClient
+      .from('practice_sessions')
+      .select('*')
+      .eq('rep_id', profile.id)
+      .order('created_at', { ascending: false })
+      .limit(5),
+  ]);
+
+  const allCalls = allCallsResult.data;
+  const personalCalls = personalCallsResult.data;
+  const practiceSessions = practiceSessionsResult.data;
 
   // Determine which calls to use for scores lookup
   const recentCalls = showPersonalView ? personalCalls : allCalls;
-
-  // Fetch recent practice sessions (always personal)
-  const { data: practiceSessions } = await adminClient
-    .from('practice_sessions')
-    .select('*')
-    .eq('rep_id', profile.id)
-    .order('created_at', { ascending: false })
-    .limit(5);
 
   // Fetch scores for recent calls
   type ScoresByCallId = Record<string, Array<{ phase: string; score: number; call_id: string }>>;

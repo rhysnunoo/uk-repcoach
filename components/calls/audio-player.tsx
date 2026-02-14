@@ -2,10 +2,15 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
+declare global {
+  interface Window {
+    __audioPlayerSeekTo?: (time: number) => void;
+  }
+}
+
 interface AudioPlayerProps {
   src: string;
   onTimeUpdate?: (currentTime: number) => void;
-  onSeek?: (time: number) => void;
 }
 
 export function AudioPlayer({ src, onTimeUpdate }: AudioPlayerProps) {
@@ -113,9 +118,9 @@ export function AudioPlayer({ src, onTimeUpdate }: AudioPlayerProps) {
 
   // Expose seekTo method via ref
   useEffect(() => {
-    (window as { __audioPlayerSeekTo?: (time: number) => void }).__audioPlayerSeekTo = seekTo;
+    window.__audioPlayerSeekTo = seekTo;
     return () => {
-      delete (window as { __audioPlayerSeekTo?: (time: number) => void }).__audioPlayerSeekTo;
+      delete window.__audioPlayerSeekTo;
     };
   }, [seekTo]);
 
@@ -226,7 +231,7 @@ export function AudioPlayer({ src, onTimeUpdate }: AudioPlayerProps) {
 // Export a hook for components to use
 export function useAudioSeek() {
   const seekTo = useCallback((time: number) => {
-    const seekFn = (window as { __audioPlayerSeekTo?: (time: number) => void }).__audioPlayerSeekTo;
+    const seekFn = window.__audioPlayerSeekTo;
     if (seekFn) {
       seekFn(time);
     }

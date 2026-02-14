@@ -68,9 +68,6 @@ export interface PracticeSessionWithScript extends PracticeSession {
   scripts?: Script | null;
 }
 
-// Helper type for filtering null values
-export type NonNullable<T> = T extends null | undefined ? never : T;
-
 // Helper type for making specific fields required
 export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: NonNullable<T[P]> };
 
@@ -97,7 +94,7 @@ export function hasBookmarks(call: Call): call is Call & { bookmarks: CallBookma
 }
 
 // Type-safe score phase literals
-export const CLOSER_PHASES = ['opening', 'clarify', 'label', 'overview', 'sell_vacation', 'explain', 'reinforce'] as const;
+export const CLOSER_PHASES = ['opening', 'clarify', 'label', 'overview', 'sell_vacation', 'price_presentation', 'explain', 'reinforce'] as const;
 export type CloserPhase = typeof CLOSER_PHASES[number];
 
 export function isCloserPhase(phase: string): phase is CloserPhase {

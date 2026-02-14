@@ -76,7 +76,7 @@ export async function GET() {
     console.error('Failed to fetch sync logs:', error);
     return NextResponse.json(
       { error: 'Failed to fetch sync logs', logs: [] },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }

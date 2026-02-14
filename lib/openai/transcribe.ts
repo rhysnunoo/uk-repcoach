@@ -1,9 +1,11 @@
 import OpenAI from 'openai';
 import type { TranscriptSegment } from '@/types/database';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 interface WhisperSegment {
   start: number;
@@ -50,7 +52,7 @@ export async function transcribeWithWhisper(
   });
 
   // Transcribe with Whisper - use verbose_json for segments
-  const transcription = await openai.audio.transcriptions.create({
+  const transcription = await getOpenAI().audio.transcriptions.create({
     file: audioFile,
     model: 'whisper-1',
     response_format: 'verbose_json',

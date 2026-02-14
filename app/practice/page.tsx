@@ -5,6 +5,8 @@ import { getProfile } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { AppLayout } from '@/components/layout/app-layout';
 import { StartPracticeForm } from '@/components/practice/start-practice-form';
+import { StatusBadge } from '@/components/ui/shared';
+import { getScoreColor, formatPersona } from '@/lib/utils/format';
 
 export default async function PracticePage() {
   const profile = await getProfile();
@@ -145,29 +147,4 @@ export default async function PracticePage() {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const classes: Record<string, string> = {
-    active: 'badge bg-blue-100 text-blue-800',
-    completed: 'badge bg-green-100 text-green-800',
-    abandoned: 'badge bg-gray-100 text-gray-800',
-  };
 
-  return (
-    <span className={classes[status] || classes.active}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
-  );
-}
-
-function formatPersona(persona: string): string {
-  return persona
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 70) return 'text-yellow-600';
-  return 'text-red-600';
-}

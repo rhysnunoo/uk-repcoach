@@ -73,7 +73,7 @@ export async function syncRingoverCalls(
     for (const ringoverCall of ringoverCalls) {
       try {
         // Only sync answered calls
-        if (ringoverCall.status !== 'ANSWERED') {
+        if (ringoverCall.last_state !== 'ANSWERED') {
           result.skipped++;
           continue;
         }
@@ -91,7 +91,7 @@ export async function syncRingoverCalls(
         }
 
         // Map Ringover user to rep
-        const ringoverUserId = ringoverCall.user_id?.toString();
+        const ringoverUserId = String(ringoverCall.user?.user_id || '');
         const repId = ringoverUserId ? userMap.get(ringoverUserId) : null;
 
         if (!repId) {
@@ -103,7 +103,7 @@ export async function syncRingoverCalls(
         }
 
         // Skip calls shorter than minimum duration
-        const callDuration = ringoverCall.talk_duration || ringoverCall.duration;
+        const callDuration = ringoverCall.incall_duration || ringoverCall.total_duration;
         if (callDuration < minDurationSeconds) {
           result.skipped++;
           continue;
@@ -111,7 +111,7 @@ export async function syncRingoverCalls(
 
         // Get contact details
         let contactName = 'Unknown';
-        let contactPhone = ringoverCall.direction === 'OUTBOUND'
+        let contactPhone = ringoverCall.direction === 'out'
           ? ringoverCall.to_number
           : ringoverCall.from_number;
 
@@ -119,10 +119,6 @@ export async function syncRingoverCalls(
           const firstName = ringoverCall.contact.firstname || '';
           const lastName = ringoverCall.contact.lastname || '';
           contactName = `${firstName} ${lastName}`.trim() || 'Unknown';
-        } else if (ringoverCall.direction === 'OUTBOUND' && ringoverCall.to_name) {
-          contactName = ringoverCall.to_name;
-        } else if (ringoverCall.direction === 'INBOUND' && ringoverCall.from_name) {
-          contactName = ringoverCall.from_name;
         }
 
         // Try to fetch transcript from Ringover Empower
@@ -130,7 +126,7 @@ export async function syncRingoverCalls(
         const transcript = parseRingoverTranscript(ringoverTranscript);
 
         const hasTranscript = transcript.length > 0;
-        const hasRecordingUrl = !!ringoverCall.recording_url;
+        const hasRecordingUrl = !!ringoverCall.record;
 
         // Determine status based on what we have
         let status: 'pending' | 'transcribing' | 'scoring' | 'complete';
@@ -153,13 +149,13 @@ export async function syncRingoverCalls(
             source: 'ringover',
             status,
             ringover_call_id: ringoverCall.call_id,
-            recording_url: ringoverCall.recording_url || null,
+            recording_url: ringoverCall.record || null,
             transcript: hasTranscript ? transcript : null,
             duration_seconds: callDuration,
             call_date: new Date(ringoverCall.start_time).toISOString(),
             contact_name: contactName,
             contact_phone: contactPhone,
-            outcome: ringoverCall.status,
+            outcome: ringoverCall.last_state,
           })
           .select()
           .single();
@@ -178,7 +174,7 @@ export async function syncRingoverCalls(
           } else if (hasRecordingUrl) {
             // Has recording but no transcript - transcribe it
             result.transcribing++;
-            triggerTranscription(newCall.id, ringoverCall.recording_url!);
+            triggerTranscription(newCall.id, ringoverCall.record!);
           }
         }
       } catch (error) {
@@ -233,17 +229,11 @@ function parseRingoverTranscript(
 }
 
 async function triggerScoring(callId: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-
   try {
-    await fetch(`${baseUrl}/api/calls/${callId}/score`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { scoreCall } = await import('@/lib/scoring/score');
+    await scoreCall(callId);
   } catch (error) {
-    console.error('Failed to trigger scoring:', error);
+    console.error(`Failed to score call ${callId}:`, error);
   }
 }
 

@@ -448,17 +448,11 @@ function detectSpeakerFromContent(text: string, lastSpeaker: 'rep' | 'prospect')
 }
 
 async function triggerScoring(callId: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-
   try {
-    await fetch(`${baseUrl}/api/calls/${callId}/score`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { scoreCall } = await import('@/lib/scoring/score');
+    await scoreCall(callId);
   } catch (error) {
-    console.error('Failed to trigger scoring:', error);
+    console.error(`Failed to score call ${callId}:`, error);
   }
 }
 

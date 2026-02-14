@@ -6,6 +6,8 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { AppLayout } from '@/components/layout/app-layout';
 import { CallsFilter } from '@/components/calls/calls-filter';
 import { OutcomeBadge } from '@/components/calls/call-outcome-selector';
+import { StatusBadge } from '@/components/ui/shared';
+import { getScoreColor, formatDuration } from '@/lib/utils/format';
 
 interface CallsPageProps {
   searchParams: Promise<{
@@ -67,7 +69,8 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
 
   // Apply search filter
   if (params.search) {
-    query = query.ilike('contact_name', `%${params.search}%`);
+    const escapedSearch = params.search.replace(/[%_\\]/g, '\\$&');
+    query = query.ilike('contact_name', `%${escapedSearch}%`);
   }
 
   // Apply score filters
@@ -281,30 +284,3 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const classes: Record<string, string> = {
-    pending: 'badge bg-gray-100 text-gray-800',
-    transcribing: 'badge bg-blue-100 text-blue-800',
-    scoring: 'badge bg-yellow-100 text-yellow-800',
-    complete: 'badge bg-green-100 text-green-800',
-    error: 'badge bg-red-100 text-red-800',
-  };
-
-  return (
-    <span className={classes[status] || classes.pending}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
-  );
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 60) return 'text-yellow-600';
-  return 'text-red-600';
-}
-
-function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}

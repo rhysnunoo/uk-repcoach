@@ -243,8 +243,12 @@ export function getRandomObjections(count: number, options?: {
     filtered = filtered.filter(o => options.difficulties!.includes(o.difficulty));
   }
 
-  // Shuffle and take count
-  const shuffled = filtered.sort(() => Math.random() - 0.5);
+  // Fisher-Yates shuffle
+  for (let i = filtered.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
+  }
+  const shuffled = filtered;
   return shuffled.slice(0, Math.min(count, shuffled.length));
 }
 

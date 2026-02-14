@@ -3,9 +3,11 @@ import { createClient } from '@/lib/supabase/server';
 import OpenAI from 'openai';
 import { objections, type Objection } from '@/lib/practice/objections';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -76,8 +78,8 @@ Provide a score (0-100) and brief, specific feedback (2-3 sentences).
 Respond in this exact JSON format:
 {"score": <number>, "feedback": "<feedback string>"}`;
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+  const completion = await getOpenAI().chat.completions.create({
+    model: 'gpt-4o',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.3,
     max_tokens: 300,

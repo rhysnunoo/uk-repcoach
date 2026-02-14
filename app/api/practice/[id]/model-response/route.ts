@@ -5,9 +5,11 @@ import OpenAI from 'openai';
 import { personas } from '@/lib/practice/personas';
 import type { PracticeMessage, SessionState, PersonaType } from '@/types/database';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -73,8 +75,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // Generate model response
     const systemPrompt = buildModelResponsePrompt(persona, scriptContent, sessionState, lastProspectMessage?.content);
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+    const completion = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o',
       messages: [
         { role: 'system', content: systemPrompt },
         ...conversationHistory,

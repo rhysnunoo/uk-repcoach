@@ -5,9 +5,11 @@ import { cache, cacheKey, CACHE_TTL } from '@/lib/cache/simple-cache';
 import OpenAI from 'openai';
 import type { TranscriptSegment } from '@/types/database';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 // In-memory cache for individual call objection extractions (persists across requests)
 const objectionCache = new Map<string, { objections: DetectedObjection[]; extractedAt: number }>();
@@ -108,31 +110,56 @@ export async function GET() {
     const objectionAnalyses: CallObjectionData[] = [];
     const now = Date.now();
 
-    // Process calls - check cache first for each
-    for (const call of calls) {
-      const transcript = call.transcript as TranscriptSegment[] | null;
-      if (!transcript || transcript.length < 5) continue;
-
-      // Check per-call cache
-      const cachedObjections = objectionCache.get(call.id);
-      let objections: DetectedObjection[];
-
-      if (cachedObjections && (now - cachedObjections.extractedAt) < OBJECTION_CACHE_TTL) {
-        objections = cachedObjections.objections;
-      } else {
-        // Extract objections (only for uncached calls)
-        objections = await extractObjectionsFromTranscript(transcript);
-        objectionCache.set(call.id, { objections, extractedAt: now });
+    // Periodically prune expired cache entries
+    if (Math.random() < 0.01) {
+      const pruneNow = Date.now();
+      for (const [key, val] of objectionCache.entries()) {
+        if (pruneNow - val.extractedAt > OBJECTION_CACHE_TTL) objectionCache.delete(key);
       }
+    }
 
-      objectionAnalyses.push({
-        call_id: call.id,
-        rep_id: call.rep_id,
-        rep_name: repNames[call.rep_id] || 'Unknown Rep',
-        call_date: call.call_date,
-        outcome: call.outcome,
-        objections,
-      });
+    // Separate cached and uncached calls
+    const callsToProcess = calls.filter(call => {
+      const transcript = call.transcript as TranscriptSegment[] | null;
+      return transcript && transcript.length >= 5;
+    });
+
+    // Process cached calls immediately
+    const uncachedCalls: typeof callsToProcess = [];
+    for (const call of callsToProcess) {
+      const cachedObjections = objectionCache.get(call.id);
+      if (cachedObjections && (now - cachedObjections.extractedAt) < OBJECTION_CACHE_TTL) {
+        objectionAnalyses.push({
+          call_id: call.id,
+          rep_id: call.rep_id,
+          rep_name: repNames[call.rep_id] || 'Unknown Rep',
+          call_date: call.call_date,
+          outcome: call.outcome,
+          objections: cachedObjections.objections,
+        });
+      } else {
+        uncachedCalls.push(call);
+      }
+    }
+
+    // Process uncached calls with batched concurrency
+    const CONCURRENCY = 5;
+    for (let i = 0; i < uncachedCalls.length; i += CONCURRENCY) {
+      const batch = uncachedCalls.slice(i, i + CONCURRENCY);
+      await Promise.all(batch.map(async (call) => {
+        const transcript = call.transcript as TranscriptSegment[];
+        const objections = await extractObjectionsFromTranscript(transcript);
+        objectionCache.set(call.id, { objections, extractedAt: now });
+
+        objectionAnalyses.push({
+          call_id: call.id,
+          rep_id: call.rep_id,
+          rep_name: repNames[call.rep_id] || 'Unknown Rep',
+          call_date: call.call_date,
+          outcome: call.outcome,
+          objections,
+        });
+      }));
     }
 
     // Aggregate objection statistics
@@ -191,8 +218,8 @@ Return JSON array:
 If no objections found, return empty array [].`;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+    const completion = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are a sales coach analyzing call transcripts for objection handling patterns. Return only valid JSON.' },
         { role: 'user', content: prompt },

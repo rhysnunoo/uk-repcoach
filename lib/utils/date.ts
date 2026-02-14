@@ -28,14 +28,12 @@ export const DATE_FORMATS = {
 
 // Helper functions
 export function formatDate(date: Date | string, pattern: keyof typeof DATE_FORMATS | string = 'medium'): string {
-  const { format } = require('date-fns');
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const formatPattern = DATE_FORMATS[pattern as keyof typeof DATE_FORMATS] || pattern;
   return format(dateObj, formatPattern);
 }
 
 export function formatRelative(date: Date | string): string {
-  const { formatDistanceToNow } = require('date-fns');
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   return formatDistanceToNow(dateObj, { addSuffix: true });
 }

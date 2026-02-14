@@ -32,7 +32,7 @@ export async function GET() {
     if (!isConnected) {
       return NextResponse.json(
         { error: 'Unable to connect to Ringover', users: [], profiles: [] },
-        { status: 200 }
+        { status: 502 }
       );
     }
 
@@ -41,7 +41,7 @@ export async function GET() {
 
     // Fetch all profiles
     const adminClient = createAdminClient();
-    const { data: profiles } = await adminClient.from('profiles').select('*');
+    const { data: profiles } = await adminClient.from('profiles').select('id, full_name, email, role, ringover_user_id');
 
     return NextResponse.json({
       users: ringoverUsers,
@@ -51,7 +51,7 @@ export async function GET() {
     console.error('Failed to fetch Ringover users:', error);
     return NextResponse.json(
       { error: 'Failed to fetch users', users: [], profiles: [] },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }
@@ -84,12 +84,12 @@ export async function POST(request: Request) {
     const adminClient = createAdminClient();
 
     // Update each profile with their Ringover user mapping
-    for (const mapping of mappings) {
-      await adminClient
+    await Promise.all(mappings.map((mapping: { ringoverUserId: string; profileId: string }) =>
+      adminClient
         .from('profiles')
         .update({ ringover_user_id: mapping.ringoverUserId })
-        .eq('id', mapping.profileId);
-    }
+        .eq('id', mapping.profileId)
+    ));
 
     return NextResponse.json({ success: true });
   } catch (error) {

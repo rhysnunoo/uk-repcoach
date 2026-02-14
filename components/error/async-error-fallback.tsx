@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface AsyncErrorFallbackProps {
   error: Error | null;
@@ -93,13 +93,16 @@ export function useAutoRetry<T>(
   const [loading, setLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
 
+  const asyncFnRef = useRef(asyncFn);
+  asyncFnRef.current = asyncFn;
+
   const execute = async () => {
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         setLoading(true);
-        const result = await asyncFn();
+        const result = await asyncFnRef.current();
         setData(result);
         setError(null);
         return result;

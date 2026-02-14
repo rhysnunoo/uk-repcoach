@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Rep {
@@ -21,6 +21,13 @@ export function CallRepSelector({ callId, currentRepId, reps }: CallRepSelectorP
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleRepChange = async (newRepId: string) => {
     if (newRepId === currentRepId) {
@@ -49,7 +56,8 @@ export function CallRepSelector({ callId, currentRepId, reps }: CallRepSelectorP
       router.refresh();
 
       // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(false), 3000);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reassign');
       setSelectedRep(currentRepId); // Revert on error

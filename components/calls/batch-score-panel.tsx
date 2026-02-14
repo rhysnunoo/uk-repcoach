@@ -39,16 +39,14 @@ export function BatchScorePanel() {
     }
   }, []);
 
-  // Poll for status when queue is active
+  // Poll for status when panel is expanded
   useEffect(() => {
-    fetchStatus();
+    if (!isExpanded) return;
 
-    const hasActive = status && (status.pending > 0 || status.processing > 0);
-    if (hasActive) {
-      const interval = setInterval(fetchStatus, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [fetchStatus, status?.pending, status?.processing]);
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 3000);
+    return () => clearInterval(interval);
+  }, [fetchStatus, isExpanded]);
 
   const scoreAll = async () => {
     setLoading(true);

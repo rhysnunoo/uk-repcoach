@@ -3,11 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-
   html {
     font-family: 'Inter', system-ui, sans-serif;
   }

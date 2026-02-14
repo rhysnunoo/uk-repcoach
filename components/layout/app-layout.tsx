@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -13,7 +14,7 @@ interface AppLayoutProps {
 export function AppLayout({ children, profile }: AppLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const isManager = profile.role === 'manager' || profile.role === 'admin';
 

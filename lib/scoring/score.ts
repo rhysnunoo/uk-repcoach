@@ -5,9 +5,11 @@ import { parseScoringResponse, calculateOverallScore, generateFallbackScores } f
 import { invalidateCallCache, invalidateTeamCache } from '@/lib/cache/simple-cache';
 import type { ScriptContent, TranscriptSegment } from '@/types/database';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
@@ -76,8 +78,8 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
     try {
       console.log(`[scoreCall] Attempt ${attempt + 1} for call ${callId}`);
 
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
+      const completion = await getOpenAI().chat.completions.create({
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },

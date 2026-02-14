@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // MyEdSpace Brand Colors
+        // RepCoach Brand Colors
         primary: {
           DEFAULT: '#6366F1',
           50: '#EEEEFF',

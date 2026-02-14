@@ -78,12 +78,18 @@ export async function GET() {
       .gte('call_date', sixtyDaysAgo)
       .lt('call_date', thirtyDaysAgo);
 
-    // Fetch scores
+    // Fetch scores in batches to avoid unbounded IN clause
     const allCallIds = [...(recentCalls || []), ...(previousCalls || [])].map(c => c.id);
-    const { data: scores } = await adminClient
-      .from('scores')
-      .select('call_id, phase, score')
-      .in('call_id', allCallIds.length > 0 ? allCallIds : ['none']);
+    const BATCH_SIZE = 500;
+    let scores: { call_id: string; phase: string; score: number }[] = [];
+    for (let i = 0; i < allCallIds.length; i += BATCH_SIZE) {
+      const batch = allCallIds.slice(i, i + BATCH_SIZE);
+      const { data: batchScores } = await adminClient
+        .from('scores')
+        .select('call_id, phase, score')
+        .in('call_id', batch);
+      if (batchScores) scores = scores.concat(batchScores);
+    }
 
     // Fetch practice sessions
     const { data: practiceSessions } = await adminClient
@@ -155,12 +161,14 @@ export async function GET() {
     repStats.sort((a, b) => b.avg_score - a.avg_score);
 
     // Calculate team averages for comparison
+    const activeScoreReps = repStats.filter(r => r.avg_score > 0);
+    const activeConvReps = repStats.filter(r => r.conversion_rate > 0);
     const teamStats = {
-      avg_score: repStats.length > 0
-        ? Math.round(repStats.reduce((sum, r) => sum + r.avg_score, 0) / repStats.filter(r => r.avg_score > 0).length || 0)
+      avg_score: activeScoreReps.length > 0
+        ? Math.round(repStats.reduce((sum, r) => sum + r.avg_score, 0) / activeScoreReps.length)
         : 0,
-      avg_conversion: repStats.length > 0
-        ? Math.round(repStats.reduce((sum, r) => sum + r.conversion_rate, 0) / repStats.filter(r => r.conversion_rate > 0).length || 0)
+      avg_conversion: activeConvReps.length > 0
+        ? Math.round(repStats.reduce((sum, r) => sum + r.conversion_rate, 0) / activeConvReps.length)
         : 0,
       total_calls: repStats.reduce((sum, r) => sum + r.total_calls, 0),
       avg_practice: repStats.length > 0

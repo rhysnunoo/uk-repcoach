@@ -87,13 +87,12 @@ export async function POST(request: NextRequest) {
 
     const adminClient = createAdminClient();
 
-    // Update each mapping
-    for (const mapping of mappings) {
-      await adminClient
-        .from('profiles')
+    // Update all mappings in parallel
+    await Promise.all(mappings.map((mapping) =>
+      adminClient.from('profiles')
         .update({ hubspot_owner_id: mapping.hubspotOwnerId })
-        .eq('id', mapping.profileId);
-    }
+        .eq('id', mapping.profileId)
+    ));
 
     return NextResponse.json({ success: true });
   } catch (error) {

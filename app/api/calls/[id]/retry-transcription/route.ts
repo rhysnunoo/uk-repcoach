@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 interface RetryTranscriptionParams {
   params: Promise<{ id: string }>;
@@ -12,6 +15,12 @@ interface RetryTranscriptionParams {
 
 export async function POST(request: NextRequest, { params }: RetryTranscriptionParams) {
   const { id: callId } = await params;
+
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     const adminClient = createAdminClient();
@@ -53,7 +62,7 @@ export async function POST(request: NextRequest, { params }: RetryTranscriptionP
     try {
       // Use OpenAI Whisper for transcription
       console.log(`[retry-transcription] Using Whisper for call ${callId}...`);
-      const transcriptionResponse = await openai.audio.transcriptions.create({
+      const transcriptionResponse = await getOpenAI().audio.transcriptions.create({
         file: new File([fileData], 'audio.mp3', { type: 'audio/mpeg' }),
         model: 'whisper-1',
         response_format: 'verbose_json',
@@ -80,11 +89,9 @@ export async function POST(request: NextRequest, { params }: RetryTranscriptionP
         })
         .eq('id', callId);
 
-      // Trigger scoring
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-      fetch(`${baseUrl}/api/calls/${callId}/score`, {
-        method: 'POST',
-      }).catch(err => console.error('Failed to trigger scoring:', err));
+      // Trigger scoring directly (avoid self-fetch anti-pattern)
+      const { scoreCall } = await import('@/lib/scoring/score');
+      scoreCall(callId).catch(err => console.error('Failed to trigger scoring:', err));
 
       return NextResponse.json({ success: true, message: 'Transcription complete, scoring in progress' });
     } catch (transcriptionError) {

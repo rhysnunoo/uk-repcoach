@@ -14,6 +14,8 @@ import { CallErrorState } from '@/components/calls/call-error-state';
 import { CallOutcomeSelector, OutcomeBadge } from '@/components/calls/call-outcome-selector';
 import { CallRepSelector } from '@/components/calls/call-rep-selector';
 import type { Score, TranscriptSegment } from '@/types/database';
+import { StatusBadge } from '@/components/ui/shared';
+import { getScoreColor, formatDuration } from '@/lib/utils/format';
 
 interface CallDetailPageProps {
   params: Promise<{ id: string }>;
@@ -306,7 +308,25 @@ function AddNoteForm({ callId }: { callId: string }) {
     <form
       action={async (formData) => {
         'use server';
-        // Server action to add note
+        const { createAdminClient } = await import('@/lib/supabase/admin');
+        const { createClient } = await import('@/lib/supabase/server');
+
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const content = formData.get('content') as string;
+        if (!content?.trim()) return;
+
+        const adminClient = createAdminClient();
+        await adminClient.from('call_notes').insert({
+          call_id: callId,
+          author_id: user.id,
+          content: content.trim(),
+        });
+
+        const { revalidatePath } = await import('next/cache');
+        revalidatePath(`/calls/${callId}`);
       }}
       className="mt-4"
     >
@@ -328,43 +348,4 @@ function AddNoteForm({ callId }: { callId: string }) {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const classes: Record<string, string> = {
-    pending: 'badge bg-gray-100 text-gray-800',
-    transcribing: 'badge bg-blue-100 text-blue-800',
-    scoring: 'badge bg-yellow-100 text-yellow-800',
-    complete: 'badge bg-green-100 text-green-800',
-    error: 'badge bg-red-100 text-red-800',
-  };
 
-  return (
-    <span className={classes[status] || classes.pending}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
-  );
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 70) return 'text-yellow-600';
-  return 'text-red-600';
-}
-
-function formatDuration(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-function ErrorIcon() {
-  return (
-    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-      />
-    </svg>
-  );
-}

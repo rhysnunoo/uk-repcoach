@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    // Ignore type errors during build - these are Supabase SSR client inference issues
-    // that don't affect runtime behavior. The types will be fixed when Supabase types are regenerated.
-    ignoreBuildErrors: true,
-  },
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',

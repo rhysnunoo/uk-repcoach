@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getScoreColor } from '@/lib/utils/format';
 
 interface CategoryStats {
   category: string;
@@ -225,10 +226,4 @@ export function ObjectionSummary() {
       )}
     </div>
   );
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 70) return 'text-yellow-600';
-  return 'text-red-600';
 }

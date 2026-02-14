@@ -10,6 +10,7 @@ interface CacheEntry<T> {
 
 class SimpleCache {
   private cache: Map<string, CacheEntry<unknown>> = new Map();
+  private pending = new Map<string, Promise<unknown>>();
   private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
@@ -73,19 +74,24 @@ class SimpleCache {
   /**
    * Get or set a cached value with a factory function
    */
-  async getOrSet<T>(
-    key: string,
-    factory: () => Promise<T>,
-    ttlSeconds: number
-  ): Promise<T> {
+  async getOrSet<T>(key: string, factory: () => Promise<T>, ttlSeconds: number): Promise<T> {
     const cached = this.get<T>(key);
-    if (cached !== null) {
-      return cached;
-    }
+    if (cached !== null) return cached;
 
-    const data = await factory();
-    this.set(key, data, ttlSeconds);
-    return data;
+    const existing = this.pending.get(key);
+    if (existing) return existing as Promise<T>;
+
+    const promise = factory().then(data => {
+      this.set(key, data, ttlSeconds);
+      this.pending.delete(key);
+      return data;
+    }).catch(err => {
+      this.pending.delete(key);
+      throw err;
+    });
+
+    this.pending.set(key, promise);
+    return promise;
   }
 
   /**
@@ -97,6 +103,16 @@ class SimpleCache {
       if (now > entry.expiresAt) {
         this.cache.delete(key);
       }
+    }
+  }
+
+  /**
+   * Destroy the cache and stop cleanup interval
+   */
+  destroy(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
     }
   }
 

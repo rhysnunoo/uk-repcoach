@@ -11,18 +11,23 @@ export async function GET() {
 
     const adminClient = createAdminClient();
 
-    // Fetch all profiles (for rep selection dropdowns)
-    const { data: profiles, error } = await adminClient
-      .from('profiles')
-      .select('id, full_name, email, role')
-      .order('full_name', { ascending: true });
+    // Managers see all profiles; reps see only their own
+    if (profile.role === 'manager' || profile.role === 'admin') {
+      const { data: profiles, error } = await adminClient
+        .from('profiles')
+        .select('id, full_name, role')
+        .order('full_name', { ascending: true });
 
-    if (error) {
-      console.error('Failed to fetch profiles:', error);
-      return NextResponse.json({ error: 'Failed to fetch profiles' }, { status: 500 });
+      if (error) {
+        console.error('Failed to fetch profiles:', error);
+        return NextResponse.json({ error: 'Failed to fetch profiles' }, { status: 500 });
+      }
+
+      return NextResponse.json({ profiles });
     }
 
-    return NextResponse.json({ profiles });
+    // Non-managers only see their own profile
+    return NextResponse.json({ profiles: [{ id: profile.id, full_name: profile.full_name, role: profile.role }] });
   } catch (error) {
     console.error('Profiles API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

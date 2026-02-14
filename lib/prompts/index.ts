@@ -13,7 +13,7 @@ import type { ScriptContent, TranscriptSegment } from '@/types/database';
 
 // Re-export existing prompt functions for backwards compatibility
 export { createScoringSystemPrompt, createScoringUserPrompt } from '../scoring/prompt';
-export { createPracticeScoringPrompt, createPracticeScoringUserPrompt } from '../scoring/practice-scoring';
+export { scorePracticeSession } from '../scoring/practice-scoring';
 
 /**
  * Base instruction for all CLOSER framework scoring

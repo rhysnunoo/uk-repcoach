@@ -3,12 +3,11 @@
 import { useMemo, memo } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import type { Profile, Call } from '@/types/database';
+import type { Call } from '@/types/database';
 import { StatCard, StatusBadge, StatusIndicator, AlertItem } from '@/components/ui/shared';
 import { getScoreColor } from '@/lib/utils/format';
 
 interface ManagerDashboardProps {
-  profile: Profile;
   recentCalls: Call[];
   scores: Record<string, unknown[]>;
 }

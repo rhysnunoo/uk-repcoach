@@ -1,9 +1,11 @@
 import OpenAI from 'openai';
 import type { PracticeMessage, ScriptContent } from '@/types/database';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 export interface PracticePhaseScore {
   phase: string;
@@ -39,8 +41,8 @@ export async function scorePracticeSession(
 
   const prompt = createPracticeScoringPrompt(personaName, personaDescription, scriptContent);
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4-turbo-preview',
+  const completion = await getOpenAI().chat.completions.create({
+    model: 'gpt-4o',
     messages: [
       { role: 'system', content: prompt },
       { role: 'user', content: `Score this practice conversation:\n\n${transcript}` },

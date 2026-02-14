@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 
 interface StatusRouteParams {
   params: Promise<{ id: string }>;
@@ -7,6 +8,12 @@ interface StatusRouteParams {
 
 export async function GET(request: NextRequest, { params }: StatusRouteParams) {
   const { id: callId } = await params;
+
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     const adminClient = createAdminClient();

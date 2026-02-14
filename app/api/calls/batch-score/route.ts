@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import {
-  addToQueue,
-  getQueueStatus,
-  clearCompleted,
-  scoreAllPending,
-} from '@/lib/scoring/queue';
+  queueCallForScoring,
+  getQueueStats,
+  retryFailedScoringJobs,
+} from '@/lib/queue/scoring-queue';
 
 export async function GET() {
   try {
@@ -29,7 +28,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const status = getQueueStatus();
+    const status = await getQueueStats();
     return NextResponse.json(status);
   } catch (error) {
     console.error('Batch score status error:', error);
@@ -65,17 +64,13 @@ export async function POST(request: NextRequest) {
     const { action, callIds } = body;
 
     if (action === 'score_all') {
-      // Score all pending calls
-      const result = await scoreAllPending();
+      // Retry all failed scoring jobs
+      const result = await retryFailedScoringJobs();
       return NextResponse.json({
-        message: `Queued ${result.queued} calls for scoring`,
-        ...result,
+        message: `Queued ${result.retried} calls for scoring`,
+        retried: result.retried,
+        errors: result.errors,
       });
-    }
-
-    if (action === 'clear_completed') {
-      clearCompleted();
-      return NextResponse.json({ message: 'Cleared completed items' });
     }
 
     if (action === 'score_selected' && Array.isArray(callIds)) {
@@ -86,7 +81,7 @@ export async function POST(request: NextRequest) {
         .in('id', callIds);
 
       const validCallIds = (calls || []).map((c) => c.id);
-      addToQueue(validCallIds);
+      await Promise.all(validCallIds.map(id => queueCallForScoring(id)));
 
       return NextResponse.json({
         message: `Queued ${validCallIds.length} calls for scoring`,

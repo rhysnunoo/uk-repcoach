@@ -1,80 +1,18 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { getProfile } from '@/lib/supabase/server';
+import { AppLayout } from '@/components/layout/app-layout';
+import { DrillsContent } from '@/components/practice/drills-content';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { ObjectionDrill, DrillSetup, DrillResults } from '@/components/practice/objection-drill';
-import type { Objection } from '@/lib/practice/objections';
+export default async function ObjectionDrillsPage() {
+  const profile = await getProfile();
 
-type DrillState = 'setup' | 'active' | 'complete';
-
-interface DrillResult {
-  objection: Objection;
-  response: string;
-  responseTime: number;
-  score: number | null;
-  feedback: string | null;
-}
-
-export default function ObjectionDrillsPage() {
-  const [drillState, setDrillState] = useState<DrillState>('setup');
-  const [selectedObjections, setSelectedObjections] = useState<Objection[]>([]);
-  const [results, setResults] = useState<DrillResult[]>([]);
-
-  const handleStart = (objections: Objection[]) => {
-    setSelectedObjections(objections);
-    setResults([]);
-    setDrillState('active');
-  };
-
-  const handleComplete = (drillResults: DrillResult[]) => {
-    setResults(drillResults);
-    setDrillState('complete');
-  };
-
-  const handleRestart = () => {
-    setSelectedObjections([]);
-    setResults([]);
-    setDrillState('setup');
-  };
+  if (!profile) {
+    redirect('/login');
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <Link
-              href="/practice"
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ← Back to Practice
-            </Link>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">Objection Handling Drills</h1>
-          <p className="text-gray-600 mt-1">
-            Practice handling common objections with quick-fire drills. Get instant feedback and compare with expert responses.
-          </p>
-        </div>
-
-        {/* Drill States */}
-        {drillState === 'setup' && (
-          <DrillSetup onStart={handleStart} />
-        )}
-
-        {drillState === 'active' && (
-          <ObjectionDrill
-            objections={selectedObjections}
-            onComplete={handleComplete}
-          />
-        )}
-
-        {drillState === 'complete' && (
-          <DrillResults
-            results={results}
-            onRestart={handleRestart}
-          />
-        )}
-      </div>
-    </div>
+    <AppLayout profile={profile}>
+      <DrillsContent />
+    </AppLayout>
   );
 }

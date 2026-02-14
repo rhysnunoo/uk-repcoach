@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { Score, ScoreQuote } from '@/types/database';
 import { CLOSER_COACHING, getCoachingTip } from '@/lib/coaching/phrases';
+import { getScoreColor } from '@/lib/utils/format';
 
 interface FeedbackListProps {
   scores: Score[];
@@ -219,12 +220,6 @@ export function FeedbackList({ scores }: FeedbackListProps) {
       })}
     </div>
   );
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 60) return 'text-yellow-600';
-  return 'text-red-600';
 }
 
 function getScoreBgColor(score: number): string {

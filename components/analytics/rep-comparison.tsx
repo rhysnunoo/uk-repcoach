@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { getScoreColor } from '@/lib/utils/format';
 import {
   BarChart,
   Bar,
@@ -417,10 +417,4 @@ export function RepComparison() {
       </div>
     </div>
   );
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-green-600';
-  if (score >= 70) return 'text-yellow-600';
-  return 'text-red-600';
 }

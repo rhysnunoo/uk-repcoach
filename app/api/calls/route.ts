@@ -3,9 +3,11 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return _openai;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -166,7 +168,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Trigger scoring directly
-      scoreCall(call.id);
+      scoreCallDirect(call.id);
 
       return NextResponse.json({ callId: call.id, message: 'Transcript processed successfully' });
     }
@@ -218,7 +220,7 @@ export async function POST(request: NextRequest) {
     const { data: call, error: insertError } = await adminClient
       .from('calls')
       .insert({
-        rep_id: user.id,
+        rep_id: repId,
         script_id: scriptId || null,
         source: 'manual',
         status: 'pending',
@@ -280,7 +282,7 @@ async function processCallAsync(callId: string, storagePath: string) {
 
     // Use OpenAI Whisper for transcription
     console.log(`[processCallAsync] Using Whisper transcription...`);
-    const transcriptionResponse = await openai.audio.transcriptions.create({
+    const transcriptionResponse = await getOpenAI().audio.transcriptions.create({
       file: new File([fileData], 'audio.mp3', { type: 'audio/mpeg' }),
       model: 'whisper-1',
       response_format: 'verbose_json',
@@ -557,18 +559,10 @@ function determineSpeakerMapping(segments: { label: string; text: string }[]): R
   return mapping;
 }
 
-async function scoreCall(callId: string) {
-  // This will be called from the scoring API route
-  // For now, just trigger the scoring endpoint
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-
+async function scoreCallDirect(callId: string) {
   try {
-    await fetch(`${baseUrl}/api/calls/${callId}/score`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { scoreCall: doScore } = await import('@/lib/scoring/score');
+    await doScore(callId);
   } catch (error) {
     console.error('Failed to trigger scoring:', error);
   }
