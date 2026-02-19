@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { transcribeWithWhisper } from '@/lib/openai/transcribe';
+import { fetchCallTranscription } from '@/lib/ringover/client';
 import { findDuplicateCall } from '@/lib/utils/deduplication';
 
 /**
@@ -207,8 +208,9 @@ export async function POST(request: NextRequest) {
 
     console.log('[Ringover Webhook] Created call:', newCall.id);
 
-    // Transcribe asynchronously (don't wait for completion)
-    processCallTranscription(newCall.id, callData.recording_url).catch(err => {
+    // Process call asynchronously: try Ringover transcript first, fall back to Whisper
+    const direction = callData.direction === 'inbound' ? 'in' : 'out';
+    processCallTranscription(newCall.id, callData.call_id, direction, callData.recording_url).catch(err => {
       console.error('[Ringover Webhook] Transcription failed:', err);
     });
 
@@ -228,26 +230,47 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Process call transcription asynchronously
+ * Process call transcription asynchronously.
+ * Tries Ringover's built-in transcript first (free), falls back to Whisper.
  */
-async function processCallTranscription(callId: string, recordingUrl: string) {
+async function processCallTranscription(
+  callId: string,
+  ringoverCallId: string,
+  direction: 'in' | 'out',
+  recordingUrl: string
+) {
   const adminClient = createAdminClient();
 
   try {
-    console.log('[Ringover Webhook] Starting transcription for call:', callId);
+    console.log('[Ringover Webhook] Fetching transcript for call:', callId);
 
-    // Transcribe with Whisper
-    const result = await transcribeWithWhisper(recordingUrl, {
-      prompt: 'This is a sales call between a sales representative and a prospect.',
-    });
+    // Try Ringover transcript first (free, instant)
+    let segments: Array<{ speaker: 'rep' | 'prospect'; text: string; start_time: number; end_time: number }> | null = null;
 
-    console.log('[Ringover Webhook] Transcription complete:', result.segments.length, 'segments');
+    const ringoverSegments = await fetchCallTranscription(ringoverCallId, direction);
+    if (ringoverSegments && ringoverSegments.length > 0) {
+      console.log('[Ringover Webhook] Got Ringover transcript:', ringoverSegments.length, 'segments');
+      segments = ringoverSegments.map(seg => ({
+        speaker: (seg.speaker === 'agent' ? 'rep' : 'prospect') as 'rep' | 'prospect',
+        text: seg.text,
+        start_time: Math.floor(seg.start_time),
+        end_time: Math.floor(seg.end_time),
+      }));
+    } else {
+      // Fall back to Whisper transcription
+      console.log('[Ringover Webhook] No Ringover transcript, using Whisper for call:', callId);
+      const result = await transcribeWithWhisper(recordingUrl, {
+        prompt: 'This is a sales call between a sales representative and a prospect.',
+      });
+      segments = result.segments;
+      console.log('[Ringover Webhook] Whisper transcription complete:', segments.length, 'segments');
+    }
 
     // Update call with transcript
     const { error: updateError } = await adminClient
       .from('calls')
       .update({
-        transcript: result.segments,
+        transcript: segments,
         status: 'scoring',
       })
       .eq('id', callId);

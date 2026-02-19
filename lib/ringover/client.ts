@@ -196,8 +196,10 @@ export async function fetchRingoverCalls(
   }
 }
 
-// Empower API for transcriptions
-const EMPOWER_BASE_URL = 'https://public-api.ringover.com/v2/empower';
+// Transcriptions API (GET /transcriptions/{call_id})
+// Returns speech segments with channelId-based speaker identification:
+//   For outbound calls: channelId 1 = agent, channelId 0 = customer
+//   For inbound calls:  channelId 0 = agent, channelId 1 = customer
 
 export interface RingoverTranscriptSegment {
   speaker: 'agent' | 'customer';
@@ -206,65 +208,63 @@ export interface RingoverTranscriptSegment {
   end_time: number;
 }
 
-interface EmpowerTranscriptionResponse {
-  transcription?: {
-    segments: Array<{
-      speaker: string;
-      text: string;
-      start: number;
-      end: number;
-    }>;
-  };
-  transcript?: Array<{
-    speaker: string;
-    content: string;
-    timestamp_start: number;
-    timestamp_end: number;
-  }>;
+interface RingoverSpeechSegment {
+  channelId: number;
+  start: number;
+  end: number;
+  duration: number;
+  text: string;
+  words?: Array<{ text: string; start: number; end: number }>;
+  named_entities?: Array<{ label: string; text: string; score: number }>;
+}
+
+interface RingoverTranscriptionItem {
+  id: number;
+  team_id: number;
+  user_id: number;
+  call_id: string;
+  channel_id: string;
+  provider: string;
+  transcription_status: string;
+  transcription_data: {
+    duration: number;
+    num_channels: number | null;
+    speeches: RingoverSpeechSegment[];
+    text?: string;
+  } | null;
 }
 
 export async function fetchCallTranscription(
-  callId: string
+  callId: string,
+  direction: 'in' | 'out' = 'out'
 ): Promise<RingoverTranscriptSegment[] | null> {
   try {
-    const response = await rateLimitedFetch(
-      `${EMPOWER_BASE_URL}/call/${callId}`,
-      {
-        headers: {
-          Authorization: getApiKey(),
-          'Content-Type': 'application/json',
-        },
-      }
+    const data = await ringoverFetch<RingoverTranscriptionItem[]>(
+      `/transcriptions/${callId}`
     );
 
-    if (!response.ok) {
-      // Transcription might not be available
+    if (!data || !Array.isArray(data) || data.length === 0) {
       console.log(`No transcription available for call ${callId}`);
       return null;
     }
 
-    const data: EmpowerTranscriptionResponse = await response.json();
+    const item = data[0];
 
-    // Try to extract transcription from various response formats
-    if (data.transcription?.segments) {
-      return data.transcription.segments.map((seg) => ({
-        speaker: seg.speaker === 'agent' ? 'agent' : 'customer',
-        text: seg.text,
-        start_time: seg.start,
-        end_time: seg.end,
-      }));
+    if (item.transcription_status !== 'DONE' || !item.transcription_data?.speeches) {
+      console.log(`Transcription not ready for call ${callId}: status=${item.transcription_status}`);
+      return null;
     }
 
-    if (data.transcript) {
-      return data.transcript.map((seg) => ({
-        speaker: seg.speaker === 'agent' ? 'agent' : 'customer',
-        text: seg.content,
-        start_time: seg.timestamp_start,
-        end_time: seg.timestamp_end,
-      }));
-    }
+    // For outbound calls: channelId 1 = agent (rep), channelId 0 = customer
+    // For inbound calls: channelId 0 = agent (rep), channelId 1 = customer
+    const agentChannelId = direction === 'out' ? 1 : 0;
 
-    return null;
+    return item.transcription_data.speeches.map((seg) => ({
+      speaker: seg.channelId === agentChannelId ? 'agent' : 'customer',
+      text: seg.text,
+      start_time: seg.start,
+      end_time: seg.end,
+    }));
   } catch (error) {
     console.log(`No transcription available for call ${callId}:`, error);
     return null;

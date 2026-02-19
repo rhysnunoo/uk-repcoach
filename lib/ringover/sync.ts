@@ -121,8 +121,8 @@ export async function syncRingoverCalls(
           contactName = `${firstName} ${lastName}`.trim() || 'Unknown';
         }
 
-        // Try to fetch transcript from Ringover Empower
-        const ringoverTranscript = await fetchCallTranscription(ringoverCall.call_id);
+        // Try to fetch transcript from Ringover
+        const ringoverTranscript = await fetchCallTranscription(ringoverCall.call_id, ringoverCall.direction);
         const transcript = parseRingoverTranscript(ringoverTranscript);
 
         const hasTranscript = transcript.length > 0;
