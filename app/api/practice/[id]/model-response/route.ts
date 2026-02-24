@@ -5,6 +5,8 @@ import OpenAI from 'openai';
 import { personas } from '@/lib/practice/personas';
 import type { PracticeMessage, SessionState, PersonaType } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
+
 let _openai: OpenAI | null = null;
 function getOpenAI() {
   if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

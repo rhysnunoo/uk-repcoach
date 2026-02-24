@@ -5,6 +5,8 @@ import { cache, cacheKey, CACHE_TTL } from '@/lib/cache/simple-cache';
 import OpenAI from 'openai';
 import type { TranscriptSegment } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
+
 let _openai: OpenAI | null = null;
 function getOpenAI() {
   if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

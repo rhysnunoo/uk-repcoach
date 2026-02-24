@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { syncRingoverCalls } from '@/lib/ringover/sync';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const supabase = await createClient();
 

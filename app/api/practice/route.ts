@@ -5,6 +5,8 @@ import { personas } from '@/lib/practice/personas';
 import { getScenarioById } from '@/lib/practice/scenarios';
 import type { PersonaType } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
+
 // Random prospect names for practice sessions
 const PROSPECT_NAMES = [
   'Sarah', 'Mike', 'Jennifer', 'David', 'Lisa', 'John', 'Emily', 'Chris',

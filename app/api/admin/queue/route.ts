@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getQueueStats, retryFailedScoringJobs } from '@/lib/queue/scoring-queue';
 
+export const dynamic = 'force-dynamic';
+
 // GET - Get queue statistics
 export async function GET() {
   try {

@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchRingoverUsers, testRingoverConnection } from '@/lib/ringover/client';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const supabase = await createClient();
 
