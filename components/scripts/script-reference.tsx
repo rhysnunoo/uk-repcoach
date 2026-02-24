@@ -922,7 +922,7 @@ function MessengerTab() {
             Do you have any older children who might benefit? We cover Year 5 through to Year 13, with subjects including Maths, English, Science, and more.
           </MessageBubble>
           <MessageBubble num={5} label="Future" color="purple">
-            We're always expanding. If you'd like, I can make a note to reach out when we launch courses for [Child]'s year group.
+            We&apos;re always expanding. If you&apos;d like, I can make a note to reach out when we launch courses for [Child]&apos;s year group.
           </MessageBubble>
         </div>
       </div>
