@@ -106,19 +106,16 @@ export function extractScriptContent(
   let pricing = '';
   if (scriptContent.pricing) {
     const p = scriptContent.pricing;
-    pricing = `Annual: $${p.annual_price}/year, Monthly: $${p.monthly_price}/month`;
-    if (p.discounts) {
-      pricing += `, Discounts: ${p.discounts}`;
-    }
+    pricing = `Annual: $${p.annual_premium.price}/year, Monthly: $${p.monthly_premium.price}/month`;
   }
 
   // Get teacher info
   let teacherInfo = '';
   if (scriptContent.course_details) {
     const cd = scriptContent.course_details;
-    teacherInfo = `Teacher: ${cd.teacher_name || 'Not specified'}`;
-    if (cd.teacher_credentials) {
-      teacherInfo += ` - ${cd.teacher_credentials}`;
+    teacherInfo = `Teacher: ${cd.teacher?.name || 'Not specified'}`;
+    if (cd.teacher?.credentials) {
+      teacherInfo += ` - ${cd.teacher.credentials.join(', ')}`;
     }
   }
 

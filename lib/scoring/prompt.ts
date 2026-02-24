@@ -27,9 +27,9 @@ ${courseDetails.name ? `- Course: ${courseDetails.name}` : ''}
 ${courseDetails.schedule ? `- Schedule: ${courseDetails.schedule.days} at ${courseDetails.schedule.pacific_time} PT / ${courseDetails.schedule.eastern_time} ET` : ''}
 
 ### Pricing (from script)
-${pricing.annual_premium ? `- Annual: $${pricing.annual_premium.price} (${pricing.annual_premium.framing || pricing.annual_premium.value_statement || ''})` : ''}
-${pricing.monthly_premium ? `- Monthly: $${pricing.monthly_premium.price} (${pricing.monthly_premium.framing || pricing.monthly_premium.value_statement || ''})` : ''}
-${pricing.trial ? `- Trial: $${pricing.trial.price} for ${pricing.trial.duration} (${pricing.trial.framing || pricing.trial.value_statement || ''})` : ''}
+${pricing.annual_premium ? `- Annual: $${pricing.annual_premium.price} (${pricing.annual_premium.value_statement || ''})` : ''}
+${pricing.monthly_premium ? `- Monthly: $${pricing.monthly_premium.price} (${pricing.monthly_premium.value_statement || ''})` : ''}
+${pricing.trial ? `- Trial: $${pricing.trial.price} for ${pricing.trial.duration} (${pricing.trial.value_statement || ''})` : ''}
 
 ### Opening Script
 ${getExactScript('opening') || 'Not specified'}

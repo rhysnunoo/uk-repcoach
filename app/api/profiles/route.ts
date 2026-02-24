@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getProfile } from '@/lib/supabase/server';
+import type { UserRole } from '@/types/database';
 
 export async function GET() {
   try {
@@ -56,7 +57,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const adminClient = createAdminClient();
-    const updates: { full_name?: string; role?: string } = {};
+    const updates: { full_name?: string; role?: UserRole } = {};
 
     if (full_name !== undefined) {
       updates.full_name = full_name;
@@ -71,7 +72,7 @@ export async function PATCH(request: NextRequest) {
       if (!validRoles.includes(role)) {
         return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
       }
-      updates.role = role;
+      updates.role = role as UserRole;
     }
 
     if (Object.keys(updates).length === 0) {

@@ -501,7 +501,15 @@ export type Database = {
           error_message?: string | null;
           bookmarks?: CallBookmark[] | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "calls_script_id_fkey";
+            columns: ["script_id"];
+            isOneToOne: false;
+            referencedRelation: "scripts";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       scores: {
         Row: {
@@ -574,7 +582,15 @@ export type Database = {
           started_at?: string;
           ended_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "practice_sessions_script_id_fkey";
+            columns: ["script_id"];
+            isOneToOne: false;
+            referencedRelation: "scripts";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       call_notes: {
         Row: {
