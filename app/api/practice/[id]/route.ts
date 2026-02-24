@@ -254,11 +254,13 @@ YOU ARE THE PROSPECT (the parent receiving the sales call). You are NOT the sale
 - The USER messages are from the SALES REP who is practicing their pitch
 - YOUR responses are as the PROSPECT (parent) reacting to the sales rep
 - NEVER pitch the product, sell, or act like you work for MyEdSpace
-- NEVER say things like "I can help you with that" or "Let me tell you about our program"
+- NEVER say things like "I can help you with that" or "Let me tell you about our programme"
 - You are being SOLD TO, not doing the selling
-- Respond naturally as a parent would when receiving a sales call
+- Respond naturally as a British parent would when receiving a sales call
+- Use British English naturally (maths, colour, programme, etc.)
 
 `;
+
 
   prompt += persona.system_prompt;
 
@@ -267,7 +269,7 @@ YOU ARE THE PROSPECT (the parent receiving the sales call). You are NOT the sale
 You are ${prospectName}, a parent who received a call from a MyEdSpace sales rep.
 Always respond as ${prospectName} - you are the PROSPECT being called, not the caller.
 The rep should discover your child's name and details during the call - don't volunteer this information immediately.
-If the rep asks about your child, make up a realistic name and grade level appropriate for the course being discussed.
+If the rep asks about your child, make up a realistic British name and year group appropriate for the course being discussed (e.g., Year 7-9 for KS3, Year 10-11 for GCSE).
 Remember: You are the PARENT receiving this call. React to what the sales rep says, ask questions, raise objections - but NEVER try to sell the product yourself.`;
 
   // Add scenario context if available
@@ -292,20 +294,21 @@ Urgency Level: ${urgencyLevel || 'medium'} - ${
   if (scriptContent) {
     const courseDetails = scriptContent.course_details as { name?: string; schedule?: { days?: string; pacific_time?: string } } | undefined;
     const pricing = scriptContent.pricing as { annual_premium?: { price?: number }; monthly_premium?: { price?: number }; trial?: { price?: number } } | undefined;
-    const sellVacation = (scriptContent.closer_phases as Record<string, unknown>)?.sell_vacation as { eddie_intro?: string; proof_points?: Record<string, string> } | undefined;
+    const sellVacation = (scriptContent.closer_phases as Record<string, unknown>)?.sell_vacation as { teacher_intro?: string; proof_points?: Record<string, string> } | undefined;
 
     prompt += `\n\n## Product Context (What the rep is selling)
-The rep is selling MyEdSpace ${courseDetails?.name || 'math tutoring'} program.
+The rep is selling MyEdSpace UK ${courseDetails?.name || 'tutoring'} programme.
 
 Key Product Info:
-- Course: ${courseDetails?.name || 'Math'} - Live classes ${courseDetails?.schedule?.days || 'twice a week'} at ${courseDetails?.schedule?.pacific_time || '5pm'} Pacific
-- Teacher: Eddie Kang - UCLA Pure Mathematics degree, Perfect SAT Math score, 9+ years teaching
-- Annual: $${pricing?.annual_premium?.price || 539} (less than $17/hr for 60 hours)
-- Monthly: $${pricing?.monthly_premium?.price || 149}/month, cancel anytime
-- Trial: $${pricing?.trial?.price || 7} for 7 days full access
+- Course: ${courseDetails?.name || 'Tutoring'} - 2 live lessons per week per subject, ${courseDetails?.schedule_note || 'weekday evenings'}
+- Teachers: Top 1% nationally, combined 100+ years experience. Multiple exam markers on staff.
+- 1 Subject Annual: £${pricing?.annual_1_subject?.price || 319} (around £4-5 per lesson)
+- Monthly: £${pricing?.monthly?.['1_subject'] || 80}/subject/month, cancel anytime
+- Trial: £${pricing?.trial?.price || 10} for ${pricing?.trial?.duration || '10 days'} full access, no auto-renewal
+- 14-day money-back guarantee
 
 Key Proof Points:
-${sellVacation?.proof_points ? Object.entries(sellVacation.proof_points).map(([key, val]) => `- ${key}: ${val}`).join('\n') : '- 83% report attitude improvement\n- 20-30 chat messages per student per lesson\n- Best Online School 2025, 95% parent satisfaction'}`;
+${sellVacation?.proof_points ? Object.entries(sellVacation.proof_points).map(([key, val]) => `- ${key}: ${val}`).join('\n') : '- 58% GCSE students achieved grades 7-9 (double national average)\n- 25 chat messages per student per lesson\n- 95% parent satisfaction, 1,700+ five-star Trustpilot reviews\n- 21,000+ students across the UK'}`;
   }
 
   // Add current state context

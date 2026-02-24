@@ -1,5 +1,5 @@
 /**
- * Centralized AI Prompt Library
+ * Centralized AI Prompt Library (UK MyEdSpace)
  *
  * All AI prompts used throughout the application are consolidated here.
  * This makes it easier to:
@@ -19,34 +19,35 @@ export { scorePracticeSession } from '../scoring/practice-scoring';
  * Base instruction for all CLOSER framework scoring
  */
 export const CLOSER_FRAMEWORK_INSTRUCTION = `
-You are an expert sales coach specializing in the CLOSER sales framework.
+You are an expert sales coach specialising in the CLOSER sales framework for MyEdSpace UK.
 The CLOSER framework phases are:
-- C (Clarify): Understand the prospect's situation and needs
-- L (Label): Identify and name the core problem
-- O (Overview/Pain): Explore the pain points and their impact
-- S (Sell Vacation): Present the solution as an outcome/destination
-- E (Explain/Objections): Handle objections using the AAA method
-- R (Reinforce/Close): Secure commitment and next steps
+- C (Clarify): Understand the prospect's situation - child's name, year group, subjects, check siblings, kill zombies (decision-maker check)
+- L (Label): Identify and name the core problem, empathy check, confirm understanding
+- O (Overview/Pain): Explore past attempts and their impact - exhaust all, ask consequences
+- S (Sell Vacation): Present the solution with teacher credentials, proof points, and 14-day guarantee
+- E (Explain/Objections): Handle objections using the AAA method (Acknowledge, Associate, Ask)
+- R (Reinforce/Close): Tiered close (Annual → Monthly → Trial), stay on line for payment
 
 When scoring, focus on:
 1. Script adherence - Did they follow the prescribed language?
 2. Technique execution - Did they apply the techniques correctly?
 3. Timing and flow - Was the conversation well-paced?
 4. Objection handling - Did they use AAA (Acknowledge, Associate, Ask)?
-5. Closing strength - Did they ask for the sale confidently?
+5. Closing strength - Did they follow the tiered close and stay on line?
 `;
 
 /**
  * Base instruction for practice sessions
  */
 export const PRACTICE_SESSION_INSTRUCTION = `
-You are a realistic prospect in a sales call simulation.
+You are a realistic prospect (parent) in a sales call simulation for MyEdSpace UK.
 Your goal is to provide a challenging but fair practice experience.
 React naturally to what the sales rep says - don't be scripted.
 If they do something well, show increased interest.
 If they make mistakes, become more skeptical.
-Ask questions a real prospect would ask.
+Ask questions a real UK parent would ask.
 Present objections when appropriate.
+Use British English naturally.
 `;
 
 /**
@@ -102,20 +103,31 @@ export function extractScriptContent(
     exactScript = phaseContent.exact_script.join('\n');
   }
 
-  // Get pricing info
+  // Get pricing info (UK format)
   let pricing = '';
   if (scriptContent.pricing) {
     const p = scriptContent.pricing;
-    pricing = `Annual: $${p.annual_premium.price}/year, Monthly: $${p.monthly_premium.price}/month`;
+    if (p.annual_1_subject) {
+      pricing = `1 Subject: £${p.annual_1_subject.price}/year, Monthly: £${p.monthly?.['1_subject'] || 80}/month`;
+    } else if (p.annual_premium) {
+      pricing = `Annual: £${p.annual_premium.price}/year, Monthly: £${p.monthly_premium?.price || 80}/month`;
+    }
   }
 
-  // Get teacher info
+  // Get teacher info (UK format - multiple teachers per subject)
   let teacherInfo = '';
   if (scriptContent.course_details) {
     const cd = scriptContent.course_details;
-    teacherInfo = `Teacher: ${cd.teacher?.name || 'Not specified'}`;
-    if (cd.teacher?.credentials) {
-      teacherInfo += ` - ${cd.teacher.credentials.join(', ')}`;
+    if (cd.teachers) {
+      const teachers = cd.teachers as Record<string, { name: string; credentials: string }>;
+      teacherInfo = Object.entries(teachers)
+        .map(([subject, info]) => `${subject}: ${info.name}`)
+        .join(', ');
+    } else if (cd.teacher) {
+      teacherInfo = `Teacher: ${cd.teacher?.name || 'Not specified'}`;
+      if (cd.teacher?.credentials) {
+        teacherInfo += ` - ${cd.teacher.credentials.join(', ')}`;
+      }
     }
   }
 
@@ -123,32 +135,32 @@ export function extractScriptContent(
 }
 
 /**
- * Common objection responses for practice
+ * Common objection responses for practice (UK)
  */
 export const COMMON_OBJECTIONS = {
   price: [
     "That's more than I was expecting to pay.",
     "I need to think about the budget.",
-    "Is there a payment plan?",
+    "Is there a payment plan or instalments?",
   ],
   timing: [
     "We're really busy right now.",
-    "Can we start next month instead?",
-    "I need to check my schedule.",
+    "Can we start next half-term instead?",
+    "I need to check the schedule.",
   ],
   authority: [
-    "I need to talk to my spouse first.",
-    "My partner handles these decisions.",
+    "I need to speak to my partner first.",
+    "My husband/wife handles these decisions.",
     "Let me discuss with the family.",
   ],
   need: [
     "I'm not sure we really need this.",
-    "We've managed okay so far.",
+    "They've managed okay so far.",
     "Is this really going to help?",
   ],
   trust: [
     "How do I know this will work?",
-    "Do you have any guarantees?",
+    "Is there a guarantee?",
     "What if it doesn't help?",
   ],
 };
@@ -157,8 +169,8 @@ export const COMMON_OBJECTIONS = {
  * Prompt version tracking
  */
 export const PROMPT_VERSIONS = {
-  scoring: '2.0.0',
-  practiceScoring: '2.0.0',
-  personas: '1.0.0',
-  scenarios: '1.0.0',
+  scoring: '3.0.0-uk',
+  practiceScoring: '3.0.0-uk',
+  personas: '2.0.0-uk',
+  scenarios: '2.0.0-uk',
 };
