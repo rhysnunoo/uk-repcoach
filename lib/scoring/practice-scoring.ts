@@ -81,18 +81,51 @@ function createPracticeScoringPrompt(
     return '';
   };
 
+  // Build teacher info for UK multi-teacher format
+  const buildTeacherSection = (): string => {
+    if (courseDetails?.teachers) {
+      return Object.entries(courseDetails.teachers as Record<string, { name: string; credentials: string }>)
+        .map(([subject, info]) => `- ${subject}: ${info.name} (${info.credentials})`)
+        .join('\n');
+    }
+    if (courseDetails?.teacher) {
+      return `- Teacher: ${courseDetails.teacher.name}\n- Credentials: ${Array.isArray(courseDetails.teacher.credentials) ? courseDetails.teacher.credentials.join(', ') : 'Not specified'}`;
+    }
+    return 'Not specified';
+  };
+
+  // Build pricing info for UK format
+  const buildPricingSection = (): string => {
+    if (!pricing) return '';
+    const lines: string[] = [];
+    if (pricing.annual_1_subject) lines.push(`- 1 Subject Annual: £${pricing.annual_1_subject.price}`);
+    if (pricing.annual_2_subjects) lines.push(`- 2 Subjects Annual: £${pricing.annual_2_subjects.price}`);
+    if (pricing.annual_ultimate) lines.push(`- Ultimate (3+) Annual: £${pricing.annual_ultimate.price}`);
+    if (pricing.monthly) {
+      const monthlyParts = Object.entries(pricing.monthly)
+        .map(([key, val]) => `${key}: £${val}`)
+        .join(', ');
+      lines.push(`- Monthly: ${monthlyParts}`);
+    }
+    if (pricing.trial) lines.push(`- Trial: £${pricing.trial.price} for ${pricing.trial.duration || '10 days'}`);
+    // Fallback for legacy format
+    if (lines.length === 0) {
+      if (pricing.annual_premium) lines.push(`- Annual: £${pricing.annual_premium.price}`);
+      if (pricing.monthly_premium) lines.push(`- Monthly: £${pricing.monthly_premium.price}`);
+      if (pricing.trial) lines.push(`- Trial: £${pricing.trial.price}`);
+    }
+    return lines.join('\n');
+  };
+
   // Build actual script reference
   const scriptReference = scriptContent ? `
 ## ACTUAL SCRIPT CONTENT (Use ONLY these for "should_say" suggestions - do NOT make up different wording)
 
 ### Teacher & Course Info
-${courseDetails?.teacher ? `- Teacher: ${courseDetails.teacher.name}
-- Credentials: ${Array.isArray(courseDetails.teacher.credentials) ? courseDetails.teacher.credentials.join(', ') : 'Not specified'}` : 'Not specified'}
+${buildTeacherSection()}
 
 ### Pricing
-${pricing?.annual_premium ? `- Annual: $${pricing.annual_premium.price}` : ''}
-${pricing?.monthly_premium ? `- Monthly: $${pricing.monthly_premium.price}` : ''}
-${pricing?.trial ? `- Trial: $${pricing.trial.price}` : ''}
+${buildPricingSection()}
 
 ### Key Script Lines by Phase
 ${getExactScript('opening') ? `**Opening:** ${getExactScript('opening')}` : ''}
@@ -102,6 +135,7 @@ ${getExactScript('overview') ? `**Overview:** ${getExactScript('overview')}` : '
 ${getExactScript('sell_vacation') ? `**Sell Vacation:** ${getExactScript('sell_vacation')}` : ''}
 ${getExactScript('explain') ? `**Explain:** ${getExactScript('explain')}` : ''}
 ${getExactScript('reinforce') ? `**Reinforce:** ${getExactScript('reinforce')}` : ''}
+${getExactScript('reinforce_close') ? `**Reinforce/Close:** ${getExactScript('reinforce_close')}` : ''}
 ` : '';
 
   return `You are a STRICT sales coach scoring practice sessions against the Hormozi CLOSER framework for MyEdSpace.

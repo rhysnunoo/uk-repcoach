@@ -292,8 +292,8 @@ Urgency Level: ${urgencyLevel || 'medium'} - ${
 
   // Add script context if available
   if (scriptContent) {
-    const courseDetails = scriptContent.course_details as { name?: string; schedule?: { days?: string; pacific_time?: string } } | undefined;
-    const pricing = scriptContent.pricing as { annual_premium?: { price?: number }; monthly_premium?: { price?: number }; trial?: { price?: number } } | undefined;
+    const courseDetails = scriptContent.course_details as { name?: string; schedule_note?: string } | undefined;
+    const pricing = scriptContent.pricing as { annual_1_subject?: { price?: number }; monthly?: Record<string, number>; trial?: { price?: number; duration?: string } } | undefined;
     const sellVacation = (scriptContent.closer_phases as Record<string, unknown>)?.sell_vacation as { teacher_intro?: string; proof_points?: Record<string, string> } | undefined;
 
     prompt += `\n\n## Product Context (What the rep is selling)

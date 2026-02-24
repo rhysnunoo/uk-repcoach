@@ -135,24 +135,48 @@ Traits: ${persona.traits.join(', ')}
   // Add script context with actual script lines
   if (scriptContent) {
     const closerPhases = scriptContent.closer_phases as Record<string, unknown> | undefined;
-    const courseDetails = scriptContent.course_details as { teacher?: { name: string; credentials?: string[] } } | undefined;
-    const pricing = scriptContent.pricing as Record<string, { price?: number }> | undefined;
+    const courseDetails = scriptContent.course_details as { teacher?: { name: string; credentials?: string[] }; teachers?: Record<string, { name: string; credentials: string }> } | undefined;
+    const pricing = scriptContent.pricing as Record<string, unknown> | undefined;
+
+    // Build teacher info (UK multi-teacher format)
+    let teacherSection = '';
+    if (courseDetails?.teachers) {
+      teacherSection = Object.entries(courseDetails.teachers)
+        .map(([subject, info]) => `- ${subject}: ${info.name} (${info.credentials})`)
+        .join('\n');
+    } else if (courseDetails?.teacher) {
+      teacherSection = `- Name: ${courseDetails.teacher.name}\n- Credentials: ${Array.isArray(courseDetails.teacher.credentials) ? courseDetails.teacher.credentials.join(', ') : 'Expert teacher'}`;
+    }
+
+    // Build pricing info (UK format)
+    const pricingLines: string[] = [];
+    const annual1 = pricing?.annual_1_subject as { price?: number } | undefined;
+    const monthly = pricing?.monthly as Record<string, number> | undefined;
+    const trial = pricing?.trial as { price?: number; duration?: string } | undefined;
+    if (annual1?.price) pricingLines.push(`- 1 Subject Annual: £${annual1.price}`);
+    if (monthly?.['1_subject']) pricingLines.push(`- Monthly: £${monthly['1_subject']}/subject/month`);
+    if (trial?.price) pricingLines.push(`- Trial: £${trial.price} for ${trial.duration || '10 days'}`);
+    // Legacy fallback
+    if (pricingLines.length === 0) {
+      const annualPrem = pricing?.annual_premium as { price?: number } | undefined;
+      const monthlyPrem = pricing?.monthly_premium as { price?: number } | undefined;
+      if (annualPrem?.price) pricingLines.push(`- Annual: £${annualPrem.price}`);
+      if (monthlyPrem?.price) pricingLines.push(`- Monthly: £${monthlyPrem.price}`);
+      if (trial?.price) pricingLines.push(`- Trial: £${trial.price}`);
+    }
 
     prompt += `## ACTUAL SCRIPT CONTENT (Use these exact lines)
 
 ### Teacher Info
-${courseDetails?.teacher ? `- Name: ${courseDetails.teacher.name}
-- Credentials: ${Array.isArray(courseDetails.teacher.credentials) ? courseDetails.teacher.credentials.join(', ') : 'Expert math teacher'}` : ''}
+${teacherSection}
 
 ### Pricing
-${pricing?.annual_premium ? `- Annual: $${pricing.annual_premium.price}` : ''}
-${pricing?.monthly_premium ? `- Monthly: $${pricing.monthly_premium.price}` : ''}
-${pricing?.trial ? `- Trial: $${pricing.trial.price}` : ''}
+${pricingLines.join('\n')}
 
 ### Script Lines by Phase
 `;
     if (closerPhases) {
-      const phaseOrder = ['opening', 'clarify', 'label', 'overview', 'sell_vacation', 'explain', 'reinforce'];
+      const phaseOrder = ['opening', 'clarify', 'kill_zombies', 'label', 'overview', 'sell_vacation', 'explain', 'reinforce', 'reinforce_close'];
       for (const phase of phaseOrder) {
         const phaseData = closerPhases[phase] as {
           purpose?: string;
