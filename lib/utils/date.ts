@@ -3,7 +3,7 @@
  * Import from here instead of directly from date-fns to optimize bundle size
  */
 
-export {
+import {
   format,
   formatDistanceToNow,
   isPast,
@@ -14,6 +14,18 @@ export {
   differenceInDays,
   addDays,
 } from 'date-fns';
+
+export {
+  format,
+  formatDistanceToNow,
+  isPast,
+  isFuture,
+  subDays,
+  startOfDay,
+  parseISO,
+  differenceInDays,
+  addDays,
+};
 
 // Common format patterns
 export const DATE_FORMATS = {

@@ -30,7 +30,7 @@ export interface ScoreResult {
     objection: string;
     category: string;
     handling_score: number;
-    used_aaa: boolean;
+    used_aaa?: boolean;
     feedback: string;
   }>;
   error?: string;
@@ -58,7 +58,9 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
   }
 
   // Get script content - use empty object if no script (defaults will be used)
-  const scriptContent = (call.scripts?.content as ScriptContent) || {} as ScriptContent;
+  // scripts join returns array type but is single object at runtime for FK joins
+  const scriptData = Array.isArray(call.scripts) ? call.scripts[0] : call.scripts;
+  const scriptContent = ((scriptData as { content?: ScriptContent } | null)?.content) || {} as ScriptContent;
 
   // Update status
   await adminClient

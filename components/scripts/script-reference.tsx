@@ -91,7 +91,7 @@ function CallFlowTab() {
                 name="QUALIFY"
                 duration="1-2min"
                 color="indigo"
-                items={['Get child name', 'Check for siblings', 'Confirm grade/course', 'Route: Live OR AI Coach']}
+                items={['Get child name', 'Check for siblings', 'Confirm year group', 'Confirm subjects']}
               />
               <FlowConnector />
 
@@ -102,14 +102,14 @@ function CallFlowTab() {
                     <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span className="font-semibold text-amber-800">Grade 6+ & Pre-Alg to Alg 2?</span>
+                    <span className="font-semibold text-amber-800">Year 5-13?</span>
                   </div>
                   <div className="flex justify-center gap-6 text-sm">
                     <span className="flex items-center gap-1.5 text-green-700">
-                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>{"YES -> Continue"}
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>{"YES -> Continue to subjects"}
                     </span>
                     <span className="flex items-center gap-1.5 text-orange-700">
-                      <span className="w-2 h-2 bg-orange-500 rounded-full"></span>{"NO -> AI Coach ($14/mo)"}
+                      <span className="w-2 h-2 bg-orange-500 rounded-full"></span>{"NO -> Below Year 5 (not available)"}
                     </span>
                   </div>
                 </div>
@@ -121,7 +121,7 @@ function CallFlowTab() {
                 name="KILL ZOMBIES"
                 duration="30s"
                 color="red"
-                items={['"Are you the decision-maker?"', 'Handle spouse/child upfront', 'Plant 30-day guarantee']}
+                items={['"Are you the decision-maker?"', 'Handle spouse/child upfront', 'Plant 14-day guarantee']}
                 critical
               />
               <FlowConnector />
@@ -135,7 +135,7 @@ function CallFlowTab() {
                   <CloserPhase letter="C" name="Clarify" desc="What's going on?" gradient="from-emerald-500 to-emerald-600" />
                   <CloserPhase letter="L" name="Label" desc="Confirm problem" gradient="from-teal-500 to-teal-600" />
                   <CloserPhase letter="O" name="Overview" desc="Pain Cycle" gradient="from-amber-500 to-amber-600" critical />
-                  <CloserPhase letter="S" name="Sell" desc="Eddie + Benefits" gradient="from-blue-500 to-blue-600" />
+                  <CloserPhase letter="S" name="Sell" desc="Teachers + Benefits" gradient="from-blue-500 to-blue-600" />
                   <CloserPhase letter="E" name="Explain" desc="Handle objections" gradient="from-purple-500 to-purple-600" />
                   <CloserPhase letter="R" name="Reinforce" desc="Close the deal" gradient="from-green-500 to-green-600" />
                 </div>
@@ -154,9 +154,9 @@ function CallFlowTab() {
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-3">
-                  <PriceTier tier={1} price="$539" label="Annual" sublabel="Default - Lead with this" primary />
-                  <PriceTier tier={2} price="$149/mo" label="Monthly" sublabel="Downsell option" />
-                  <PriceTier tier={3} price="$7" label="Trial" sublabel="Last resort only" muted />
+                  <PriceTier tier={1} price="£319+" label="Annual" sublabel="Default - Lead with this" primary />
+                  <PriceTier tier={2} price="£80+/mo" label="Monthly" sublabel="Downsell option" />
+                  <PriceTier tier={3} price="£10" label="10-Day Trial" sublabel="Last resort only" muted />
                 </div>
               </div>
             </div>
@@ -172,14 +172,14 @@ function CallFlowTab() {
         </div>
         <div className="divide-y divide-gray-100">
           <CheatRow phase="OPEN" color="blue" text={'Greeting -> Recording -> Proof-Promise-Plan -> "How does that sound?"'} />
-          <CheatRow phase="QUALIFY" color="indigo" text={"Get child's name -> Check siblings -> Confirm grade/course -> Route"} />
+          <CheatRow phase="QUALIFY" color="indigo" text={"Get child's name -> Check siblings -> Confirm year group -> Confirm subjects"} />
           <CheatRow phase="ZOMBIES" color="red" text={'"Are you the decision-maker?" -> Handle spouse/child -> Plant guarantee'} critical />
-          <CheatRow phase="C" color="emerald" text={'"What\'s going on with math?" -> "What would success look like?" -> "Why now?"'} />
+          <CheatRow phase="C" color="emerald" text={'"What\'s been going on?" -> "What would success look like?" -> "Why now?"'} />
           <CheatRow phase="L" color="teal" text={'"So it sounds like [problem] and you want [goal]. Is that accurate?"'} />
           <CheatRow phase="O" color="amber" text={'"What have you tried?" -> "How did that go?" -> "What else?" -> Exhaust all'} critical />
-          <CheatRow phase="S" color="blue" text={"Eddie credentials -> Bridge from pain -> How it works -> 30-day guarantee"} />
+          <CheatRow phase="S" color="blue" text={"Teacher credentials (top 1%) -> Bridge from pain -> How it works -> 14-day guarantee"} />
           <CheatRow phase="E" color="purple" text={"AAA: Acknowledge -> Associate -> Ask. Expect 2-4 objections."} />
-          <CheatRow phase="R" color="green" text={"Annual -> Monthly -> Trial (last resort) -> STOP when they say yes"} />
+          <CheatRow phase="R" color="green" text={"Annual → Monthly → Trial (last resort) → Stay on line for payment"} />
         </div>
       </div>
 
@@ -192,17 +192,17 @@ function CallFlowTab() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <th className="px-6 py-3">Course</th>
+                <th className="px-6 py-3">Subject</th>
+                <th className="px-6 py-3">Year Groups</th>
                 <th className="px-6 py-3">Days</th>
-                <th className="px-6 py-3">Pacific</th>
-                <th className="px-6 py-3">Eastern</th>
+                <th className="px-6 py-3">Time</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              <ScheduleRow course="Pre-Algebra" days="Mon & Wed" pacific="5pm PT" eastern="8pm ET" />
-              <ScheduleRow course="Algebra 1" days="Tue & Thu" pacific="5pm PT" eastern="8pm ET" />
-              <ScheduleRow course="Geometry" days="Mon & Wed" pacific="6pm PT" eastern="9pm ET" />
-              <ScheduleRow course="Algebra 2" days="Tue & Thu" pacific="6pm PT" eastern="9pm ET" />
+              <ScheduleRow course="KS3 Maths" days="Year 7-9" pacific="Mon & Wed" eastern="5:00pm" />
+              <ScheduleRow course="GCSE Maths" days="Year 10-11" pacific="Tue & Thu" eastern="5:30pm" />
+              <ScheduleRow course="A-Level Maths" days="Year 12-13" pacific="Mon & Wed" eastern="6:00pm" />
+              <ScheduleRow course="GCSE Science" days="Year 10-11" pacific="Tue & Thu" eastern="6:30pm" />
             </tbody>
           </table>
         </div>
@@ -362,7 +362,7 @@ function FullScriptTab() {
           {[
             { title: 'Statements ↓', desc: 'Downward inflection = certainty' },
             { title: 'Questions ↑', desc: 'Upward inflection = invites response' },
-            { title: 'Slow on proof', desc: 'UCLA... Pure Mathematics... Let it land' },
+            { title: 'Slow on proof', desc: 'Top 1%... combined 100+ years... Let it land' },
             { title: 'Pause after key info', desc: 'Silence = confidence' },
             { title: 'Match their energy', desc: 'Calm if calm, acknowledge stress' },
             { title: 'Use their names', desc: 'Parent and child throughout' },
@@ -377,24 +377,24 @@ function FullScriptTab() {
 
       <ScriptSection phase="OPENING" duration="30-60 sec" color="blue"
         goal={"Set agenda fast. Control the conversation. NO 'how are you today?'"}>
-        <ScriptLine>{`"Hi [Name], this is [Rep] from MyEdSpace. Thanks for booking time with me."`}</ScriptLine>
+        <ScriptLine>{`"Hi there - am I speaking with [Parent]? Thanks so much for booking in a consultation with me."`}</ScriptLine>
         <ScriptNote>{"Recording Disclosure (Required):"}</ScriptNote>
-        <ScriptLine>{`"Quick heads up - this call is recorded for training and monitoring purposes. Is that okay with you?"`}</ScriptLine>
+        <ScriptLine>{`"Just to let you know, this call is recorded for training purposes. Is that okay?"`}</ScriptLine>
         <ScriptNote>{"[Wait for confirmation]"}</ScriptNote>
-        <ScriptLine>{`"Great. Quick background: we've helped thousands of parents get their kids confident in math. On this call, I want to understand what's going on with your child and where they're at, show you how we might help, and see if it makes sense. Should take about 10 minutes. How does that sound?"`}</ScriptLine>
+        <ScriptLine>{`"Brilliant. So just a quick background - we've helped over 21,000 students across the UK improve their grades and confidence. On this call, I'd love to understand what's going on with your child, show you how we might be able to help, and see if it's a good fit. Should only take about 10 minutes. How does that sound?"`}</ScriptLine>
         <ScriptTip>{`Get a micro-commitment ('sounds good') before proceeding.`}</ScriptTip>
       </ScriptSection>
 
       <ScriptSection phase="C - CLARIFY" duration="1-2 min" color="emerald"
         goal="Get THEM to state the problem. The person asking questions is closing.">
         <ScriptNote>{`Get child's name if you don't have it:`}</ScriptNote>
-        <ScriptLine>{`"And what's your child's name - who are we helping today?"`}</ScriptLine>
+        <ScriptLine>{`"So first things first - who's the lucky one we're helping today? What's your child's name?"`}</ScriptLine>
         <ScriptNote>{"Check for siblings:"}</ScriptNote>
-        <ScriptLine>{`"Do you have any other kids at home who might need help with math too?"`}</ScriptLine>
-        <ScriptTip>{`If YES: "We have a 20% sibling discount on the second enrollment."`}</ScriptTip>
-        <ScriptNote>{"Confirm grade/course:"}</ScriptNote>
-        <ScriptLine>{`"What grade is [Child] in right now?"`}</ScriptLine>
-        <ScriptLine>{`"And which math course are they taking - Pre-Algebra, Algebra 1, Geometry, or Algebra 2?"`}</ScriptLine>
+        <ScriptLine>{`"And do you have any other children who might benefit from some support too?"`}</ScriptLine>
+        <ScriptTip>{`If YES: "We have a 20% sibling discount on the less expensive package."`}</ScriptTip>
+        <ScriptNote>{"Confirm year group/subjects:"}</ScriptNote>
+        <ScriptLine>{`"What year is [Child] in?"`}</ScriptLine>
+        <ScriptLine>{`"For [Year Group], we offer [Subjects]. Which of these - if not all - are you interested in for [Child]?"`}</ScriptLine>
         <QualificationBox />
       </ScriptSection>
 
@@ -405,12 +405,12 @@ function FullScriptTab() {
         <ScriptLine>{`"Perfect. And is [Child] on board with getting some help, or is this a surprise?"`}</ScriptLine>
         <ScriptNote>{`If "need to talk to spouse":`}</ScriptNote>
         <ScriptLine>{`"Makes sense. Are they around now, or is there a time today we could get them on the call too?"`}</ScriptLine>
-        <ScriptLine>{`"No problem. Let's do this - I'll walk you through everything. We also have a 30-day money-back guarantee, so even if you sign up today, you've got a full month to make sure it's right - and your spouse can see it in action. Sound good?"`}</ScriptLine>
+        <ScriptLine>{`"No problem. Let's do this - I'll walk you through everything. We also have a 14-day money-back guarantee, so even if you sign up today, your partner can see it in action and you can get a full refund if it's not right. Sound good?"`}</ScriptLine>
       </ScriptSection>
 
       <ScriptSection phase="CORE DISCOVERY" duration="1-2 min" color="teal"
         goal="Understand their situation">
-        <ScriptLine>{`"So what's going on with math that made you reach out?"`}</ScriptLine>
+        <ScriptLine>{`"So tell me, what's been going on with [Child]'s education that made you reach out to us?"`}</ScriptLine>
         <ScriptNote>{"[Let them talk. Take notes. Use their words later.]"}</ScriptNote>
         <ScriptLine>{`"What would success look like for [Child] by the end of this school year?"`}</ScriptLine>
         <ScriptLine>{`"And what made you reach out NOW versus a few months ago?"`}</ScriptLine>
@@ -419,68 +419,67 @@ function FullScriptTab() {
 
       <ScriptSection phase="L - LABEL" duration="30 sec" color="teal"
         goal="Name their problem back to them. They must hear it and agree.">
-        <ScriptLine>{`"Okay, so let me make sure I've got this right. [Child] is in [Grade] taking [Course]. The main challenge is [their specific pain - use their words]. And what you really want is [their stated goal]. Is that accurate?"`}</ScriptLine>
+        <ScriptLine>{`"Okay, so let me make sure I've got this right. [Child] is in [Year] taking [Subjects]. The main challenge is [their specific pain - use their words]. And what you really want is [their stated goal]. Is that right?"`}</ScriptLine>
         <ScriptNote>{"[Wait for confirmation]"}</ScriptNote>
         <ScriptLine>{`"Got it. That's really helpful."`}</ScriptLine>
       </ScriptSection>
 
       <ScriptSection phase="O - OVERVIEW (Pain Cycle)" duration="2-3 min" color="amber" critical
         goal="Exhaust all prior attempts. Prospects don't buy without pain.">
-        <ScriptLine>{`"Before I tell you about what we do, I want to understand what you've already tried. What have you done so far to help [Child] with math?"`}</ScriptLine>
-        <ScriptNote>{"[Common: YouTube, Khan Academy, tutor, parent helping]"}</ScriptNote>
+        <ScriptLine>{`"Before reaching out to us, what have you tried so far to help [Child]?"`}</ScriptLine>
+        <ScriptNote>{"[Common: private tutors, YouTube, BBC Bitesize, Kumon, school support, nothing yet]"}</ScriptNote>
         <ScriptLine>{`"Okay, and how did that go?"`}</ScriptLine>
         <ScriptLine>{`"Got it. What else have you tried?"`}</ScriptLine>
         <ScriptNote>{`[Keep asking "what else?" until exhausted]`}</ScriptNote>
         <ScriptLine>{`"So you've tried [list everything], and none of it has really stuck. Is that fair to say?"`}</ScriptLine>
         <ScriptLine>{`"How long has this been going on?"`}</ScriptLine>
-        <ScriptLine>{`"And if nothing changes, what happens? Where does [Child] end up in 6 months if this doesn't get fixed?"`}</ScriptLine>
-        <ScriptTip>{"This makes the stakes real. Let them verbalize consequences."}</ScriptTip>
+        <ScriptLine>{`"And if things stay the way they are - what does that mean for [Child] by exam time?"`}</ScriptLine>
+        <ScriptTip>{"This makes the stakes real. Let them verbalise consequences."}</ScriptTip>
       </ScriptSection>
 
       <ScriptSection phase="S - SELL THE VACATION" duration="2-3 min" color="blue"
-        goal="Sell the outcome. Lead with Eddie's credentials.">
-        <ScriptLine>{`"Okay, that's really helpful. Can I tell you about how we might be able to help?"`}</ScriptLine>
-        <ScriptNote>{"EDDIE INTRO (Lead with credentials):"}</ScriptNote>
-        <ScriptLine>{`"So the teacher is Eddie Kang. UCLA Pure Mathematics degree. Perfect SAT math score. Nine years teaching in high schools and colleges across California. We screened over 3,000 teachers to find him - he was the one."`}</ScriptLine>
-        <ScriptLine>{`"What makes Eddie different is how he explains things. He can take something confusing and make it click. Parents tell us their kids actually start enjoying math."`}</ScriptLine>
+        goal="Sell the outcome. Lead with teacher credentials.">
+        <ScriptLine>{`"That's really helpful, thank you. Can I tell you a bit about how we might be able to help?"`}</ScriptLine>
+        <ScriptNote>{"TEACHER INTRO (Lead with credentials):"}</ScriptNote>
+        <ScriptLine>{`"Let me tell you about who'll be teaching [Child]. Our teachers are in the top 1% in the country - combined 100+ years of teaching experience. What students say makes them special is how they explain topics. They can take something confusing and just make it click."`}</ScriptLine>
         <ScriptNote>{`WHAT [CHILD]'S WEEK LOOKS LIKE:`}</ScriptNote>
-        <ScriptLine>{`"[Course] runs twice a week - [Days] at [Time PT] Pacific, [Time ET] Eastern. Each class is one hour."`}</ScriptLine>
-        <ScriptLine>{`"[Child] gets a workbook to follow along during class. Then there are practice problems after, and every single problem has a video solution where Eddie walks through it step by step."`}</ScriptLine>
-        <ScriptLine>{`"Every lesson is recorded instantly. So if [Child] misses a class, they watch the recording and don't fall behind."`}</ScriptLine>
-        <ScriptLine>{`"Between classes, [Child] also has access to our AI Math Coach - available 24/7 for homework help."`}</ScriptLine>
+        <ScriptLine>{`"[Child] gets 2 live lessons every week per subject. They follow along with a workbook we provide, so they can focus on listening instead of frantically copying notes. The teacher teaches live - it's interactive, not passive. Students ask questions in chat, work through problems together. On average, each student sends around 25 messages per lesson."`}</ScriptLine>
+        <ScriptLine>{`"And it doesn't stop when the lesson ends. Every week, there are practice problems that reinforce what was taught. And here's the key part - every single problem has a video solution where the teacher walks through it step by step. So if [Child] gets stuck at 9pm doing homework? They're not actually stuck."`}</ScriptLine>
+        <ScriptLine>{`"Every lesson is recorded and available instantly. So if [Child] misses a class - football, family dinner, whatever - they just watch the recording. They don't fall behind."`}</ScriptLine>
         <ScriptNote>{"PLANT THE GUARANTEE:"}</ScriptNote>
-        <ScriptLine>{`"And here's the best thing - we have a 30-day money-back guarantee. Full month to see if Eddie's teaching clicks. If it's not working, full refund, no hassle."`}</ScriptLine>
+        <ScriptLine>{`"And we have a 14-day money-back guarantee. If it's not working, full refund, no hassle."`}</ScriptLine>
         <ScriptLine>{`"How does all of that sound so far?"`}</ScriptLine>
       </ScriptSection>
 
       <ScriptSection phase="R - REINFORCE + CLOSE" duration="1-2 min" color="green"
         goal="Follow the tiered close. Don't lead with trial. STOP when they say yes.">
         <ScriptNote>{"TIER 1: Annual Close (Default)"}</ScriptNote>
-        <ScriptLine>{`"So let me walk you through the investment. Private tutoring at Eddie's level would run you easily over $100 an hour. For 60 hours, that's $6,000."`}</ScriptLine>
-        <ScriptLine>{`"The full course with us is $539 for the year. You can pay upfront or split it into 3 payments of $180."`}</ScriptLine>
-        <ScriptLine>{`"And remember - 30-day money-back guarantee. Full month to make sure it's right."`}</ScriptLine>
-        <ScriptLine>{`"The next [Course] class is [Day] at [Time]. Should I get [Child] set up so they can start this week?"`}</ScriptLine>
+        <ScriptLine>{`"So let me walk you through the investment. An average private tutor charges around £50 an hour. Two lessons a week per subject - that adds up quickly."`}</ScriptLine>
+        <ScriptLine>{`"With us, you get our top 1% teachers for just £319 for 1 subject for the full year. That works out to around £4.31 per lesson. You can pay upfront and save an extra 5%, or split it into 3 monthly instalments."`}</ScriptLine>
+        <ScriptLine>{`"And remember - 14-day money-back guarantee."`}</ScriptLine>
+        <ScriptLine>{`"The next class for [Child] is [Day]. Should I get [Child] set up so they can start this week?"`}</ScriptLine>
         <div className="my-4 p-4 bg-green-100 border border-green-300 rounded-xl">
           <p className="font-bold text-green-800 flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {"If they say YES -> STOP. Don't keep selling."}
+            {"If they say YES -> STOP. Stay on line for payment."}
           </p>
         </div>
+        <ScriptNote>{"AFTER YES:"}</ScriptNote>
+        <ScriptLine>{`"Great choice. I'm sending you the registration link now. I'm happy to stay on the line while you register - it should only take 1 or 2 minutes."`}</ScriptLine>
         <ScriptNote>{"TIER 2: Monthly Downsell (If price objection)"}</ScriptNote>
-        <ScriptLine>{`"Totally fair. We also have monthly at $149. No long-term commitment - cancel anytime. Same 30-day guarantee. Want to start with monthly?"`}</ScriptLine>
+        <ScriptLine>{`"Or if you'd prefer flexibility, we have monthly at £80 per subject. No lock-in, cancel anytime. Same 14-day guarantee."`}</ScriptLine>
         <ScriptNote>{"TIER 3: Trial Save (Last resort)"}</ScriptNote>
-        <ScriptLine>{`"Tell you what. Try it for $7 for a week. Full access to everything. If it's not a fit, you cancel. But if [Child] loves it, you're set. Fair?"`}</ScriptLine>
+        <ScriptLine>{`"Tell you what - try it for 10 days, just £10. Full access. No auto-renewal. If it's not a fit, no harm done. But if [Child] loves it, you're set. Fair?"`}</ScriptLine>
       </ScriptSection>
 
-      <ScriptSection phase="AI MATH COACH" duration="For Grade 5 & below" color="purple"
-        goal="$14/mo product for younger students">
-        <ScriptLine>{`"Our live courses start from Pre-Algebra which is typically 6th grade and up. But I've got something perfect for [Child]."`}</ScriptLine>
-        <ScriptLine>{`"We have our AI Math Coach. It was built by Eddie using his exact teaching methodology. It covers everything from basic math up through Algebra 2."`}</ScriptLine>
-        <ScriptLine>{`"Here's what makes it different from ChatGPT: it doesn't just give answers. It uses the Socratic method - asks questions to guide them to figure it out themselves."`}</ScriptLine>
-        <ScriptLine>{`"[Child] can type math problems or just take a photo of their homework. Available 24/7."`}</ScriptLine>
-        <ScriptLine>{`"It's $14 a month. No contract, cancel anytime. Want me to get [Child] set up?"`}</ScriptLine>
+      <ScriptSection phase="MULTI-SUBJECT PRICING" duration="For 2+ subjects" color="purple"
+        goal="Upsell for families needing multiple subjects">
+        <ScriptLine>{`"Since [Child] needs help with [Subject 1] and [Subject 2], let me tell you about our multi-subject options."`}</ScriptLine>
+        <ScriptLine>{`"For 2 subjects, it's £574.20 for the year - that's a 10% discount compared to buying them separately."`}</ScriptLine>
+        <ScriptLine>{`"Or for our Ultimate package - 3 or more subjects - it's £789 for the full year. That's the best value by far."`}</ScriptLine>
+        <ScriptTip>{`If they have a sibling: "And we offer 20% off the less expensive package for siblings."`}</ScriptTip>
       </ScriptSection>
     </div>
   );
@@ -557,9 +556,9 @@ function QualificationBox() {
         Qualification Check
       </p>
       <div className="space-y-1.5 text-sm">
-        <p className="flex items-center gap-2 text-green-700"><span className="w-2 h-2 bg-green-500 rounded-full"></span>{"Grade 6-11 / Pre-Alg to Alg 2 -> Continue"}</p>
-        <p className="flex items-center gap-2 text-blue-700"><span className="w-2 h-2 bg-blue-500 rounded-full"></span>{"Grade 5 or below -> AI Math Coach ($14/mo)"}</p>
-        <p className="flex items-center gap-2 text-gray-500"><span className="w-2 h-2 bg-gray-400 rounded-full"></span>{"Above Algebra 2 -> No product (check siblings)"}</p>
+        <p className="flex items-center gap-2 text-green-700"><span className="w-2 h-2 bg-green-500 rounded-full"></span>{"Year 5-13 / All subjects -> Continue"}</p>
+        <p className="flex items-center gap-2 text-blue-700"><span className="w-2 h-2 bg-blue-500 rounded-full"></span>{"Below Year 5 -> Not currently available"}</p>
+        <p className="flex items-center gap-2 text-gray-500"><span className="w-2 h-2 bg-gray-400 rounded-full"></span>{"Graduate -> Check siblings / Alumni referral"}</p>
       </div>
     </div>
   );
@@ -637,19 +636,19 @@ function ObjectionsTab() {
 [Wait for answer - this tells you what frame to use]
 
 **If they mention PRIVATE TUTORING:**
-"Right, so private tutors run $60-80 an hour. That's like $200-$250+ a month, and that's just for one session a week. We're $149/month for two live classes per week with Eddie - UCLA Pure Math degree, perfect SAT score, 9 years experience. Plus the workbooks, video solutions, AI math coach 24/7. Way more support for less money."
+"Right, so private tutors run £40-60 an hour. That's like £150-200+ a month, and that's just for one session a week. We're £80/month per subject for 2 live lessons per week with top 1% teachers - combined 100+ years experience. Plus workbooks, video solutions for every problem. Way more support for less money."
 
 **If they mention KUMON / MATHNASIUM:**
-"Kumon is typically $150-200/month, Mathnasium $200-400/month. And those are rotating tutors - different person each time. With us, Eddie teaches every single class. Same elite teacher. $149/month, and your kid doesn't have to drive anywhere."
+"Kumon is typically £60-80/month per subject, and that's just worksheets with a supervisor - no actual teaching. With us, top 1% teachers TEACH live every lesson. Same elite teachers every week. £80/month per subject, from home."
 
 **If they mention FREE OPTIONS (YouTube, Khan):**
-"Totally - those are great for some kids. The challenge is, they're not structured, there's no accountability, and when your kid gets stuck, they're stuck. With Eddie, they get live instruction, can ask questions in real-time, and every practice problem has a video solution. That's the difference between free and effective."
+"Totally - BBC Bitesize and YouTube are great for revision snippets. The challenge is, there's no structure, no accountability, and when your child gets stuck, they're stuck. With us, top 1% teachers teach live - students interact in real-time with 25 messages per lesson on average. Every practice problem has a video solution. That's the difference between free and effective."
 
 **ASK (Close):**
-"And remember - we have a 30-day money-back guarantee. Full month to see if it's worth it. If not, full refund. Does that change how it feels?"
+"And remember - we have a 14-day money-back guarantee. Full month to see if it's worth it. If not, full refund. Does that change how it feels?"
 
 **DOWNSELL if still hesitant:**
-"We also have monthly at $149 with no commitment - cancel anytime. Same 30-day guarantee. Want to start there?"`} />
+"We also have monthly at £80 per subject with no commitment - cancel anytime. Same 14-day guarantee. Want to start there?"`} />
 
         <ObjectionCard objection="I need to talk to my spouse / partner" forceOpen={expandAll} response={`**ACKNOWLEDGE:**
 "Makes total sense. Big decisions together."
@@ -659,7 +658,7 @@ function ObjectionsTab() {
 
 [Listen and address each concern. Then:]
 
-"Here's what I'd suggest: Let's get [Child] signed up today so they don't miss any more classes. You've got a 30-day money-back guarantee, so your spouse can see it in action - watch a class with [Child], see the workbooks, see how Eddie teaches."
+"Here's what I'd suggest: Let's get [Child] signed up today so they don't miss any more classes. You've got a 14-day money-back guarantee, so your spouse can see it in action - watch a class with [Child], see the workbooks, see the teaching in action."
 
 "If either of you decides it's not right, full refund, no questions asked. But this way [Child] doesn't fall further behind while you're deciding."
 
@@ -688,7 +687,7 @@ function ObjectionsTab() {
 [Pause - let them talk]
 
 **ASK:**
-"Here's what I know: you called us because something isn't working. Every day you wait is another day [Child] falls further behind. And you've got a 30-day money-back guarantee - so you can start today and STILL think about it for a full month."
+"Here's what I know: you called us because something isn't working. Every day you wait is another day [Child] falls further behind. And you've got a 14-day money-back guarantee - so you can start today and STILL think about it for two weeks."
 
 "What's holding you back?"`} />
 
@@ -696,14 +695,14 @@ function ObjectionsTab() {
 "I hear that a lot - and it's usually from parents whose kids have tried those boring recorded video platforms. Totally different."
 
 **ASSOCIATE:**
-"This is LIVE. Eddie is there, teaching in real-time. Kids are chatting, asking questions, answering problems. It's interactive."
+"This is LIVE. Our teachers are there, teaching in real-time. Kids are chatting, asking questions, answering problems. It's interactive."
 
-"Here's a stat: we see 20-30 chat messages per student per lesson. That's not kids zoning out - that's kids engaged."
+"Here's a stat: we see 25 chat messages per student per lesson. That's not kids zoning out - that's kids engaged."
 
-"And Eddie's teaching style is different. Parents tell us their kids who 'hate math' actually start looking forward to class. He makes it click in a way school teachers can't."
+"And Our teachers' style is different. Parents tell us their kids who hate the subject actually start looking forward to class. They make it click in a way school teachers can't."
 
 **ASK:**
-"Plus - 30-day money-back guarantee. If [Child] genuinely doesn't engage, full refund. But I'd bet they surprise you."
+"Plus - 14-day money-back guarantee. If [Child] genuinely doesn't engage, full refund. But I'd bet they surprise you."
 
 "Let's get them started - what do you have to lose?"`} />
 
@@ -711,13 +710,13 @@ function ObjectionsTab() {
 "Totally understand - schedules are tight."
 
 **ASSOCIATE:**
-"Here's the good news: every single lesson is recorded and available immediately after class. So if [Child] has soccer on Monday, they watch the recording that night or next morning."
+"Here's the good news: every single lesson is recorded and available immediately after class. So if [Child] has football on Monday, they watch the recording that night or next morning."
 
 "A lot of our students do a mix - live when they can, recording when they can't. Works great either way."
 
 "The workbooks are the same. Practice problems are the same. Video solutions for every question. Whether live or recorded, [Child] gets the same quality instruction."
 
-"Plus they have the AI Math Coach available 24/7 if they need help between classes."
+"Plus every practice problem has a video solution so they can learn at their own pace between classes."
 
 **ASK:**
 "What days is [Child] free? Let me check if our schedule could work even partially live."`} />
@@ -726,32 +725,32 @@ function ObjectionsTab() {
 "I get it - 1-on-1 feels like it should be better."
 
 **ASSOCIATE:**
-"Here's what we've learned: with a random tutor at $60-80 an hour, you're paying for someone to help with tonight's homework. They're not building real understanding."
+"Here's what we've learned: with a random tutor at £40-60 an hour, you're paying for someone to help with tonight's homework. They're not building real understanding."
 
-"With Eddie, you get a UCLA math expert teaching a complete curriculum. He's built the entire progression - each concept builds on the last. That's how kids actually learn math, not one-off homework help."
+"With us, you get top 1% teachers with combined 100+ years experience. Some are actual exam markers. They teach a structured curriculum where each concept builds on the last. That's how kids actually learn, not one-off homework help."
 
-"And here's what's interesting - in our classes, kids actually interact MORE than with a private tutor. We see 20-30 chat messages per student per lesson. They're asking questions, answering problems, engaged the whole time."
+"And here's what's interesting - in our classes, kids actually interact MORE than with a private tutor. We see 25 chat messages per student per lesson. They're asking questions, answering problems, engaged the whole time."
 
-"Plus between classes, [Child] has 24/7 access to our AI Math Coach for any questions - basically unlimited 1-on-1 help."
+"Plus between classes, [Child] has video solutions for every single practice problem - so they're never stuck."
 
 **ASK:**
-"And at $149/month versus $500+/month for weekly tutoring, you get way more for way less. 30-day guarantee - try it and see?"`} />
+"And at £80/month versus £200+/month for weekly tutoring, you get way more for way less. 14-day guarantee - try it and see?"`} />
 
-        <ObjectionCard objection="We're considering Kumon / Mathnasium" forceOpen={expandAll} response={`**ACKNOWLEDGE:**
+        <ObjectionCard objection="We're considering Kumon / another tutoring service" forceOpen={expandAll} response={`**ACKNOWLEDGE:**
 "Both solid options. Let me share the key differences."
 
 **ASSOCIATE (for Kumon):**
 "Kumon is worksheet-based. Kids sit there doing repetitive problems with a proctor watching. It builds some skills, but there's no actual teaching."
 
-"With us, Eddie TEACHES. He explains concepts, breaks things down, makes it click. Then practice with video solutions for every problem."
+"With us, top 1% teachers TEACH live. They explain concepts, break things down, make it click. Then practice with video solutions for every problem."
 
-**(for Mathnasium):**
-"Mathnasium is good but pricey - usually $200-400/month. And you're getting rotating tutors - different person each visit."
+**(for other tutoring services):**
+"Private tutoring centres are pricey - usually £200+/month. And you're getting rotating tutors - different person each visit."
 
-"With us, Eddie teaches every single class. Same elite teacher - UCLA Pure Math, perfect SAT, 9 years experience. $149/month, your kid logs in from home."
+"With us, the same elite teachers teach every lesson. Top 1% nationally, combined 100+ years experience. £80/month per subject, from home."
 
 **ASK:**
-"Tell you what - try our $7 trial week before you commit to anything. See Eddie teach, see if it clicks for [Child]. Then decide. Fair?"`} />
+"Tell you what - try our £10 trial for 10 days before you commit to anything. See the teachers in action, see if it clicks for [Child]. Then decide. Fair?"`} />
 
         <ObjectionCard objection="We already use IXL / Khan Academy" forceOpen={expandAll} response={`**ACKNOWLEDGE:**
 "IXL is great for practice - lots of problems, adaptive."
@@ -759,22 +758,22 @@ function ObjectionsTab() {
 **ASSOCIATE:**
 "The challenge is, it's software, not teaching. When [Child] gets stuck on a concept, they're stuck. They can watch a hint video, but that's not the same as someone explaining it properly."
 
-"We're the opposite. Eddie actually TEACHES the concept first. Then practice problems. And every single problem has a video where Eddie walks through the solution step by step."
+"We're the opposite. Our teachers actually TEACH the concept first. Then practice problems. And every single problem has a video solution where the teacher walks through it step by step."
 
 "IXL is like a gym with no trainer. We're the trainer."
 
-"Plus our AI Math Coach - [Child] can take a photo of any problem and get help understanding it, 24/7."
+"Plus video solutions for every practice problem - [Child] is never stuck without help."
 
 **ASK:**
-"You can keep using IXL for extra practice. Add us for the actual teaching. 30-day guarantee to see if it makes a difference?"`} />
+"You can keep using IXL for extra practice. Add us for the actual teaching. 14-day guarantee to see if it makes a difference?"`} />
 
         <ObjectionCard objection="What if it doesn't work? / Can you guarantee results?" forceOpen={expandAll} response={`**ACKNOWLEDGE:**
 "Totally fair question - you've probably tried things that didn't work before."
 
 **ASSOCIATE:**
-"Here's what I can guarantee: 30 days, full money back, no questions asked. That's a full month to see if Eddie's teaching style clicks for [Child]."
+"Here's what I can guarantee: 14 days, full money back, no questions asked. That's two weeks to see if the teaching style clicks for [Child]."
 
-"We have a 95% parent satisfaction rate. 83% of parents report their child's attitude toward math improved. Those are real numbers from real families."
+"We have a 95% parent satisfaction rate and 1,700+ five-star Trustpilot reviews. 58% of our GCSE students achieved grades 7-9 - double the national average. Those are real numbers from real families."
 
 "But I can't guarantee YOUR specific kid's grades, because that depends on them doing the work. What I CAN guarantee is that if you give this a real shot and it's not working, you get every penny back."
 
@@ -785,14 +784,14 @@ function ObjectionsTab() {
 "Makes sense - you don't want to overload them."
 
 **ASSOCIATE:**
-"Here's the thing: this isn't extra work on top of school. This IS the school math - Pre-Algebra, Algebra 1, Geometry, Algebra 2. Same concepts, taught better."
+"Here's the thing: this isn't extra work on top of school. This IS the school math - the same syllabus their school follows - Maths, English, Science. Same concepts, taught better by top 1% teachers."
 
-"Most parents tell us homework actually gets EASIER after a few weeks with Eddie. Kids understand the concepts, so they're not struggling for hours."
+"Most parents tell us homework actually gets EASIER after a few weeks with us. Kids understand the concepts, so they're not struggling for hours."
 
 "Two hours a week with us could save [Child] hours of frustrated homework time."
 
 **ASK:**
-"What if I told you this could actually reduce their stress, not add to it? 30-day guarantee to prove it."`} />
+"What if I told you this could actually reduce their stress, not add to it? 14-day guarantee to prove it."`} />
       </div>
 
       {/* All-Purpose Closes */}
@@ -806,7 +805,7 @@ function ObjectionsTab() {
         <div className="grid gap-3">
           {[
             { name: 'Main Concern', script: '"What\'s your main concern? What are you afraid of happening?"', tip: 'Gets to the real objection' },
-            { name: 'Best/Worst', script: '"Best case: confident kid. Worst case: 30-day refund. Which risk makes sense?"', tip: 'Reframes the risk' },
+            { name: 'Best/Worst', script: '"Best case: confident kid. Worst case: 14-day refund. Which risk makes sense?"', tip: 'Reframes the risk' },
             { name: 'Reason', script: '"The reason you\'re telling yourself not to is exactly why you should."', tip: 'Pattern interrupt - use sparingly' },
             { name: 'What Would Make It', script: '"What would make this a yes for you?"', tip: 'They tell you what to close on' },
             { name: 'Information Source', script: '"What info do you still need? I\'m your information source right now."', tip: 'Prevents "I\'ll research more"' },
@@ -876,7 +875,7 @@ function MessengerTab() {
           </div>
           <div>
             <h3 className="font-bold">Messenger Scripts</h3>
-            <p className="text-sky-100 text-sm">{"Qualify grade first -> Trial signup or call within 4-6 messages"}</p>
+            <p className="text-sky-100 text-sm">{"Qualify year group first -> Trial signup or call within 4-6 messages"}</p>
           </div>
         </div>
       </div>
@@ -885,26 +884,26 @@ function MessengerTab() {
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
           <h3 className="font-semibold text-gray-900">Live Course Flow</h3>
-          <p className="text-sm text-gray-500">Grade 6-11 / Pre-Alg to Alg 2</p>
+          <p className="text-sm text-gray-500">Year 5-13 / All subjects</p>
         </div>
         <div className="p-6 space-y-4">
           <MessageBubble num={1} label="Opening" color="blue">
-            {`Hey [Name], this is [Rep] from MyEdSpace. You reached out about math help - what's your child's name?`}
+            {`Hey [Name], this is [Rep] from MyEdSpace. You reached out about help for your child - what's their name?`}
           </MessageBubble>
-          <MessageBubble num={2} label="Grade" color="blue">
-            Great! What grade is [Child] in, and which math course are they taking?
+          <MessageBubble num={2} label="Year Group" color="blue">
+            Great! What year is [Child] in, and which subjects are they struggling with?
           </MessageBubble>
           <MessageBubble num={3} label="Pain" color="blue">
-            Got it, [Grade] in [Course]. Is [Child] struggling right now, or looking to get ahead?
+            Got it, [Year] in [Subject]. Is [Child] struggling right now, or looking to get ahead?
           </MessageBubble>
-          <MessageBubble num={4} label="Eddie" color="blue">
-            {`Here's what we do: Our teacher Eddie Kang has a UCLA Pure Math degree and perfect SAT math score. We screened 3000+ teachers - he was the one. He teaches live twice a week.`}
+          <MessageBubble num={4} label="Teachers" color="blue">
+            {`Here's what we do: Our teachers are in the top 1% nationally with combined 100+ years experience. Some are actual exam markers. They teach live twice a week per subject.`}
           </MessageBubble>
           <MessageBubble num={5} label="Benefits" color="blue">
-            [Child] gets: Live classes 2x/week with Eddie, workbooks, practice problems, video solutions for every question, recorded lessons if they miss class, plus 24/7 AI Math Coach.
+            [Child] gets: 2 live lessons per week per subject, workbooks, practice problems with video solutions for every question, and recorded lessons if they miss class.
           </MessageBubble>
           <MessageBubble num={6} label="Close" color="green">
-            {`Private tutoring at Eddie's level would cost $100+/hr. The full course is $539/year or $149/month with no contract. 30-day money-back guarantee. Want me to send the link to get [Child] started?`}
+            {`A private tutor costs £40-60/hr. The full course is £319/year for 1 subject (£4.31/lesson!) or £80/month with no lock-in. 14-day money-back guarantee. Want me to send the link to get [Child] started?`}
           </MessageBubble>
         </div>
       </div>
@@ -912,21 +911,18 @@ function MessengerTab() {
       {/* AI Coach Flow */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-white">
-          <h3 className="font-semibold text-gray-900">AI Math Coach Flow</h3>
-          <p className="text-sm text-gray-500">Grade 5 & Below</p>
+          <h3 className="font-semibold text-gray-900">Below Year 5 Flow</h3>
+          <p className="text-sm text-gray-500">Not currently available</p>
         </div>
         <div className="p-6 space-y-4">
-          <MessageBubble num={3} label="Pivot" color="purple">
-            {`Got it! Our live classes start at Pre-Algebra (usually 6th grade), but I've got something perfect for [Child].`}
+          <MessageBubble num={3} label="Redirect" color="purple">
+            {`Got it! Our live courses currently start from Year 5 upwards. Unfortunately we don't have courses for [Child]'s year group yet.`}
           </MessageBubble>
-          <MessageBubble num={4} label="AI Coach" color="purple">
-            We have an AI Math Coach built by our lead teacher Eddie (UCLA Pure Math, perfect SAT). Unlike ChatGPT, it uses the Socratic method to guide [Child] to figure it out themselves.
+          <MessageBubble num={4} label="Siblings" color="purple">
+            Do you have any older children who might benefit? We cover Year 5 through to Year 13, with subjects including Maths, English, Science, and more.
           </MessageBubble>
-          <MessageBubble num={5} label="Features" color="purple">
-            [Child] can type math problems or snap a photo of homework. Available 24/7 for unlimited questions. It actually teaches instead of giving answers.
-          </MessageBubble>
-          <MessageBubble num={6} label="Close" color="green">
-            $14/month, cancel anytime. Want me to send the link to get [Child] set up?
+          <MessageBubble num={5} label="Future" color="purple">
+            We&apos;re always expanding. If you&apos;d like, I can make a note to reach out when we launch courses for [Child]&apos;s year group.
           </MessageBubble>
         </div>
       </div>
@@ -938,10 +934,10 @@ function MessengerTab() {
         </div>
         <div className="divide-y divide-gray-100">
           {[
-            { obj: 'Too expensive', resp: 'Tutoring runs $60-80/hr = $400+/month. This is $149 for elite teaching. Plus 30-day money-back guarantee.' },
-            { obj: 'Need to think', resp: "What's the main thing you're weighing? 30-day guarantee means you can start now and still have a full month to decide." },
-            { obj: 'Need to talk to spouse', resp: '30-day guarantee means you can sign up now, let your spouse see it, and get full refund if either says no.' },
-            { obj: "Times don't work", resp: 'Every lesson is recorded. Mix of live + recordings works great. 30-day guarantee to test the schedule.' },
+            { obj: 'Too expensive', resp: 'Tutoring runs £40-60/hr. This is £80/month for top 1% teachers. Works out to £4-5 per lesson. Plus 14-day money-back guarantee.' },
+            { obj: 'Need to think', resp: "What's the main thing you're weighing? 14-day guarantee means you can start now and still decide." },
+            { obj: 'Need to talk to spouse', resp: '14-day guarantee means you can sign up now, let your spouse see it, and get full refund if either says no.' },
+            { obj: "Times don't work", resp: 'Every lesson is recorded. Mix of live + recordings works great. 14-day guarantee to test the schedule.' },
           ].map((item, idx) => (
             <div key={idx} className="px-6 py-4 hover:bg-gray-50 transition-colors">
               <span className="font-medium text-gray-900">{item.obj}:</span>
@@ -963,7 +959,7 @@ function MessengerTab() {
           </div>
           <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
             <span className="text-orange-800 font-medium">After 24 hours:</span>
-            <p className="text-orange-700 mt-1">Hi [Name], wanted to follow up. 30-day money-back guarantee means zero risk. Let me know if I can help.</p>
+            <p className="text-orange-700 mt-1">Hi [Name], wanted to follow up. 14-day money-back guarantee means zero risk. Let me know if I can help.</p>
           </div>
           <div className="bg-red-50 border border-red-200 rounded-xl p-4">
             <span className="text-red-800 font-medium">After 48+ hours:</span>
@@ -1004,22 +1000,22 @@ function MessageBubble({ num, label, color, children }: { num: number; label: st
 function QuickReferenceTab() {
   return (
     <div className="space-y-6">
-      {/* Eddie Credentials */}
+      {/* Teacher Credentials */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-lg">
         <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          Eddie Credentials (Memorize)
+          Teacher Credentials (Memorise)
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {[
-            { icon: '🎓', text: 'UCLA Pure Mathematics' },
-            { icon: '📊', text: 'Perfect SAT Math (800)' },
-            { icon: '📚', text: '9+ years teaching' },
-            { icon: '🔍', text: 'Screened 3,000+ teachers' },
-            { icon: '👥', text: '20k+ social followers' },
-            { icon: '⭐', text: 'CA high schools & colleges' },
+            { icon: '🎓', text: 'Top 1% teachers nationally' },
+            { icon: '📊', text: 'Combined 100+ years experience' },
+            { icon: '📚', text: 'Multiple exam markers on staff' },
+            { icon: '🔍', text: '1,700+ five-star Trustpilot reviews' },
+            { icon: '👥', text: '21,000+ students across UK' },
+            { icon: '⭐', text: '58% GCSE students got 7-9' },
           ].map((item, idx) => (
             <div key={idx} className="bg-white/10 backdrop-blur rounded-xl p-3 flex items-center gap-2">
               <span className="text-lg">{item.icon}</span>
@@ -1045,29 +1041,29 @@ function QuickReferenceTab() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               <tr className="bg-green-50">
-                <td className="px-6 py-4 font-semibold text-green-700">Annual Premium</td>
-                <td className="px-6 py-4 font-bold">$539 <span className="font-normal text-gray-500">(or 3x $180)</span></td>
-                <td className="px-6 py-4 text-gray-600">&lt;$17/hr for 60 hours of elite teaching</td>
+                <td className="px-6 py-4 font-semibold text-green-700">1 Subject Annual</td>
+                <td className="px-6 py-4 font-bold">£319 <span className="font-normal text-gray-500">(or 3x £106.33)</span></td>
+                <td className="px-6 py-4 text-gray-600">£4.31/lesson vs £50 for a tutor</td>
               </tr>
               <tr>
-                <td className="px-6 py-4 font-medium">Monthly Premium</td>
-                <td className="px-6 py-4 font-bold">$149/mo</td>
-                <td className="px-6 py-4 text-gray-600">No lock-in, cancel anytime, 30-day guarantee</td>
+                <td className="px-6 py-4 font-medium">Monthly</td>
+                <td className="px-6 py-4 font-bold">£80/subject/mo</td>
+                <td className="px-6 py-4 text-gray-600">No lock-in, cancel anytime, 14-day guarantee</td>
               </tr>
               <tr className="bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-500">7-Day Trial</td>
-                <td className="px-6 py-4 font-bold text-gray-500">$7</td>
-                <td className="px-6 py-4 text-gray-500">LAST RESORT - full access test</td>
+                <td className="px-6 py-4 font-medium text-gray-500">10-Day Trial</td>
+                <td className="px-6 py-4 font-bold text-gray-500">£10</td>
+                <td className="px-6 py-4 text-gray-500">LAST RESORT - full access, no auto-renewal</td>
               </tr>
               <tr>
-                <td className="px-6 py-4 font-medium">Sibling (2nd child)</td>
+                <td className="px-6 py-4 font-medium">Sibling</td>
                 <td className="px-6 py-4 font-bold">20% off</td>
-                <td className="px-6 py-4 text-gray-600">$119/mo or $431/yr</td>
+                <td className="px-6 py-4 text-gray-600">20% off less expensive package</td>
               </tr>
               <tr className="bg-purple-50">
-                <td className="px-6 py-4 font-medium text-purple-700">AI Math Coach</td>
-                <td className="px-6 py-4 font-bold">$14/mo</td>
-                <td className="px-6 py-4 text-gray-600">24/7, Socratic method, photo upload</td>
+                <td className="px-6 py-4 font-medium text-purple-700">Multi-Subject</td>
+                <td className="px-6 py-4 font-bold">£574.20 (2) / £789 (3+)</td>
+                <td className="px-6 py-4 text-gray-600">10% off 2 subjects, more for Ultimate</td>
               </tr>
             </tbody>
           </table>
@@ -1083,9 +1079,9 @@ function QuickReferenceTab() {
             </svg>
           </div>
           <p className="font-bold text-green-700 text-lg">LIVE COURSES</p>
-          <p className="text-green-600 text-sm mt-1">Grade 6-11</p>
-          <p className="text-green-600 text-sm">Pre-Alg to Alg 2</p>
-          <p className="font-bold text-green-800 mt-3">$149/mo or $539/yr</p>
+          <p className="text-green-600 text-sm mt-1">Year 5-13</p>
+          <p className="text-green-600 text-sm">All subjects</p>
+          <p className="font-bold text-green-800 mt-3">£80/mo or £319/yr</p>
         </div>
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-5 text-center">
           <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -1093,10 +1089,10 @@ function QuickReferenceTab() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
-          <p className="font-bold text-blue-700 text-lg">AI MATH COACH</p>
-          <p className="text-blue-600 text-sm mt-1">Grade 5 & below</p>
-          <p className="text-blue-600 text-sm">Below Pre-Algebra</p>
-          <p className="font-bold text-blue-800 mt-3">$14/mo</p>
+          <p className="font-bold text-blue-700 text-lg">MULTI-SUBJECT</p>
+          <p className="text-blue-600 text-sm mt-1">2+ subjects</p>
+          <p className="text-blue-600 text-sm">10% off 2, more for 3+</p>
+          <p className="font-bold text-blue-800 mt-3">£574.20/yr (2 subs)</p>
         </div>
         <div className="bg-gradient-to-br from-gray-50 to-slate-50 border-2 border-gray-200 rounded-2xl p-5 text-center">
           <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -1104,10 +1100,10 @@ function QuickReferenceTab() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <p className="font-bold text-gray-500 text-lg">NO PRODUCT</p>
-          <p className="text-gray-400 text-sm mt-1">Above Algebra 2</p>
-          <p className="text-gray-400 text-sm">Pre-Calc, Calc, AP</p>
-          <p className="font-medium text-gray-500 mt-3">Check for siblings</p>
+          <p className="font-bold text-gray-500 text-lg">NOT AVAILABLE</p>
+          <p className="text-gray-400 text-sm mt-1">Below Year 5</p>
+          <p className="text-gray-400 text-sm">Not currently offered</p>
+          <p className="font-medium text-gray-500 mt-3">Check siblings</p>
         </div>
       </div>
 
@@ -1117,7 +1113,7 @@ function QuickReferenceTab() {
         <div className="space-y-3">
           {[
             { name: 'Main Concern', script: '"What\'s your main concern? What are you afraid of happening?"' },
-            { name: 'Best/Worst', script: '"Best case: confident kid. Worst case: 30-day refund. Which risk makes sense?"' },
+            { name: 'Best/Worst', script: '"Best case: confident kid. Worst case: 14-day refund. Which risk makes sense?"' },
             { name: 'Reason', script: '"The reason you\'re telling yourself not to is exactly why you should."' },
           ].map((close, idx) => (
             <div key={idx} className="bg-white rounded-xl p-4 border border-green-100 shadow-sm">
@@ -1135,10 +1131,10 @@ function QuickReferenceTab() {
         </div>
         <div className="divide-y divide-gray-100">
           {[
-            { pain: 'Engagement / motivation', proof: '20-30 chat messages per student per lesson' },
-            { pain: 'Attitude toward math', proof: '83% report attitude improvement' },
-            { pain: 'Quality concerns', proof: '95% parent satisfaction' },
-            { pain: 'Price concerns', proof: '$149/mo vs $60-80/hr tutoring ($400+/mo)' },
+            { pain: 'Engagement / motivation', proof: '25 chat messages per student per lesson' },
+            { pain: 'Results / grades', proof: '58% GCSE students achieved 7-9 (2x national avg)' },
+            { pain: 'Quality concerns', proof: '95% parent satisfaction, 1,700+ Trustpilot reviews' },
+            { pain: 'Price concerns', proof: '£4-5/lesson vs £40-60/hr for a tutor' },
           ].map((item, idx) => (
             <div key={idx} className="px-6 py-4 flex items-center hover:bg-gray-50 transition-colors">
               <span className="text-gray-600 w-48 flex-shrink-0">{item.pain}</span>
@@ -1158,7 +1154,7 @@ function QuickReferenceTab() {
         </h3>
         <div className="flex flex-wrap gap-2">
           {[
-            'Personalized learning', 'Math can be fun!', 'World-class', 'Unlock potential',
+            'Personalised learning', 'Maths can be fun!', 'World-class', 'Unlock potential',
             'Learning journey', 'Empower', 'SUPER excited', 'AMAZING', 'How are you today?'
           ].map((word, idx) => (
             <span key={idx} className="bg-red-100 text-red-700 px-3 py-1.5 rounded-full text-sm font-medium border border-red-200">

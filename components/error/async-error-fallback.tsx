@@ -129,6 +129,7 @@ export function useAutoRetry<T>(
 
   useEffect(() => {
     execute();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { data, error, loading, retry, retryCount };

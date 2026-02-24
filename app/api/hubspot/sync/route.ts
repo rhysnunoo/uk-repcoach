@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { syncHubspotCalls } from '@/lib/hubspot/sync';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -15,7 +17,7 @@ export async function POST(request: NextRequest) {
     // Check if user is manager/admin
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 
@@ -61,7 +63,7 @@ export async function GET(request: NextRequest) {
     // Check if user is manager/admin
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 

@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getQueueStats, retryFailedScoringJobs } from '@/lib/queue/scoring-queue';
 
+export const dynamic = 'force-dynamic';
+
 // GET - Get queue statistics
 export async function GET() {
   try {
@@ -18,7 +20,7 @@ export async function GET() {
     // Check if user is a manager/admin
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 
@@ -49,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Check if user is a manager/admin
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 

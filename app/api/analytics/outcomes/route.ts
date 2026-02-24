@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { cache, cacheKey, CACHE_TTL } from '@/lib/cache/simple-cache';
 
+export const dynamic = 'force-dynamic';
+
 interface CallWithScores {
   id: string;
   rep_id: string;
@@ -31,7 +33,7 @@ export async function GET() {
     // Check if user is manager/admin
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single() as { data: { role: string } | null };
 

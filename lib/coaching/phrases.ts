@@ -1,4 +1,4 @@
-// Recommended phrases and coaching tips for each CLOSER phase
+// Recommended phrases and coaching tips for each CLOSER phase (UK MyEdSpace)
 
 export interface PhaseCoaching {
   phase: string;
@@ -19,16 +19,18 @@ export const CLOSER_COACHING: Record<string, PhaseCoaching> = {
     letter: 'O',
     description: 'Set the agenda, establish credibility, and get a micro-commitment',
     requiredElements: [
-      'Greet + thank them for booking',
-      'Brief proof/credibility statement',
-      'Promise outcome (understand, show how to help, see if it makes sense)',
+      'Greet + confirm speaking with correct person',
+      'Recording disclosure and consent',
+      'Brief proof/credibility (21,000+ students across the UK)',
+      'Promise outcome (understand, show how to help, see if good fit)',
       'Plan for the call (~10 minutes)',
       'Micro-commitment ("How does that sound?")',
     ],
     recommendedPhrases: [
-      '"Hi [Name], this is [Rep] from MyEdSpace. Thanks so much for taking the time to book a call with us."',
-      '"We\'ve helped thousands of parents across the country get their kids back on track with math."',
-      '"What I\'d like to do is spend about 10 minutes to understand your situation, show you how we might be able to help, and then see if it makes sense to work together."',
+      '"Hi there - am I speaking with [Parent]? Thanks so much for booking in a consultation with me."',
+      '"Just to let you know, this call is recorded for training purposes. Is that okay?"',
+      '"We\'ve helped over 21,000 students across the UK improve their grades and confidence."',
+      '"On this call, I\'d love to understand what\'s going on with your child, show you how we might help, and see if it\'s a good fit. Should take about 10 minutes."',
       '"How does that sound?"',
     ],
     avoidPhrases: [
@@ -36,77 +38,94 @@ export const CLOSER_COACHING: Record<string, PhaseCoaching> = {
       '"Did I catch you at a good time?"',
       'Launching into product features immediately',
       'Long company introduction',
+      'Forgetting recording disclosure',
     ],
-    coachingTip: 'Keep it under 60 seconds. The goal is to get permission to ask questions, not to sell. A strong opening sets the frame for the entire call.',
-    exampleScript: `"Hi Sarah, this is John from MyEdSpace. Thanks so much for booking time with me today.
+    coachingTip: 'Keep it under 60 seconds. The goal is to get permission to ask questions, not to sell. A strong opening sets the frame for the entire call. Don\'t forget the recording disclosure - it\'s required.',
+    exampleScript: `"Hi there - am I speaking with Sarah? Thanks so much for booking in a consultation with me.
 
-We've helped thousands of parents across the country get their kids confident with math again.
+Just to let you know, this call is recorded for training purposes. Is that okay?
 
-What I'd like to do is spend about 10 minutes to understand what's going on with [Child's name], show you how we might be able to help, and then see if it makes sense to work together.
+Brilliant. So just a quick background - we've helped over 21,000 students across the UK improve their grades and confidence. On this call, I'd love to understand what's going on with your child, show you how we might be able to help, and see if it's a good fit. Should only take about 10 minutes.
 
 How does that sound?"`,
   },
 
   clarify: {
     phase: 'clarify',
-    displayName: 'Clarify (C)',
+    displayName: 'Clarify (C) + Kill Zombies',
     letter: 'C',
-    description: 'Understand their situation using open-ended questions',
+    description: 'Get child details, check siblings, confirm subjects, and handle decision-maker upfront',
     requiredElements: [
-      'Ask why they reached out (open-ended)',
-      'Get them to state their problem in their OWN words',
-      'Cover child\'s grade level and current course',
-      'Ask about their goal/success criteria',
-      'Uncover urgency trigger ("What made you reach out NOW?")',
+      'Get child\'s name',
+      'Check for siblings (20% discount opportunity)',
+      'Confirm year group',
+      'Identify subjects of interest',
+      'Kill zombies - check if spouse/partner needs to be involved',
+      'Handle child buy-in if mentioned',
     ],
     recommendedPhrases: [
-      '"So tell me, what\'s going on with [Child] and math?"',
-      '"What grade is [Child] in and what math class are they taking?"',
-      '"What would success look like for you?"',
-      '"What made you decide to reach out NOW vs. waiting until next semester?"',
-      '"Help me understand more about that..."',
+      '"So first things first - who\'s the lucky one we\'re helping today? What\'s your child\'s name?"',
+      '"And do you have any other children who might benefit from some support too?"',
+      '"What year is [Child] in?"',
+      '"For [Year Group], we offer [Subjects]. Which of these are you interested in?"',
+      '"Before I tell you more - is it only you that needs to hear this, or should we get someone else involved upfront?"',
     ],
     avoidPhrases: [
-      'Yes/no questions',
-      'Assuming the problem without asking',
+      'Yes/no questions only',
+      'Assuming year group or subjects without asking',
+      'Forgetting to check for siblings',
+      'Not addressing the decision-maker question',
       'Talking more than the prospect',
-      'Jumping to solutions before understanding',
     ],
-    coachingTip: 'Listen 80%, talk 20%. Use "tell me more" and "help me understand" to go deeper. The goal is to have THEM articulate the problem, not you.',
-    exampleScript: `"So tell me, what's going on with Emma and math?"
+    coachingTip: 'Listen 80%, talk 20%. Check for siblings early - it\'s a 20% discount opportunity. Kill zombies by asking about the decision-maker BEFORE you pitch. This avoids the "I need to talk to my partner" objection at the end.',
+    exampleScript: `"So first things first - who's the lucky one we're helping today?"
+[Listen - "My daughter Sophie"]
+"Lovely! And do you have any other children who might benefit too?"
 [Listen]
-"What grade is she in and what class is she taking?"
+"What year is Sophie in?"
+[Listen - "Year 10"]
+"Perfect. For GCSE, we offer Maths, English, Biology, Chemistry, and Physics. Which of these are you interested in for Sophie?"
 [Listen]
-"And what would success look like for you? If we fast forward 3 months and everything worked out perfectly, what does that look like?"
-[Listen]
-"That makes sense. What made you decide to reach out now versus waiting?"`,
+"Before I tell you more - other parents sometimes make the mistake of waiting until the end and then having to get their partner to hear everything again. Is it only you that needs to hear this, or should we get someone else involved upfront?"`,
   },
 
   label: {
     phase: 'label',
-    displayName: 'Label (L)',
+    displayName: 'Label (L) + Discovery',
     letter: 'L',
-    description: 'Restate their problem to confirm understanding',
+    description: 'Discover their situation, empathise, and confirm understanding',
     requiredElements: [
+      'Ask what made them reach out (open-ended)',
+      'Empathy check: repeat, acknowledge, associate ("We hear this a lot")',
+      'Ask about success vision',
+      'Uncover urgency trigger (why now?)',
       'Restate problem using THEIR exact words',
-      'Include grade, course, specific challenge, AND goal',
-      'Get verbal confirmation ("Is that accurate?")',
-      'Acknowledge their input',
+      'Include year group, subjects, challenge, AND goal',
+      'Get verbal confirmation ("Is that right?")',
     ],
     recommendedPhrases: [
-      '"So let me make sure I understand..."',
-      '"So what I\'m hearing is that [Child] is in [grade] taking [course], and the main challenge is [their words]. Your goal is [their goal]. Is that accurate?"',
-      '"Did I get that right?"',
-      '"Is there anything I missed?"',
+      '"So tell me, what\'s been going on with [Child]\'s education that made you reach out to us?"',
+      '"We hear this a lot from parents - you\'re definitely not alone."',
+      '"What would success look like for [Child] by the end of this school year?"',
+      '"What made you reach out now, versus a few months ago?"',
+      '"So let me make sure I\'ve got this right. [Child] is in [Year] taking [Subjects]. The main challenge is [their words]. And what you really want is [their goal]. Is that right?"',
     ],
     avoidPhrases: [
       'Skipping the label entirely',
       'Moving to solution without confirmation',
-      'Parroting without synthesizing',
       'Using your words instead of theirs',
+      'No empathy or acknowledgment',
+      'Not waiting for confirmation',
     ],
-    coachingTip: 'Use their EXACT words when possible. This shows you listened and builds trust. Don\'t move on until you get a clear "yes" that you understand.',
-    exampleScript: `"So let me make sure I understand. Emma is in 8th grade taking Pre-Algebra, and she's been struggling with fractions and word problems since last year. It's affecting her confidence and you're worried about her falling behind before high school. Your goal is to get her caught up and feeling confident again before the end of the semester. Is that accurate?"`,
+    coachingTip: 'Use their EXACT words when restating the problem. This shows you listened and builds massive trust. Include the empathy check - "We hear this a lot" normalises their situation. Don\'t move on until you get a clear "yes".',
+    exampleScript: `"So tell me, what's been going on with Sophie's education that made you reach out to us?"
+[Listen - let them explain fully]
+"I really appreciate you sharing that. We hear this a lot from parents - you're definitely not alone."
+"What would success look like for Sophie by the end of this school year?"
+[Listen]
+"And what made you reach out now, versus a few months ago?"
+[Listen]
+"Okay, so let me make sure I've got this right. Sophie's in Year 10 taking GCSE Maths and Chemistry. The main challenge is she's lost confidence since starting GCSEs and her grades have dropped from 7s to 4s. What you really want is for her to get back on track and feel confident before mock exams. Is that right?"`,
   },
 
   overview: {
@@ -115,21 +134,20 @@ How does that sound?"`,
     letter: 'O',
     description: 'Explore past attempts and build urgency through pain',
     requiredElements: [
-      'Ask about ALL past attempts ("What have you done so far?")',
+      'Ask about ALL past attempts ("What have you tried so far?")',
       'Follow up with "How did that go?" for EACH attempt',
       'Exhaust with "What else?" until nothing left (2-3 times minimum)',
-      'Summarize and confirm all attempts failed',
+      'Summarise and confirm all attempts failed',
       'Ask about duration ("How long has this been going on?")',
-      'Ask about consequences ("If nothing changes, what happens?")',
+      'Ask about consequences ("If things stay the way they are, what does that mean?")',
     ],
     recommendedPhrases: [
-      '"What have you tried so far to help [Child] with math?"',
+      '"Before reaching out to us, what have you tried so far to help [Child]?"',
       '"And how did that go?"',
       '"What else have you tried?"',
       '"Anything else?"',
-      '"So you\'ve tried [X], [Y], and [Z], and none of them have really worked. Is that fair to say?"',
-      '"How long has this been going on?"',
-      '"If nothing changes over the next 6 months, what happens?"',
+      '"So you\'ve tried [X], [Y], and [Z], and none of it has quite worked. How long has this been going on?"',
+      '"And if things stay the way they are - what does that mean for [Child] by exam time?"',
     ],
     avoidPhrases: [
       'Skipping to the pitch too quickly',
@@ -137,57 +155,63 @@ How does that sound?"`,
       'Not exploring why past attempts failed',
       'Avoiding the pain conversation',
     ],
-    coachingTip: 'This is the MOST IMPORTANT phase. Prospects don\'t buy without pain. Keep asking "what else?" until they have nothing left. The more they talk about failed attempts, the more they\'ll value your solution.',
-    exampleScript: `"Before I tell you about what we do, I'm curious - what have you tried so far to help Emma with math?"
-[Listen - e.g., "We tried Khan Academy"]
+    coachingTip: 'This is the MOST IMPORTANT phase. Prospects don\'t buy without pain. Keep asking "what else?" until they have nothing left. The more they talk about failed attempts, the more they\'ll value your solution. Let them verbalise the consequences.',
+    exampleScript: `"Before reaching out to us, what have you tried so far to help Sophie?"
+[Listen - e.g., "We got her a private tutor"]
 "And how did that go?"
 [Listen]
 "What else have you tried?"
-[Listen - e.g., "A tutor for a few months"]
+[Listen - e.g., "YouTube videos, BBC Bitesize"]
 "How did that work out?"
 [Listen]
 "Anything else?"
 [Listen]
-"So you've tried Khan Academy and a tutor, and neither really solved the problem. Is that fair to say?"
-[Confirm]
-"How long has this been going on?"
+"So you've tried a private tutor, YouTube, and BBC Bitesize, and none of it has quite worked. How long has this been going on?"
 [Listen]
-"If nothing changes over the next year, what happens? Where does Emma end up?"`,
+"And if things stay the way they are - what does that mean for Sophie by mock exams?"`,
   },
 
   sell_vacation: {
     phase: 'sell_vacation',
     displayName: 'Sell the Vacation (S)',
     letter: 'S',
-    description: 'Paint the outcome picture, leading with Eddie\'s credentials',
+    description: 'Paint the outcome picture, leading with teacher credentials',
     requiredElements: [
-      'Lead with Eddie\'s credentials (UCLA Pure Math, perfect SAT, 9 years, screened 3000+)',
+      'Lead with teacher credentials (top 1% in the country, combined 100+ years experience)',
       'Bridge from their SPECIFIC pain point',
-      'Paint outcome picture (confident kid, easier homework - NOT features)',
-      'Use relevant proof point matched to their concern',
+      'Explain what the child\'s week looks like (2 live lessons, workbooks, practice with video solutions, recordings)',
+      'Use relevant proof point (58% GCSE 7-9, 25 messages/lesson, 1,700+ Trustpilot reviews)',
+      'Mention 14-day money-back guarantee',
       'Keep brief - under 3 minutes',
     ],
     recommendedPhrases: [
-      '"So here\'s what makes us different. MyEdSpace was founded by Eddie, who studied Pure Math at UCLA, got a perfect 800 on his SAT math section, and has been teaching kids math for over 9 years."',
-      '"He\'s personally screened over 3,000 tutors to build our team..."',
-      '"Based on what you told me about [specific challenge], here\'s what typically happens..."',
-      '"Most parents tell us that within the first few weeks, they notice [Child] is less frustrated with homework..."',
-      '"Imagine [Child] actually understanding the material and feeling confident raising their hand in class..."',
+      '"Can I tell you a bit about how we might be able to help?"',
+      '"Our teachers are in the top 1% in the country - combined 100+ years of teaching experience."',
+      '"What students say makes them special is how they explain topics. They can take something confusing and just make it click."',
+      '"[Child] gets 2 live lessons every week per subject. They follow along with a workbook we provide."',
+      '"Every single practice problem has a video solution where the teacher walks through it step by step."',
+      '"Every lesson is recorded. So if [Child] misses a class, they just watch the recording."',
+      '"Last year, 58% of our GCSE students achieved grades 7-9 - more than double the national average."',
+      '"We have a 14-day money-back guarantee."',
     ],
     avoidPhrases: [
-      'Feature dumps (workbooks, practice problems, dashboard...)',
+      'Feature dumps without connecting to their pain',
       'Generic pitch not tailored to their situation',
-      'Burying Eddie\'s credentials',
+      'Burying teacher credentials',
       'Talking for more than 3 minutes',
     ],
-    coachingTip: 'Sell the OUTCOME, not the product. Connect everything back to their specific pain from the Overview phase. Eddie\'s credentials should come first - they establish trust before you pitch anything.',
-    exampleScript: `"Based on everything you've shared, let me tell you how we can help.
+    coachingTip: 'Sell the OUTCOME, not the product. Connect everything back to their specific pain from the Overview phase. Teacher credentials should come first - they establish trust before you pitch anything. Use specific proof points that match their concern.',
+    exampleScript: `"That's really helpful, thank you. Can I tell you a bit about how we might be able to help?
 
-MyEdSpace was founded by Eddie, who studied Pure Math at UCLA and got a perfect 800 on his SAT math. He's been teaching kids for over 9 years and has personally screened over 3,000 tutors.
+So let me tell you about who'll be teaching Sophie. Our teachers are in the top 1% in the country - combined 100+ years of teaching experience. For GCSE Maths, you get teachers like Neil Trivedi - 9+ years, 1st Class from UCL. What students say makes them special is how they explain topics - they take something confusing and just make it click.
 
-Given that Emma's struggling with fractions and word problems, here's what typically happens with students like her. Within the first few sessions, they start to see patterns they were missing before. Parents usually notice within a few weeks that homework time is less stressful - less tears, fewer arguments.
+Sophie gets 2 live lessons every week. She follows along with a workbook we provide, so she can focus on listening. The teacher teaches live - it's interactive. Students ask questions in chat, work through problems together.
 
-By the end of the semester, kids like Emma usually go from dreading math to actually feeling confident enough to raise their hand in class."`,
+And here's the key - every single practice problem has a video solution where the teacher walks through it step by step. So if Sophie gets stuck at 9pm doing homework, she's not actually stuck.
+
+Last year, 58% of our GCSE students achieved grades 7-9 - more than double the national average. And we have a 14-day money-back guarantee.
+
+How does all of that sound so far?"`,
   },
 
   price_presentation: {
@@ -196,36 +220,39 @@ By the end of the semester, kids like Emma usually go from dreading math to actu
     letter: 'P',
     description: 'Present tiered pricing starting with highest value option',
     requiredElements: [
-      'Check for buy-in BEFORE presenting price ("Does this sound like it could help?")',
-      'Lead with Annual plan ($539) - highest value anchor',
-      'Frame as investment, not cost ($/month breakdown, $/lesson)',
-      'Have downsell tiers ready: Monthly ($149) → Trial ($7)',
+      'Check for buy-in BEFORE presenting price ("How does all of that sound?")',
+      'Lead with Annual plan (£319+ depending on subjects) - highest value anchor',
+      'Frame as investment vs tutor cost (£4-5/lesson vs £50/hr tutor)',
+      'Have downsell tiers ready: Monthly (£80+) → Trial (£10)',
+      'Mention payment plan (3 instalments) and 5% upfront discount',
       'Present one option at a time, wait for response',
     ],
     recommendedPhrases: [
-      '"Before I share pricing, based on what I\'ve explained - does this sound like something that could help [Child]?"',
-      '"Most families who are serious about getting results go with our annual plan at $539. That comes out to less than $17 per lesson."',
-      '"For the whole school year, that\'s unlimited sessions with Eddie and his team."',
-      '"Would that work for your family?"',
-      '"If you\'d prefer not to commit to the full year, we also have a monthly option at $149."',
+      '"So - how does all of that sound so far?"',
+      '"An average private tutor charges around £50 an hour. With us, you get our top 1% teachers for just £[price] for the full course. That works out to around £4-5 per lesson."',
+      '"You can pay upfront and save an extra 5%, or split it into 3 monthly instalments."',
+      '"The next class for [Child] is [Day]. Should I get [Child] set up so they can start this week?"',
     ],
     avoidPhrases: [
-      'Leading with the $7 trial (undersells value)',
-      'Apologizing for the price',
+      'Leading with the £10 trial (undersells value)',
+      'Apologising for the price',
       'Presenting all options at once',
       'Skipping the buy-in question',
       'Rushing through pricing',
     ],
-    coachingTip: 'Always get buy-in BEFORE price. If they\'re not bought in on the solution, price will always feel too high. Lead with annual to anchor high - committed parents will take it. Only downsell if needed.',
-    exampleScript: `"Before I share the investment, I want to make sure this makes sense - based on what I've explained, does it sound like this could help Emma get back on track?"
+    coachingTip: 'Always get buy-in BEFORE price. If they\'re not bought in on the solution, price will always feel too high. Lead with annual to anchor high. Only downsell if needed. Frame against tutor costs (£50/hr) to make the price feel small.',
+    exampleScript: `"So - how does all of that sound so far?"
+[Wait for positive response]
 
-[Wait for yes]
+"Great! So let me walk you through the investment. An average private tutor charges around £50 an hour. Two lessons a week - that's hundreds per month.
 
-"Great! So most families who are serious about getting results go with our annual plan. It's $539 for the whole year - that's unlimited sessions with Eddie and his team, and it works out to less than $17 per lesson.
+With us, the full course is £319 for 1 subject for the year. That works out to around £4.31 per lesson. You can pay upfront and save an extra 5%, or split it into 3 monthly instalments of £106.33.
 
-Would that work for your family?"
+And remember - 14-day money-back guarantee.
 
-[If hesitation, pause and listen - don't immediately downsell]`,
+The next Maths class for Sophie is Wednesday. Should I get her set up so she can start this week?"
+
+[If hesitation, pause - don't immediately downsell]`,
   },
 
   explain: {
@@ -240,12 +267,11 @@ Would that work for your family?"
       'Identify the obstacle type (money, time, spouse, skepticism)',
     ],
     recommendedPhrases: [
-      '"Does this sound like something that could help [Child]?"',
-      '"I totally understand..." (Acknowledge)',
-      '"A lot of parents feel the same way initially..." (Associate)',
-      '"Help me understand - is it the investment itself, or something else?" (Ask)',
-      '"What would need to happen for this to make sense for you?"',
-      '"If the money wasn\'t a concern, would this be something you\'d want to move forward with?"',
+      '"I completely understand..." (Acknowledge)',
+      '"We hear this a lot from parents..." (Associate)',
+      '"What would make this a yes for you?" (Ask)',
+      '"If this was completely up to you, would you have any hesitation?"',
+      '"If money wasn\'t a concern, would this be something you\'d want for [Child]?"',
     ],
     avoidPhrases: [
       'Answering objections directly',
@@ -256,14 +282,20 @@ Would that work for your family?"
     ],
     coachingTip: 'The person asking questions is closing. NEVER answer an objection directly - always respond with a question. Your job is to understand the REAL objection, which is often different from the stated one.',
     exampleScript: `Objection: "I need to think about it"
-"I totally understand - this is an important decision. [Acknowledge]
-A lot of parents feel the same way when they first hear about us. [Associate]
-Help me understand - when you say you need to think about it, is it the investment itself, or is there something specific you're unsure about?" [Ask]
+"I completely understand. [Acknowledge]
+We hear this a lot from parents. [Associate]
+What would make this a yes for you?" [Ask]
 
-Objection: "It's too expensive"
-"I hear you, and I appreciate you being honest about that. [Acknowledge]
-Many parents we work with felt the same way initially. [Associate]
-Can I ask - if the investment wasn't a concern, is this something you'd want Emma to have?" [Ask]`,
+Objection: "That's more than I expected"
+"I completely understand - it's a real investment. [Acknowledge]
+This works out to £4-5 per lesson versus £50 for a tutor. [Associate]
+If you'd prefer flexibility, we have monthly at £80 per subject, cancel anytime. [Alternative]
+What would work best for your family?" [Ask]
+
+Objection: "I need to talk to my partner"
+"Completely understand. [Acknowledge]
+If this was completely up to you, would you have any hesitation? [Ask]
+We have a 14-day money-back guarantee, so your partner can see it in action. [Associate]"`,
   },
 
   reinforce: {
@@ -272,40 +304,43 @@ Can I ask - if the investment wasn't a concern, is this something you'd want Emm
     letter: 'R',
     description: 'Present tiered pricing and close the sale',
     requiredElements: [
-      'Follow tiered close: Annual ($539) → Monthly ($149) → Trial ($7)',
+      'Follow tiered close: Annual → Monthly → Trial',
       'Present Annual FIRST (don\'t lead with trial)',
       'Have downsell path ready',
       'Once they say yes, STOP TALKING',
-      'Clear next steps after close',
+      'Stay on line for payment confirmation',
+      'Clear next steps (registration link, parent account, student account, first class)',
     ],
     recommendedPhrases: [
-      '"Most families who are serious about getting results go with our annual plan at $539. That comes out to less than $45 a month and you get unlimited sessions for the whole year."',
-      '"Would that work for you, or would you prefer to start with our monthly option at $149?"',
-      '"If you want to just try it out first, we also have a $7 trial week so [Child] can experience a few sessions."',
-      '"Perfect! Let me get you set up. I\'ll need..."',
+      '"Should I get [Child] set up so they can start this week?"',
+      '"Or if you\'d prefer flexibility, we have monthly at £[80-180]/month - no lock-in, cancel anytime."',
+      '"Tell you what - try it for 10 days, just £10. Full access. No auto-renewal. Fair?"',
+      '"Great choice. I\'m sending you the registration link now. I\'m happy to stay on the line while you register."',
+      '"Perfect, I can see that\'s gone through. [Child] is all set! Their first class is [Day] at [Time]."',
     ],
     avoidPhrases: [
-      'Leading with the $7 trial',
+      'Leading with the £10 trial',
       'Multiple competing CTAs',
       'Fake urgency ("This offer expires today")',
       'Talking after they say yes',
-      'Apologizing for the price',
+      'Not staying on line for payment',
     ],
-    coachingTip: 'Always lead with annual - it anchors high and most committed parents will take it. Have your downsell ready but don\'t offer it unless needed. When they say yes, STOP SELLING and move to next steps immediately.',
-    exampleScript: `"Based on everything we discussed, I think Emma would really benefit from this.
+    coachingTip: 'Always lead with annual - it anchors high and most committed parents will take it. Have your downsell ready but don\'t offer it unless needed. When they say yes, STOP SELLING and stay on the line while they register and pay. Confirm you can see the payment.',
+    exampleScript: `"The full course is £319 for the year - that's about £4.31 per lesson versus £50 for a tutor. You can pay upfront for 5% off or split into 3 instalments.
 
-Most families who are serious about getting results go with our annual plan. It's $539 for the whole year - that's unlimited sessions, comes out to less than $45 a month.
+The next class for Sophie is Wednesday at 5pm. Should I get her set up?"
 
-Would that work for you?"
-
-[If hesitation]
-"If you'd rather not commit to the full year upfront, we also have a monthly option at $149. You can cancel anytime."
+[If price objection]
+"Or if you'd prefer flexibility, monthly is £80 - no lock-in, cancel anytime."
 
 [If still hesitating]
-"Or if you just want Emma to try it first, we have a $7 trial week where she can do a few sessions and see if it's a good fit."
+"Tell you what - try it for 10 days, just £10. Full access, no auto-renewal. Fair?"
 
-[When they say yes]
-"Perfect! Let me get you set up right now. I just need your email address to create Emma's account..."`,
+[When they say YES]
+"Great choice! I'm sending you the registration link now. I'm happy to stay on the line while you register - should only take a minute or two."
+
+[After payment]
+"Perfect, I can see that's gone through! Sophie is all set. You'll get an email to set up your parent account, then Sophie's student account. Her first class is Wednesday at 5pm."`,
   },
 };
 

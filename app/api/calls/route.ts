@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
 
+export const dynamic = 'force-dynamic';
+
 let _openai: OpenAI | null = null;
 function getOpenAI() {
   if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -23,7 +25,7 @@ export async function GET(request: NextRequest) {
     // Get profile to check role
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 
@@ -102,7 +104,7 @@ export async function POST(request: NextRequest) {
     if (repIdFromForm && repIdFromForm !== user.id) {
       const { data: profile } = await adminClient
         .from('profiles')
-        .select('role')
+        .select('*')
         .eq('id', user.id)
         .single();
 
@@ -309,7 +311,7 @@ async function processCallAsync(callId: string, storagePath: string) {
     console.log(`[processCallAsync] Transcript saved, triggering scoring...`);
 
     // Trigger scoring
-    await scoreCall(callId);
+    await scoreCallDirect(callId);
     console.log(`[processCallAsync] Processing complete for call ${callId}`);
   } catch (error) {
     console.error('[processCallAsync] Processing error:', error);
@@ -571,12 +573,12 @@ async function scoreCallDirect(callId: string) {
 async function detectScriptFromTranscript(transcriptText: string, adminClient: ReturnType<typeof createAdminClient>): Promise<string | null> {
   const text = transcriptText.toLowerCase();
 
-  // Keywords for each course
+  // Keywords for each course (UK key stages)
   const courseKeywords: Record<string, string[]> = {
-    'Pre-Algebra': ['pre-algebra', 'pre algebra', 'prealgebra', '6th grade', '7th grade', 'middle school math'],
-    'Algebra 1': ['algebra 1', 'algebra one', '8th grade', '9th grade', 'freshman'],
-    'Geometry': ['geometry', 'proofs', 'triangles', 'geometric'],
-    'Algebra 2': ['algebra 2', 'algebra two', 'algebra ii', '10th grade', '11th grade', 'junior'],
+    'Primary': ['primary', 'year 5', 'year 6', 'year five', 'year six', 'ks2', 'key stage 2', '11+', 'eleven plus', 'sats'],
+    'KS3': ['ks3', 'key stage 3', 'year 7', 'year 8', 'year 9', 'year seven', 'year eight', 'year nine', 'secondary'],
+    'GCSE': ['gcse', 'year 10', 'year 11', 'year ten', 'year eleven', 'mock exam', 'mocks', 'ks4', 'key stage 4'],
+    'A-Level': ['a-level', 'a level', 'alevel', 'year 12', 'year 13', 'year twelve', 'year thirteen', 'sixth form', 'as level', 'a2'],
   };
 
   // Count matches for each course

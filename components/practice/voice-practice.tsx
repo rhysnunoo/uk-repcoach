@@ -154,7 +154,7 @@ export function VoicePractice({ sessionId, script, persona, onEnd }: VoicePracti
   }>({ totalFillerWords: 0, totalWords: 0, avgWPM: 0, fillerWordCounts: {} });
   const [showStats, setShowStats] = useState(false);
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const finalTranscriptRef = useRef<string>(''); // Track processed final transcripts
   const speechStartTimeRef = useRef<number | null>(null);
@@ -227,7 +227,7 @@ export function VoicePractice({ sessionId, script, persona, onEnd }: VoicePracti
     recognition.interimResults = true;
     recognition.lang = 'en-US';
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       // Build the complete transcript from all results
       let completeFinal = '';
       let currentInterim = '';
@@ -256,7 +256,7 @@ export function VoicePractice({ sessionId, script, persona, onEnd }: VoicePracti
       }
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error('Speech recognition error:', event.error);
       if (event.error === 'not-allowed') {
         setError('Microphone access denied. Please allow microphone access and try again.');
@@ -410,6 +410,7 @@ export function VoicePractice({ sessionId, script, persona, onEnd }: VoicePracti
     } finally {
       setIsProcessing(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isListening, currentTranscript, sessionId, speak]);
 
   const startPractice = async () => {
@@ -483,7 +484,7 @@ export function VoicePractice({ sessionId, script, persona, onEnd }: VoicePracti
 
         <div className="bg-gray-50 p-4 mb-6 text-left">
           <h3 className="font-medium text-gray-900 mb-2">Script: {script.name}</h3>
-          <p className="text-sm text-gray-600">{scriptContent.overview || script.course}</p>
+          <p className="text-sm text-gray-600">{(scriptContent.overview as string) || script.course}</p>
           {prospectName && (
             <p className="text-sm text-gray-500 mt-2">Prospect: {prospectName}</p>
           )}
@@ -695,9 +696,51 @@ export function VoicePractice({ sessionId, script, persona, onEnd }: VoicePracti
 }
 
 // Type declarations for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  readonly results: SpeechRecognitionResultList;
+  readonly resultIndex: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  readonly error: string;
+  readonly message: string;
+}
+
+interface SpeechRecognitionResultList {
+  readonly length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  readonly isFinal: boolean;
+  readonly length: number;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  readonly transcript: string;
+  readonly confidence: number;
+}
+
+interface SpeechRecognitionInstance extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+interface SpeechRecognitionConstructor {
+  new(): SpeechRecognitionInstance;
+}
+
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition: SpeechRecognitionConstructor;
+    webkitSpeechRecognition: SpeechRecognitionConstructor;
   }
 }

@@ -1,4 +1,4 @@
-// Common objections for quick-fire objection handling practice
+// Common objections for quick-fire objection handling practice (UK MyEdSpace)
 
 export interface Objection {
   id: string;
@@ -19,44 +19,44 @@ export const objections: Objection[] = [
     difficulty: 'medium',
     tips: [
       'Acknowledge their concern',
-      'Break down the cost per hour/session',
-      'Compare to alternatives (private tutors cost $60-100/hr)',
+      'Break down the cost per lesson (£4-5 per lesson)',
+      'Compare to alternatives (private tutors cost £40-60/hr)',
       'Focus on the value and results',
     ],
-    sampleResponse: "I completely understand - budgets are tight. Let me share something: at $539 for the year, that's less than $17 per hour for 60 hours of live instruction. Compare that to private tutors at $60-100 an hour. Plus, most parents tell us the improvement in grades and confidence makes it worth every penny. What if we started with the 7-day trial for just $7 to see if it's a good fit?",
+    sampleResponse: "I completely understand - it's a real investment. Let me put it in perspective: at £319 for the year, that's around £4.31 per lesson for 74 hours of live teaching from top 1% teachers. Compare that to a private tutor at £40-60 an hour. Plus, 58% of our GCSE students achieved grades 7-9 last year. What if we started with the 10-day trial for just £10 to see if it's a good fit?",
   },
   {
-    id: 'price_compare_kumon',
+    id: 'price_compare_tutor',
     category: 'price',
-    objection: "Kumon is cheaper than this.",
+    objection: "We already have a private tutor. Why would we switch?",
     difficulty: 'hard',
     tips: [
-      'Know your competitor pricing (Kumon is ~$150/month)',
-      'Highlight live instruction vs worksheets',
-      'Emphasize engagement and results',
-      'Point out hidden costs (drive time, gas)',
+      'Don\'t badmouth their tutor',
+      'Highlight live instruction vs 1-on-1 limitations',
+      'Emphasise teacher credentials and examining experience',
+      'Point out cost difference (£40-60/hr vs £4-5/lesson)',
     ],
-    sampleResponse: "Actually, Kumon runs about $150 a month for worksheets - we're comparable or less for live instruction. The big difference is your child gets real teaching from Eddie, not just repetitive worksheets. Plus, you save drive time and gas. Most parents who switch from Kumon tell us their kids are way more engaged when they can ask questions in real-time.",
+    sampleResponse: "Private tutors can be brilliant. Can I ask - what qualifications does the tutor have? The reason I ask is our teachers are in the top 1% nationally. For GCSE Maths, you get someone like Neil Trivedi - 1st Class from UCL, 9+ years teaching. Or Guy Maycock with over a decade of examining experience - he literally knows what markers are looking for. At £4-5 per lesson versus £40-60 an hour for a tutor, you're getting elite-level teaching at a fraction of the cost.",
   },
   {
     id: 'price_free_options',
     category: 'price',
-    objection: "Can't we just use Khan Academy? It's free.",
+    objection: "Can't we just use BBC Bitesize or YouTube? They're free.",
     difficulty: 'medium',
     tips: [
-      'Acknowledge Khan Academy is great',
+      'Acknowledge these are useful resources',
       'Highlight the difference: passive vs interactive',
       'Mention accountability and structure',
-      'Share that many students use both',
+      'Share engagement stats (25 messages per lesson)',
     ],
-    sampleResponse: "Khan Academy is fantastic - we actually recommend it for extra practice! The difference is that with free videos, your child is learning alone without anyone to answer questions or notice when they're confused. Our live classes mean Eddie can see exactly where students struggle and address it immediately. That real-time feedback is what drives the breakthrough moments.",
+    sampleResponse: "BBC Bitesize and YouTube are great for revision snippets - we actually recommend them for extra practice! The difference is, with free videos, your child is learning alone with no one to answer questions or notice when they're confused. Our lessons are live and interactive - on average, students send 25 messages per lesson. That's real-time engagement. Plus every practice problem has a video solution. That's the difference between free and effective.",
   },
 
   // Timing Objections
   {
     id: 'timing_not_now',
     category: 'timing',
-    objection: "We're not ready to commit to anything right now. Maybe next semester.",
+    objection: "We're not ready to commit right now. Maybe next term.",
     difficulty: 'medium',
     tips: [
       'Understand their reason for waiting',
@@ -64,12 +64,12 @@ export const objections: Objection[] = [
       'Mention the cost of waiting (falling further behind)',
       'Offer the low-commitment trial',
     ],
-    sampleResponse: "I hear you - timing matters. Can I ask what's making you want to wait? The reason I ask is that math builds on itself, and most parents who wait tell us they wish they hadn't because their child fell further behind. What if we did the 7-day trial now? That way you can see if it works before committing to anything bigger.",
+    sampleResponse: "I hear you - timing matters. Can I ask what's making you want to wait? The reason I ask is that the curriculum builds on itself, and most parents who wait tell us they wish they hadn't because their child fell further behind. What if we did the 10-day trial for £10? That way you can see if it works before committing to anything bigger.",
   },
   {
-    id: 'timing_school_just_started',
+    id: 'timing_term_just_started',
     category: 'timing',
-    objection: "School just started. Let's see how they do first.",
+    objection: "The school year's just started. Let's see how they get on first.",
     difficulty: 'easy',
     tips: [
       'Acknowledge the logic',
@@ -77,7 +77,7 @@ export const objections: Objection[] = [
       'Mention early intervention benefits',
       'Suggest getting ahead instead of catching up',
     ],
-    sampleResponse: "That makes sense - you want to give them a chance. Here's what we've found though: the parents who catch issues early in the semester have kids who stay confident all year. Waiting until they're already struggling means playing catch-up. Starting now means your child builds strong foundations from day one. Would you rather prevent a problem or fix one?",
+    sampleResponse: "That makes sense - you want to give them a chance. Here's what we've found though: parents who catch issues early in the year have children who stay confident all year. Waiting until they're already struggling means playing catch-up. Starting now means your child builds strong foundations from day one. Would you rather prevent a problem or fix one?",
   },
   {
     id: 'timing_think_about_it',
@@ -90,7 +90,7 @@ export const objections: Objection[] = [
       'Address any hidden concerns',
       'Offer to help with their decision process',
     ],
-    sampleResponse: "Of course - this is an important decision for your family. Can I ask what specifically you want to think through? Sometimes I can help clarify things, and even if not, I want to make sure you have all the information you need to make the best decision for your child.",
+    sampleResponse: "Of course - this is an important decision for your family. What specifically are you weighing up? Sometimes I can help clarify things, and even if not, I want to make sure you have all the information you need. And remember, the 14-day money-back guarantee means you can start today and still have two weeks to decide.",
   },
 
   // Trust/Skepticism Objections
@@ -105,20 +105,20 @@ export const objections: Objection[] = [
       'Explain how this is different',
       'Offer specific evidence/guarantees',
     ],
-    sampleResponse: "I'm sorry to hear that - that's frustrating. What did you try before, and what went wrong? I ask because we hear this a lot, and usually it's one of a few things: boring worksheets, tutors who couldn't explain things well, or kids who just didn't engage. Eddie's classes are designed specifically to avoid those problems - live, interactive, and students actually participate with 20-30 chat messages per class.",
+    sampleResponse: "I'm sorry to hear that - that's frustrating. What did you try before, and what went wrong? I ask because we hear this a lot, and usually it comes down to a few things: rotating tutors who don't know the child, boring worksheets, or kids who just don't engage. Our teachers are permanent - same elite teacher every lesson. And the lessons are live and interactive - students average 25 messages per lesson. That's not kids zoning out.",
   },
   {
     id: 'trust_online_concern',
     category: 'trust',
-    objection: "I don't think online learning works. Kids just zone out.",
+    objection: "Online learning doesn't work. Kids just zone out in front of screens.",
     difficulty: 'medium',
     tips: [
-      'Acknowledge the valid concern',
+      'Acknowledge the valid concern (especially post-COVID)',
       'Explain engagement mechanisms',
       'Share engagement statistics',
-      'Offer to let them observe a class',
+      'Mention no camera/no speaking requirement reduces anxiety',
     ],
-    sampleResponse: "That's a valid concern - a lot of online learning is just videos kids ignore. What makes our classes different is they're live and interactive. Eddie calls on students, they answer in the chat, and there's real back-and-forth. We track engagement - average students send 20-30 messages per class. They can't zone out because they're constantly participating.",
+    sampleResponse: "That's a completely fair concern - especially after what happened during COVID. The difference is our lessons aren't passive. Students interact through chat in real-time - answering questions, asking their own, working through problems. On average, each student sends 25 messages per lesson. And here's something parents love: no camera, no speaking out loud. Shy students actually participate MORE because it's all through chat.",
   },
   {
     id: 'trust_proof',
@@ -127,59 +127,59 @@ export const objections: Objection[] = [
     difficulty: 'easy',
     tips: [
       'Share specific statistics',
-      'Mention awards and recognition',
-      'Offer testimonials or references',
-      'Point to the trial as risk-free proof',
+      'Mention Trustpilot reviews',
+      'Offer trial as risk-free proof',
+      'Reference GCSE results',
     ],
-    sampleResponse: "Great question - 83% of parents report their child's attitude toward math improved within the first month. We were named Best Online School 2025 with 95% parent satisfaction. But honestly, the best proof is the 7-day trial. You'll see firsthand how your child responds to Eddie's teaching. If it doesn't work, you've risked $7. If it does, you've found the solution.",
+    sampleResponse: "Great question. Last year, 58% of our GCSE students achieved grades 7-9 - that's more than double the national average. We have 1,700+ five-star reviews on Trustpilot and 95% parent satisfaction. But honestly, the best proof is the 10-day trial. You'll see firsthand how your child responds. If it doesn't work, you've risked £10. If it does, you've found the solution.",
   },
 
   // Competition Objections
   {
     id: 'competition_shopping',
     category: 'competition',
-    objection: "I'm talking to a few different companies. What makes you different?",
+    objection: "I'm looking at a few different options. What makes you different?",
     difficulty: 'medium',
     tips: [
       'Don\'t badmouth competitors',
       'Focus on unique differentiators',
       'Ask what they\'re comparing',
-      'Highlight live instruction advantage',
+      'Highlight teacher quality and results',
     ],
-    sampleResponse: "Smart to compare options! Who else are you looking at? The main thing that sets us apart is Eddie himself - UCLA math degree, perfect SAT score, 9 years experience - teaching live, twice a week. Most services are either expensive private tutors or self-paced videos. We're live group instruction at an affordable price. What matters most to you in making this decision?",
+    sampleResponse: "Smart to compare options! Who else are you looking at? The main thing that sets us apart is our teachers - they're in the top 1% nationally, combined 100+ years experience, and some are actual exam markers. Plus it's live teaching, not pre-recorded videos. Most services are either expensive private tutors or passive platforms. We're live expert teaching at an affordable price. What matters most to you?",
   },
   {
-    id: 'competition_mathnasium',
+    id: 'competition_kumon',
     category: 'competition',
-    objection: "We're thinking about Mathnasium instead.",
+    objection: "We're thinking about Kumon instead.",
     difficulty: 'medium',
     tips: [
-      'Acknowledge Mathnasium is reputable',
-      'Compare pricing and convenience',
-      'Highlight specific differences',
+      'Acknowledge Kumon is established',
+      'Compare approach: worksheets vs live teaching',
+      'Highlight price and convenience differences',
       'Don\'t be defensive',
     ],
-    sampleResponse: "Mathnasium does good work! Here's the difference: they're about $400/month for in-person sessions, and you have to drive there. We're $539 for the whole year with classes from home. Both work - it really depends on whether your child does better with in-person attention or the convenience and consistency of online live classes. What's your sense of what your child needs?",
+    sampleResponse: "Kumon is well-known! Here's the key difference: Kumon is worksheet-based with a supervisor watching. There's no actual teaching. With us, elite teachers TEACH live - they explain concepts, break things down, make it click. Kumon runs about £60-80/month per subject, and you have to drive there. We're £80/month for live lessons from home with top 1% teachers. Both work differently - it depends on whether your child needs teaching or just practice.",
   },
 
   // Need Objections
   {
     id: 'need_grades_ok',
     category: 'need',
-    objection: "My child's grades are actually okay. They're getting Bs.",
+    objection: "My child's grades are actually okay. They're getting 5s and 6s.",
     difficulty: 'easy',
     tips: [
       'Acknowledge their success',
       'Explore if they could be doing better',
       'Discuss confidence vs. grades',
-      'Mention building for future challenges',
+      'Mention building for future challenges (GCSEs, A-Levels)',
     ],
-    sampleResponse: "That's great that they're doing okay! Can I ask - are they working hard for those Bs, or is it coming easily? Sometimes B students are actually struggling more than they show. And looking ahead, as math gets harder in high school, building strong foundations now means they stay confident. Is your child enjoying math, or just getting through it?",
+    sampleResponse: "That's great that they're doing well! Can I ask - are they working hard for those grades, or is it coming easily? Sometimes students at that level are actually capable of 7s, 8s, or 9s but just need the right teaching to unlock it. 58% of our GCSE students got 7-9 last year. Is your child enjoying the subject, or just getting through it?",
   },
   {
-    id: 'need_summer',
+    id: 'need_wait_and_see',
     category: 'need',
-    objection: "They're doing fine. We'll get help if they start struggling.",
+    objection: "They're fine for now. We'll get help if they start properly struggling.",
     difficulty: 'medium',
     tips: [
       'Respect their assessment',
@@ -187,22 +187,22 @@ export const objections: Objection[] = [
       'Plant seeds for future contact',
       'Offer value even if not buying now',
     ],
-    sampleResponse: "I respect that - you know your child best. One thing I'll mention: parents who wait until struggling often say they wish they'd started earlier, because catching up is harder than staying ahead. If things are good now, that's awesome. Would you be open to me checking in next semester, or if you'd like, we can stay in touch in case things change?",
+    sampleResponse: "I respect that - you know your child best. One thing I'll mention: parents who wait until their child is properly struggling often say they wish they'd started earlier, because catching up is much harder than staying ahead. If things are good now, that's brilliant. Would you be open to me checking in next half-term?",
   },
 
   // Authority Objections
   {
     id: 'authority_spouse',
     category: 'authority',
-    objection: "I need to talk to my husband/wife about this first.",
+    objection: "I need to speak to my husband/wife about this first.",
     difficulty: 'medium',
     tips: [
       'Acknowledge this is a family decision',
       'Offer to loop them in',
-      'Ask what concerns the spouse might have',
-      'Provide materials to share',
+      'Ask what concerns the partner might have',
+      'Plant the 14-day guarantee as safety net',
     ],
-    sampleResponse: "Absolutely - this is definitely a family decision. Is your spouse available to join us now, even for a few minutes? If not, what questions do you think they'll have? I want to make sure you have everything you need to explain it to them. And I'm happy to send you a summary email you can share.",
+    sampleResponse: "Completely understand - this is definitely a family decision. Is your partner around now? Even for a few minutes? If not, what questions do you think they'll have? I want to make sure you have everything you need. And here's something that helps: we have a 14-day money-back guarantee. So even if you start today, your partner can see it in action and if either of you decides it's not right, full refund.",
   },
   {
     id: 'authority_child_decides',
@@ -212,10 +212,10 @@ export const objections: Objection[] = [
     tips: [
       'Validate the importance of buy-in',
       'Suggest the trial as a test',
-      'Share how kids typically respond',
-      'Offer engagement guarantees',
+      'Share how students typically respond',
+      'Mention no camera/no speaking to reduce anxiety',
     ],
-    sampleResponse: "That's so important - if they're not into it, it won't work. Here's what I suggest: try the 7-day trial and let them experience a class. Most kids are skeptical at first, but once they see Eddie's teaching style and start participating in the chat, they actually enjoy it. If after a class or two they hate it, you'll know. Fair?",
+    sampleResponse: "That's so important - if they're not into it, it won't work. Here's what I suggest: try the 10-day trial for £10 and let them experience a lesson. Most students are skeptical at first, but once they see the teaching style and start interacting through chat, they actually enjoy it. And there's no camera and no speaking out loud - so it's not intimidating. If after a couple of lessons they hate it, you'll know. Fair?",
   },
 ];
 

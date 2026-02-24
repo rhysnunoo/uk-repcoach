@@ -20,7 +20,7 @@ const CLOSER_PHASES = [
   { phase: 'clarify', label: 'Clarify', keywords: ['why', 'what brings', 'tell me', 'situation', 'struggling', 'challenge'] },
   { phase: 'label', label: 'Label', keywords: ['sounds like', 'so you\'re', 'if i understand', 'what i\'m hearing'] },
   { phase: 'overview', label: 'Overview/Pain', keywords: ['tried', 'before', 'worked', 'failed', 'frustrat', 'cost', 'impact'] },
-  { phase: 'sell_vacation', label: 'Sell Vacation', keywords: ['imagine', 'picture', 'what if', 'results', 'students', 'success', 'eddie', 'teacher'] },
+  { phase: 'sell_vacation', label: 'Sell Vacation', keywords: ['imagine', 'picture', 'what if', 'results', 'students', 'success', 'teacher', 'teachers', 'trustpilot'] },
   { phase: 'explain', label: 'Explain/AAA', keywords: ['understand', 'hear you', 'makes sense', 'acknowledge', 'other parents'] },
   { phase: 'reinforce', label: 'Reinforce/Close', keywords: ['option', 'tier', 'annual', 'monthly', 'trial', 'start', 'today', 'ready'] },
 ];
@@ -81,9 +81,16 @@ function getPricingExample(scriptContent: ScriptContent | null): string {
   }
   const p = scriptContent.pricing;
   const parts = [];
-  if (p.annual_premium?.price) parts.push(`annual plan at $${p.annual_premium.price}`);
-  if (p.monthly_premium?.price) parts.push(`monthly at $${p.monthly_premium.price}`);
-  if (p.trial?.price) parts.push(`$${p.trial.price} trial`);
+  // UK format
+  if (p.annual_1_subject?.price) parts.push(`annual plan at £${p.annual_1_subject.price}`);
+  if (p.monthly?.['1_subject']) parts.push(`monthly at £${p.monthly['1_subject']}`);
+  if (p.trial?.price) parts.push(`£${p.trial.price} trial for ${p.trial.duration || '10 days'}`);
+  // Legacy US fallback
+  if (parts.length === 0) {
+    if (p.annual_premium?.price) parts.push(`annual plan at £${p.annual_premium.price}`);
+    if (p.monthly_premium?.price) parts.push(`monthly at £${p.monthly_premium.price}`);
+    if (p.trial?.price) parts.push(`£${p.trial.price} trial`);
+  }
   return parts.length > 0
     ? `"We have options: ${parts.join(', ')}. Which sounds like the best fit?"`
     : 'Present your pricing options clearly.';
@@ -91,6 +98,17 @@ function getPricingExample(scriptContent: ScriptContent | null): string {
 
 // Helper to get teacher info from script
 function getTeacherInfo(scriptContent: ScriptContent | null): { name: string; credentials: string } {
+  // UK format: multiple teachers per subject
+  const teachers = scriptContent?.course_details?.teachers;
+  if (teachers) {
+    const entries = Object.entries(teachers as Record<string, { name: string; credentials: string }>);
+    if (entries.length > 0) {
+      const names = entries.map(([, info]) => info.name).join(', ');
+      const creds = entries[0][1].credentials || '';
+      return { name: names, credentials: creds };
+    }
+  }
+  // Legacy US format: single teacher
   const teacher = scriptContent?.course_details?.teacher;
   if (teacher) {
     return {
@@ -98,7 +116,7 @@ function getTeacherInfo(scriptContent: ScriptContent | null): { name: string; cr
       credentials: Array.isArray(teacher.credentials) ? teacher.credentials.join(', ') : '',
     };
   }
-  return { name: 'the teacher', credentials: '' };
+  return { name: 'our teachers', credentials: '' };
 }
 
 export function generateCoachingHints(

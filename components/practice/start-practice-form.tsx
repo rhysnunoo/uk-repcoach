@@ -16,8 +16,8 @@ export function StartPracticeForm({ scripts }: StartPracticeFormProps) {
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Sort scripts in desired order
-  const courseOrder = ['Pre-Algebra', 'Algebra 1', 'Geometry', 'Algebra 2'];
+  // Sort scripts in desired order (UK key stages)
+  const courseOrder = ['Primary', 'KS3', 'GCSE', 'A-Level'];
   const sortedScripts = [...scripts].sort((a, b) => {
     const aIndex = courseOrder.indexOf(a.course);
     const bIndex = courseOrder.indexOf(b.course);

@@ -43,25 +43,31 @@ export interface ScriptContent {
 
 export interface CourseDetails {
   name: string;
-  schedule: {
+  schedule?: {
     days: string;
-    pacific_time: string;
-    eastern_time: string;
+    pacific_time?: string;
+    eastern_time?: string;
   };
-  teacher: {
+  schedule_note?: string;
+  teacher?: {
     name: string;
     credentials: string[];
   };
+  teachers?: Record<string, { name: string; credentials: string }>;
+  [key: string]: unknown;
 }
 
 export interface CloserPhases {
   opening?: FrameworkPhase;
   clarify?: FrameworkPhase;
+  kill_zombies?: FrameworkPhase;
   label?: FrameworkPhase;
   overview?: FrameworkPhase;
   sell_vacation?: FrameworkPhase;
   explain?: FrameworkPhase;
   reinforce?: FrameworkPhase;
+  reinforce_close?: FrameworkPhase;
+  [key: string]: FrameworkPhase | undefined;
 }
 
 export interface FrameworkPhase {
@@ -70,7 +76,7 @@ export interface FrameworkPhase {
   key_questions?: string[];
   key_points?: string[];
   techniques?: string[];
-  eddie_intro?: string;
+  teacher_intro?: string;
   proof_points?: Record<string, string>;
   aaa_framework?: {
     acknowledge: string;
@@ -95,9 +101,15 @@ export interface ScoringCriteria {
 }
 
 export interface PricingInfo {
-  annual_premium: { price: number; value_statement: string };
-  monthly_premium: { price: number; value_statement: string };
-  trial: { price: number; duration: string; value_statement: string };
+  annual_1_subject?: { price: number; original?: number; value_statement?: string; payment_plan?: string; lessons?: number; framing?: string };
+  annual_2_subjects?: { price: number; original?: number; value_statement?: string; payment_plan?: string; lessons?: number };
+  annual_ultimate?: { price: number; original?: number; value_statement?: string; payment_plan?: string; lessons?: number };
+  monthly?: Record<string, number>;
+  trial?: { price: number; duration: string; value_statement?: string };
+  // Legacy US format fields
+  annual_premium?: { price: number; value_statement: string };
+  monthly_premium?: { price: number; value_statement: string };
+  [key: string]: unknown;
 }
 
 export type CloserPhase = 'opening' | 'clarify' | 'label' | 'overview' | 'sell_vacation' | 'price_presentation' | 'explain' | 'reinforce';
