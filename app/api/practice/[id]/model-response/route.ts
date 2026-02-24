@@ -55,7 +55,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const messages = (session.messages || []) as PracticeMessage[];
     const sessionState = (session.session_state || {}) as SessionState;
     const persona = personas[session.persona as PersonaType];
-    const scriptContent = session.scripts?.content as Record<string, unknown> | null;
+    const scriptData = Array.isArray(session.scripts) ? session.scripts[0] : session.scripts;
+    const scriptContent = (scriptData as { content?: Record<string, unknown> } | null)?.content ?? null;
 
     // Build conversation history up to the specified turn
     // We want to generate what the rep SHOULD have said at turnIndex

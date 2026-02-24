@@ -31,7 +31,7 @@ export async function GET() {
     // Check if user is manager/admin
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single() as { data: { role: string } | null };
 

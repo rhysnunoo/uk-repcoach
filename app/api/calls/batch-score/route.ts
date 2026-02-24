@@ -20,7 +20,7 @@ export async function GET() {
     const adminClient = createAdminClient();
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient();
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 

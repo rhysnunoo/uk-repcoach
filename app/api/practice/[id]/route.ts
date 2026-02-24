@@ -60,7 +60,8 @@ export async function POST(request: NextRequest, { params }: PracticeRouteParams
     const persona = personas[session.persona as PersonaType];
     const currentState = (session.session_state || {}) as SessionState;
     const messages = (session.messages || []) as PracticeMessage[];
-    const scriptContent = session.scripts?.content as Record<string, unknown> | null;
+    const scriptData = Array.isArray(session.scripts) ? session.scripts[0] : session.scripts;
+    const scriptContent = (scriptData as { content?: ScriptContent } | null)?.content ?? null;
 
     // Build conversation history
     const conversationHistory = messages.map((msg) => ({
@@ -176,12 +177,13 @@ export async function PATCH(request: NextRequest, { params }: PracticeRouteParam
 
       // Score the session
       const persona = personas[session.persona as PersonaType];
-      const scriptContent = session.scripts?.content as Record<string, unknown> | null;
+      const scriptData2 = Array.isArray(session.scripts) ? session.scripts[0] : session.scripts;
+      const scriptContent2 = (scriptData2 as { content?: ScriptContent } | null)?.content ?? null;
       await scoreSession(
         sessionId,
         session.messages as PracticeMessage[],
         persona,
-        scriptContent
+        scriptContent2
       );
 
       return NextResponse.json({ success: true });
@@ -213,7 +215,7 @@ export async function DELETE(request: NextRequest, { params }: PracticeRoutePara
     // Get profile to check role - only admins can delete
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 

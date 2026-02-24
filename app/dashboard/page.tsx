@@ -138,7 +138,6 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
         {isManager && !showPersonalView ? (
           <ManagerDashboard
-            profile={profile}
             recentCalls={allCalls || []}
             scores={scores}
           />

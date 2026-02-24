@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, { params }: CallRouteParams) {
     // Get profile to check role
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 
@@ -81,7 +81,7 @@ export async function PATCH(request: NextRequest, { params }: CallRouteParams) {
     // Get profile to check role
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 
@@ -153,7 +153,7 @@ export async function DELETE(request: NextRequest, { params }: CallRouteParams) 
     // Get profile to check role - only admins can delete
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 

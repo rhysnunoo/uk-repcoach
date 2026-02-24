@@ -20,7 +20,7 @@ export async function GET(request: NextRequest, { params }: NotesRouteParams) {
     // Get profile to check role
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single() as { data: { role: string } | null };
 

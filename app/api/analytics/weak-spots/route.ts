@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     // Check if user can view this rep's data
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     // Get profile to check role
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     if (repIdFromForm && repIdFromForm !== user.id) {
       const { data: profile } = await adminClient
         .from('profiles')
-        .select('role')
+        .select('*')
         .eq('id', user.id)
         .single();
 
@@ -309,7 +309,7 @@ async function processCallAsync(callId: string, storagePath: string) {
     console.log(`[processCallAsync] Transcript saved, triggering scoring...`);
 
     // Trigger scoring
-    await scoreCall(callId);
+    await scoreCallDirect(callId);
     console.log(`[processCallAsync] Processing complete for call ${callId}`);
   } catch (error) {
     console.error('[processCallAsync] Processing error:', error);

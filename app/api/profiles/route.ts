@@ -56,7 +56,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const adminClient = createAdminClient();
-    const updates: { full_name?: string; role?: string } = {};
+    const updates: { full_name?: string; role?: 'rep' | 'manager' | 'admin' } = {};
 
     if (full_name !== undefined) {
       updates.full_name = full_name;
