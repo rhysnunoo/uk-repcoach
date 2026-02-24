@@ -101,9 +101,9 @@ export interface ScoringCriteria {
 }
 
 export interface PricingInfo {
-  annual_1_subject?: { price: number; original?: number; value_statement?: string };
-  annual_2_subjects?: { price: number; original?: number; value_statement?: string };
-  annual_ultimate?: { price: number; original?: number; value_statement?: string };
+  annual_1_subject?: { price: number; original?: number; value_statement?: string; payment_plan?: string; lessons?: number; framing?: string };
+  annual_2_subjects?: { price: number; original?: number; value_statement?: string; payment_plan?: string; lessons?: number };
+  annual_ultimate?: { price: number; original?: number; value_statement?: string; payment_plan?: string; lessons?: number };
   monthly?: Record<string, number>;
   trial?: { price: number; duration: string; value_statement?: string };
   // Legacy US format fields
