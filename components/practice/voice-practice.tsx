@@ -410,6 +410,7 @@ export function VoicePractice({ sessionId, script, persona, onEnd }: VoicePracti
     } finally {
       setIsProcessing(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isListening, currentTranscript, sessionId, speak]);
 
   const startPractice = async () => {
