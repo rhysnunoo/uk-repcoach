@@ -1,57 +1,62 @@
--- Seed Scripts for RepCoach
--- CLOSER Framework (Hormozi methodology) sales scripts for MyEdSpace courses
--- Based on official MyEdSpace sales methodology
+-- Seed Scripts for RepCoach (UK MyEdSpace)
+-- CLOSER Framework sales scripts adapted for UK tutoring market
+-- Based on official MyEdSpace UK sales methodology
 
--- Delete existing scripts to replace with updated versions
-delete from scripts where course in ('Pre-Algebra', 'Algebra 1', 'Geometry', 'Algebra 2');
+-- Delete existing scripts to replace with UK versions
+delete from scripts where course in ('Pre-Algebra', 'Algebra 1', 'Geometry', 'Algebra 2', 'KS3', 'GCSE', 'A-Level', 'Primary');
 
--- Universal Script (applies to all courses)
--- The script content is the same structure for all courses, just with course-specific details inserted
+-- KS3 Script (Year 7-9: Maths, English, Science)
 insert into scripts (name, course, version, is_active, content) values (
-  'Pre-Algebra Sales Script v2',
-  'Pre-Algebra',
-  2,
+  'KS3 Sales Script v1',
+  'KS3',
+  1,
   true,
   '{
     "framework": "CLOSER (Hormozi)",
-    "target_duration": "8-12 minutes",
+    "target_duration": "10-15 minutes",
     "course_details": {
-      "name": "Pre-Algebra",
-      "schedule": {
-        "days": "Mon & Wed",
-        "pacific_time": "5pm",
-        "eastern_time": "8pm"
-      }
+      "name": "KS3 (Year 7-9)",
+      "year_groups": ["Year 7", "Year 8", "Year 9"],
+      "subjects": ["Maths", "English", "Science"],
+      "teachers": {
+        "Maths": {"name": "Nick Featherstone / Neil Trivedi", "credentials": "15+ years teaching, Masters from Oxford / 9+ years, 1st Class from UCL"},
+        "English": {"name": "Louis Provis / Eleanor St John Sutton", "credentials": "11+ years, MAs from Cambridge & Oxford / 6+ years, Double 1st from UPenn"},
+        "Science": {"name": "Hannah Shuter, Emma Williams & team", "credentials": "40+ years combined experience"}
+      },
+      "schedule_note": "2 live lessons per week per subject, weekday evenings between 16:30-19:50"
     },
     "pricing": {
-      "annual_premium": {"price": 539, "payment_plan": "3x $180", "framing": "Less than $17/hr for 60 hours"},
-      "annual_essentials": {"price": 489, "payment_plan": "3x $163", "framing": "Save vs monthly"},
-      "monthly_premium": {"price": 149, "framing": "No lock-in, cancel anytime"},
-      "monthly_essentials": {"price": 135, "framing": "No lock-in, cancel anytime"},
-      "trial": {"price": 7, "duration": "7 days", "framing": "Full access, risk-free test"}
+      "annual_1_subject": {"price": 319, "original": 480, "lessons": 74, "payment_plan": "3x £106.33", "framing": "£4.31 per lesson vs £50 for a tutor"},
+      "annual_2_subjects": {"price": 574.20, "original": 864, "lessons": 148, "payment_plan": "3x £191.40"},
+      "annual_ultimate": {"price": 789, "original": 1080, "lessons": 222, "payment_plan": "3x £263"},
+      "monthly": {"1_subject": 80, "2_subjects": 144, "ultimate": 180, "framing": "No lock-in, cancel anytime"},
+      "trial": {"price": 10, "duration": "10 days", "framing": "Full access, no auto-renewal"},
+      "upfront_discount": "5% off if paid upfront",
+      "sibling_discount": "20% off less expensive package"
     },
     "closer_phases": {
       "opening": {
         "name": "Opening (Proof-Promise-Plan)",
         "duration": "30-60 sec",
         "goal": "Set agenda, build credibility, get micro-commitment",
-        "exact_script": "Hi [Name], this is [Rep] from MyEdSpace. Thanks for booking time with me. Quick background: we''ve helped thousands of parents get their kids confident in math, including a lot in Pre-Algebra specifically. On this call, I want to understand what''s going on with [Child], show you how we might help, and see if it makes sense. Should take about 10 minutes. How does that sound?",
-        "with_setter_notes": "Hey [Name], [Setter] mentioned [Child] is in [Grade] and [specific issue from notes]. Is that still where things are at?",
+        "exact_script": "Hi there - am I speaking with [Parent]? Thanks so much for booking in a consultation with me, really excited to help your child achieve their goals. Just to let you know, this call is recorded for training purposes. Is that okay? Brilliant. So just a quick background - we''ve helped over 21,000 students across the UK improve their grades and confidence. On this call, I''d love to understand what''s going on with your child that made you reach out, show you how we might be able to help, and see if it''s a good fit. Should only take about 10 minutes. How does that sound?",
         "required_elements": [
-          "Greet + thank them for booking",
-          "Brief proof/credibility (thousands of parents)",
-          "Promise outcome (understand situation, show how to help, see if it makes sense)",
-          "Plan for the call (10 minutes)",
+          "Greet + confirm speaking with right person",
+          "Recording disclosure and consent",
+          "Brief proof/credibility (21,000+ students across the UK)",
+          "Promise outcome (understand situation, show how to help, see if good fit)",
+          "Plan for the call (~10 minutes)",
           "Micro-commitment (How does that sound?)"
         ],
         "red_flags": [
           "How are you today? opener (conversion killer)",
           "Launching into product pitch immediately",
           "No agenda setting",
-          "Long company introduction"
+          "Long company introduction",
+          "Forgetting recording disclosure"
         ],
         "scoring": {
-          "5": "Sets agenda immediately, includes proof/credibility, states promise, outlines plan, gets micro-commitment, under 60 sec",
+          "5": "All required elements present, recording disclosed, gets micro-commitment, under 60 sec",
           "4": "Has most elements but missing one (e.g., no micro-commitment)",
           "3": "Has agenda but missing proof OR promise",
           "2": "Long company intro, no clear agenda",
@@ -60,63 +65,68 @@ insert into scripts (name, course, version, is_active, content) values (
       },
       "clarify": {
         "name": "C - Clarify",
-        "duration": "1-2 min",
-        "goal": "Get prospect to state their problem/goal",
+        "duration": "2-3 min",
+        "goal": "Get child name, year group, subjects, and check siblings. Kill zombies.",
         "exact_script": [
-          "So what''s going on with math that made you reach out?",
-          "[Let them talk. Take notes. Use their words later.]",
-          "Got it. And what grade is [Child] in? Which math course are they taking right now?",
-          "[Confirm course fit: Pre-Algebra, Algebra 1, Geometry, or Algebra 2]",
-          "What would success look like for [Child] by the end of this school year?",
-          "[This is their stated goal. Reference it in the close.]",
-          "And what made you reach out NOW versus a few months ago?",
-          "[This reveals urgency. Recent bad grade? Upcoming test? Frustration boiling over?]"
+          "So first things first - who''s the lucky one we''re helping today? What''s your child''s name?",
+          "And do you have any other children who might benefit from some support too?",
+          "Great. What year is [Child] in?",
+          "Perfect. For [Year Group], we offer [Subjects]. Which of these - if not all - are you interested in for [Child]?",
+          "Before I tell you more - other parents sometimes make the mistake of waiting until the end of the call and then having to get their partner to hear everything again. So just want to check: is it only you that needs to hear this, or should we get someone else involved upfront?"
         ],
         "required_elements": [
-          "Ask why they reached out (open-ended)",
-          "Get them to state their problem in their own words",
-          "Cover child''s grade level and current course",
-          "Ask about their goal/success criteria",
-          "Uncover urgency trigger"
+          "Get child''s name",
+          "Check for siblings (20% discount opportunity)",
+          "Confirm year group",
+          "Identify subjects of interest",
+          "Kill zombies - check if spouse/partner needs to be involved",
+          "Handle child buy-in if mentioned"
         ],
         "red_flags": [
-          "Assuming problem without asking",
+          "Assuming year group or subjects without asking",
           "Only yes/no questions",
-          "Rep talks more than prospect",
-          "Not uncovering the why now"
+          "Forgetting to check for siblings",
+          "Not addressing decision-maker question",
+          "Rep talks more than prospect"
         ],
         "scoring": {
-          "5": "Asks why they reached out, gets them to state problem, covers grade/course, asks about goals, uncovers urgency, uses open-ended questions, listens more than talks",
-          "4": "Good discovery but misses one element (e.g., no urgency question)",
+          "5": "Gets name, year group, subjects, checks siblings, kills zombies, uses open-ended questions",
+          "4": "Good discovery but misses one element (e.g., no zombie kill or sibling check)",
           "3": "Some discovery but relies on closed yes/no questions",
           "2": "Minimal discovery, moves quickly to pitch",
-          "1": "Assumes problem without asking, talks more than listens"
+          "1": "Assumes details without asking, talks more than listens"
         }
       },
       "label": {
         "name": "L - Label",
-        "duration": "30 sec",
-        "goal": "Name their problem back, get confirmation",
+        "duration": "1-2 min",
+        "goal": "Name their problem back and get confirmation. Includes discovery questions.",
         "exact_script": [
-          "Okay, so let me make sure I''ve got this right. [Child] is in [Grade] taking [Course]. The main challenge is [their specific pain - use their words]. And what you really want is [their stated goal]. Is that accurate?",
-          "[Wait for confirmation. If they add something, incorporate it.]",
-          "Got it. That''s really helpful."
+          "So tell me, what''s been going on with [Child]''s education that made you reach out to us?",
+          "[EMPATHY CHECK: Repeat their problem back, acknowledge it, associate: We hear this a lot from parents, you''re definitely not alone.]",
+          "And what would success look like for [Child] by the end of this school year?",
+          "What made you reach out now, versus a few months ago?",
+          "Okay, so let me make sure I''ve got this right. [Child] is in [Year] taking [Subjects]. The main challenge is [their specific pain - use their words]. And what you really want is [their stated goal]. Is that right?"
         ],
         "required_elements": [
+          "Ask what made them reach out (open-ended)",
+          "Empathy check: repeat, acknowledge, associate",
+          "Ask about success vision",
+          "Uncover urgency trigger (why now?)",
           "Restate problem using THEIR words",
-          "Include grade, course, specific challenge, and goal",
-          "Get verbal confirmation (Is that accurate? / Is that right?)",
-          "Acknowledge their input"
+          "Include year group, subjects, challenge, and goal",
+          "Get verbal confirmation"
         ],
         "red_flags": [
           "Skipping labeling entirely",
           "Moving to solution without confirmation",
-          "Parroting exact words without synthesis",
+          "Not using their words",
+          "No empathy or acknowledgment",
           "Not waiting for confirmation"
         ],
         "scoring": {
-          "5": "Restates problem using their words, includes grade/course/challenge/goal, gets verbal confirmation",
-          "4": "Good summary but confirmation was weak",
+          "5": "Full discovery, empathy check, restates using their words, includes all details, gets verbal confirmation",
+          "4": "Good summary but missed empathy or confirmation was weak",
           "3": "Acknowledges but doesn''t get explicit confirmation",
           "2": "Parrots their words without synthesis",
           "1": "Skips labeling entirely, moves straight to pitch"
@@ -128,29 +138,24 @@ insert into scripts (name, course, version, is_active, content) values (
         "goal": "Exhaust past attempts, surface all pain",
         "importance": "THIS IS THE MOST IMPORTANT PHASE. Prospects don''t buy without pain.",
         "exact_script": [
-          "Before I tell you about what we do, I want to understand what you''ve already tried. What have you done so far to help [Child] with math?",
-          "[Common answers: YouTube videos, Khan Academy, hired a tutor, parent tried helping, extra homework from school]",
-          "Okay, and how did that go?",
+          "Before reaching out to us, what have you tried so far to help [Child]?",
+          "[Common: private tutors, YouTube, extra homework, school support, nothing yet]",
+          "And how did that go?",
           "[Let them explain why it didn''t work. Don''t interrupt.]",
-          "Got it. What else have you tried?",
-          "[Keep asking ''what else?'' until they''ve exhausted all prior attempts]",
-          "Anything else?",
-          "[Once exhausted, summarize:]",
-          "So you''ve tried [list everything], and none of it has really stuck. Is that fair to say?",
-          "[Then dig into duration and consequences:]",
-          "How long has this been going on?",
-          "And if nothing changes, what happens? Like, where does [Child] end up in 6 months if this doesn''t get fixed?",
-          "[This makes the stakes real. Let them verbalize the consequences.]"
+          "Okay. And what else have you tried?",
+          "[Keep asking ''what else?'' until exhausted]",
+          "So you''ve tried [list everything], and none of it has quite worked. How long has this been going on?",
+          "And if things stay the way they are - what does that mean for [Child] by [exam time / end of the year]?"
         ],
         "active_listening_cues": [
           "That makes sense.",
           "I hear that a lot.",
-          "That''s really common at this grade."
+          "That''s really common."
         ],
         "required_elements": [
           "Ask about ALL past attempts",
-          "Follow up with How did that go? for EACH attempt",
-          "Exhaust with What else? until nothing left",
+          "Follow up with ''How did that go?'' for EACH attempt",
+          "Exhaust with ''What else?'' until nothing left",
           "Summarize and confirm all attempts failed",
           "Ask about duration",
           "Ask about consequences if nothing changes"
@@ -163,7 +168,7 @@ insert into scripts (name, course, version, is_active, content) values (
           "No empathy or acknowledgment"
         ],
         "scoring": {
-          "5": "Asks about past attempts, follows up with how did that go? for each, exhausts with what else? until nothing left, summarizes all failed attempts, asks about duration, asks about consequences",
+          "5": "Asks about past attempts, follows up with how did that go? for each, exhausts with what else? multiple times, summarizes, asks about duration, asks about consequences",
           "4": "Good pain cycle but didn''t fully exhaust or missed consequences",
           "3": "Asks about past attempts but doesn''t go deep, moves on after 1-2 attempts",
           "2": "Minimal exploration, token question about past attempts",
@@ -173,111 +178,63 @@ insert into scripts (name, course, version, is_active, content) values (
       "sell_vacation": {
         "name": "S - Sell the Vacation",
         "duration": "2-3 min",
-        "goal": "Sell outcomes not features, lead with Eddie''s credentials",
-        "permission_script": "Okay, that''s really helpful. Can I tell you about how we might be able to help?",
-        "eddie_intro": "So the teacher is Eddie Kang. UCLA Pure Mathematics degree. Perfect SAT math score. Nine years teaching in high schools and colleges across California. We screened over 3,000 teachers to find him - he was the one. What makes Eddie different is how he explains things. He can take something confusing and make it click. Parents tell us their kids actually start enjoying math, which I know sounds crazy.",
-        "eddie_credentials": {
-          "degree": "Pure Mathematics degree from UCLA",
-          "sat": "Perfect SAT Math score (800)",
-          "experience": "9+ years teaching in CA high schools and colleges",
-          "selection": "Screened 3,000+ teachers - he was the one",
-          "social": "20k+ social media followers"
-        },
-        "pain_bridges": {
-          "homework_takes_forever": "You mentioned homework is taking [X] hours. What parents tell us is that drops to 30-45 minutes because [Child] actually understands instead of guessing.",
-          "child_hates_math": "You mentioned [Child] doesn''t like math. 83% of parents say their kid''s attitude toward math improved with Eddie. They actually start showing up because it feels different than school.",
-          "tutoring_expensive": "You mentioned tutoring costs were a concern. Instead of $60-80 an hour for a random tutor, it''s $149 a month for everything - live classes twice a week, workbooks, practice problems, video solutions. Elite teaching at a fraction of the cost."
-        },
-        "how_it_works": "[Child] joins live twice a week - Mon & Wed at 5pm Pacific / 8pm Eastern. Eddie''s teaching in real-time, kids are chatting and asking questions. Plus workbooks before class, practice problems after, and video solutions for every question. Everything they need.",
+        "goal": "Sell outcomes, lead with teacher credentials, set expectations",
+        "permission_script": "That''s really helpful, thank you. Can I tell you a bit about how we might be able to help?",
+        "teacher_intro": "Let me tell you about who''ll be teaching [Child]... Our teachers are in the top 1% in the country - combined 100+ years of teaching experience. What students say makes them special is how they explain topics. They can take something confusing and just make it click.",
+        "how_it_works": "[Child] gets 2 live lessons every week per subject. They follow along with a workbook we provide, so they can focus on listening instead of frantically copying notes. The teacher teaches live - it''s interactive, not passive. Students ask questions in chat, work through problems together. On average, each student sends around 25 messages per lesson - that level of engagement is incomparable to a normal classroom.",
+        "practice_and_solutions": "And it doesn''t stop when the lesson ends. Every week, there are practice problems that reinforce what was taught. And here''s the key part - every single problem has a video solution where the teacher walks through it step by step. So if [Child] gets stuck at 9pm doing homework? They''re not actually stuck.",
+        "recordings": "Every lesson is recorded and available instantly. So if [Child] misses a class - football practice, family dinner, whatever - they just watch the recording. They don''t fall behind.",
         "proof_points": {
-          "engagement": "20-30 chat messages per student per lesson",
-          "attitude": "83% report attitude improvement",
-          "quality": "Best Online School 2025, 95% parent satisfaction",
-          "price": "$149/mo vs $60-80/hr tutors ($400+/mo)",
-          "trust": "Eddie''s taught thousands. UCLA Math, perfect SAT.",
-          "urgency": "Math builds. Wait = gaps. 30-day guarantee = no risk."
+          "engagement": "25 chat messages per student per lesson on average",
+          "results_gcse": "58% of GCSE students achieved grades 7-9 - double the national average",
+          "results_general": "Students perform 3x better than national averages",
+          "satisfaction": "95% parent satisfaction, 1,700+ five-star Trustpilot reviews",
+          "scale": "21,000+ students across the UK",
+          "guarantee": "14-day money-back guarantee"
         },
         "required_elements": [
-          "Lead with Eddie''s credentials (UCLA Pure Math, perfect SAT, 9 years, 3000+ screened)",
-          "Bridge from their specific pain point (not generic pitch)",
-          "Paint outcome picture (confident kid, easier homework - NOT features)",
+          "Lead with teacher credentials (top 1%, combined experience, specific teacher names if known)",
+          "Bridge from their SPECIFIC pain point (not generic pitch)",
+          "Explain what their week looks like (2 live lessons, workbooks, practice, video solutions, recordings)",
           "Use relevant proof point matched to their concern",
-          "Keep brief - under 3 minutes"
+          "Mention 14-day money-back guarantee",
+          "Ask how it sounds so far"
         ],
         "red_flags": [
           "Generic pitch not tailored to their situation",
-          "Features before benefits (workbooks, practice problems...)",
-          "Eddie buried in details or mentioned as afterthought",
+          "Features before benefits",
+          "Teacher credentials buried or mentioned as afterthought",
           "No specific numbers or proof",
-          "Monologues over 3 minutes",
-          "Selling the plane flight (process) not vacation (outcome)"
+          "Monologues over 3 minutes"
         ],
         "scoring": {
-          "5": "Leads with Eddie credentials, bridges from their specific pain, paints outcome (not features), uses relevant proof point, keeps under 3 min",
-          "4": "Good pitch but Eddie buried or generic proof point",
-          "3": "Mentions Eddie but generic pitch not tailored to their situation",
+          "5": "Leads with teacher credentials, bridges from their specific pain, explains week structure, uses relevant proof, mentions guarantee, under 3 min",
+          "4": "Good pitch but teacher credentials buried or generic proof point",
+          "3": "Mentions teachers but generic pitch not tailored to their situation",
           "2": "Feature dump, no connection to their pain",
-          "1": "No mention of Eddie, no proof points, robotic feature list"
+          "1": "No mention of teacher quality, no proof points, robotic feature list"
         }
       },
       "explain": {
         "name": "E - Explain (AAA Objection Handling)",
         "duration": "1-2 min",
         "goal": "Handle objections: Acknowledge, Associate, Ask",
-        "buy_in_check": "Based on what I''ve explained, does this sound like it would help [Child] with [their stated goal]? Any questions about how the program works?",
+        "buy_in_check": "So - how does all of that sound so far?",
         "aaa_framework": {
-          "acknowledge": {"action": "Repeat their concern neutrally", "example": "Totally understand - you want to make sure it''s worth it."},
-          "associate": {"action": "Connect to success story or similar situation", "example": "A lot of parents felt that way. One mom told me..."},
-          "ask": {"action": "Return with a question to move forward", "example": "If budget weren''t a factor, would this be right for [Child]?"}
+          "acknowledge": {"action": "Repeat their concern neutrally", "example": "I completely understand..."},
+          "associate": {"action": "Connect to similar situation or proof", "example": "We hear this a lot from parents..."},
+          "ask": {"action": "Return with a question to move forward", "example": "What would make this a yes for you?"}
         },
-        "key_principle": "The person asking questions is closing. Never answer an objection directly. Respond with a question about their question.",
-        "obstacle_categories": {
-          "circumstances": {"examples": ["Time", "Money", "Fit"], "strategy": "Address the variable directly, reframe value"},
-          "others": {"examples": ["Spouse", "Partner"], "strategy": "What would their main concern be? Arm them with answers"},
-          "self": {"examples": ["Avoiding decision", "Past failure"], "strategy": "What''s different this time? Best case/worst case close"}
+        "key_principle": "The person asking questions is closing. Never answer an objection directly.",
+        "common_objections": {
+          "need_to_think": "I completely understand. What would make this a yes for you? ... Try the £10 trial - 10 days, full access, no auto-renewal.",
+          "talk_to_spouse": "Completely understand. If this was completely up to you, would you have any hesitation? ... We have a 14-day money-back guarantee, so they can see it in action.",
+          "too_expensive": "I completely understand - it''s a real investment. This works out to £4-5 per lesson versus £50 for a tutor. ... We have monthly at £80/month, cancel anytime.",
+          "want_one_to_one": "Students ask questions in chat in real-time. On average, each student sends around 25 messages per lesson. No cameras, no speaking out loud - shy students often participate MORE.",
+          "times_dont_work": "Every lesson is recorded. Loads of students have football, music - they catch up later. Some prefer it because they can pause and rewind."
         },
-        "objection_responses": {
-          "too_expensive": {
-            "response": "Totally understand - you want to make sure it''s worth it. Quick question: what are you comparing us to?",
-            "if_private_tutoring": "Right, so private tutors run $60-80 an hour. For 8 sessions a month, that''s $480-640. We''re $149 for everything - better teacher, more support. And we have a 30-day money-back guarantee. If it''s not working, full refund. Does that change how it feels?"
-          },
-          "talk_to_spouse": {
-            "response": "Makes total sense. What questions do you think they''ll have? I can help you answer them.",
-            "then": "Here''s an option: start the $7 trial together this week. You can both see it in action before deciding. That way you''re making an informed decision together instead of guessing."
-          },
-          "need_to_think": {
-            "response": "Totally get it. What''s your main concern? What are you afraid of having happen?",
-            "if_vague": "Here''s the thing - you''re not going to go home and stare at the wall thinking about math class. You''ll get busy, a week goes by, [Child] has another rough test. What information do you still need to decide? I''m your information source right now."
-          },
-          "wont_engage_online": {
-            "response": "I hear that a lot - usually from parents whose kids tried boring recorded videos. This is different. It''s live. Kids are chatting, asking questions in real-time. We see 20-30 messages per student per lesson. One dad told me his son hated math - first week with Eddie, the kid asked to log in early. Try the $7 week and see for yourself."
-          },
-          "start_later": {
-            "response": "I get wanting to wait for the right time. But here''s what we''ve found: math builds on itself. A mom I spoke with wanted to wait until things calmed down. By the time she came back, her daughter had failed the midterm and was way behind. She told me she wished she''d just started when we first talked. The 30-day guarantee means there''s no risk to starting now."
-          }
-        },
-        "all_purpose_closes": [
-          "What would make this a yes for you?",
-          "What would make this a no?",
-          "Best case: [Child] gets confident, homework gets easier. Worst case: you''re out $7 for the trial and learned it wasn''t the right fit. Which risk makes more sense?",
-          "The reason you''re telling yourself not to do this is exactly why you should. The fact that you don''t have time is why [Child] needs the help."
-        ],
-        "rapid_fire_at_close": [
-          "What''s your main concern?",
-          "What are you afraid of having happen?",
-          "What would make this a yes?",
-          "What would make this a no?"
-        ],
-        "red_flags": [
-          "Answering objections directly (loses control)",
-          "Getting defensive or arguing",
-          "Generic trust us responses",
-          "No objection handling at all",
-          "Over-explaining (desperation smell)",
-          "Offering discounts to close"
-        ],
         "scoring": {
-          "5": "Uses AAA (Acknowledge-Associate-Ask) on all objections, responds with questions, identifies obstacle type (circumstances/others/self), has stacked closes ready",
+          "5": "Uses AAA on all objections, responds with questions, identifies obstacle type",
           "4": "Uses AAA mostly but answered one objection directly",
           "3": "Handles some objections but answers directly rather than with questions",
           "2": "Gets flustered by objections, defensive responses",
@@ -286,39 +243,28 @@ insert into scripts (name, course, version, is_active, content) values (
       },
       "reinforce_close": {
         "name": "R - Reinforce + Close",
-        "duration": "1 min",
-        "goal": "Tiered close: Annual -> Monthly -> Trial",
+        "duration": "1-2 min",
+        "goal": "Tiered close: Annual -> Monthly -> Trial. Stay on line for payment.",
         "critical_note": "CRITICAL: Follow the tiered close. Don''t lead with trial. Once they say yes, STOP TALKING.",
-        "tier_1_annual": {
-          "script": "So here''s what most parents do. The full course is $539 for the year - that''s less than $17 an hour for 60 hours of teaching from Eddie, plus all the workbooks, practice problems, and video solutions. You can pay upfront and save an extra 5%, or split it into 3 payments of $180.",
-          "ask": "Based on what you told me about [reference their goal], I''d recommend the full course so [Child] gets the complete curriculum with no gaps. Should I get [Child] set up?",
-          "if_yes": "STOP. Close immediately. Move to next steps."
-        },
-        "tier_2_monthly": {
-          "trigger": "If price objection",
-          "script": "Totally fair. We also have monthly at $149. No long-term commitment - you can cancel anytime. A lot of parents start there and switch to annual once they see [Child] loving it. Want to start with monthly?"
-        },
-        "tier_3_trial": {
-          "trigger": "Last resort",
-          "script": "Tell you what. I can see you want to make sure this is right for [Child]. Try it for $7 for a week. Full access to everything - the live classes, workbooks, all of it. If it''s not a fit, you cancel, no questions. But if [Child] loves it, you''re set. Fair?"
-        },
-        "after_yes": "Great choice. Here''s what happens next: I''ll send you the link to register. Once you complete that, you''ll get an email to set up your parent account and then [Child]''s student account. [Child] can join their first class on Monday at 5pm Pacific. Any questions before I send the link?",
-        "tiered_flow": "Present Annual -> Yes? STOP. Close immediately. -> Price objection? Offer Monthly -> Accepted? Done -> Still hesitant? Offer Trial",
+        "tier_1_annual": "So let me walk you through the investment. An average private tutor charges around £50 an hour. Two lessons a week per subject - that''s [X] lessons a month. With us, you get our top 1% teachers for just £[price] for the full course. That works out to around £4-5 per lesson. You can pay upfront and save an extra 5%, or split it into 3 monthly instalments.",
+        "tier_1_ask": "The next class for [Child] is [Day]. Should I get [Child] set up so they can start this week?",
+        "tier_2_monthly": "Or if you''d prefer flexibility, we have monthly at £[80-180]/month - no lock-in, cancel anytime.",
+        "tier_3_trial": "Tell you what - try it for 10 days, just £10. Full access. No auto-renewal. Fair?",
+        "after_yes": "Great choice. I''m sending you the registration link now. I''m happy to stay on the line while you register - it should only take 1 or 2 minutes.",
+        "payment_confirmation": "Perfect, I can see that''s gone through. [Child] is all set! You''ll get an email to set up your parent account, and then [Child]''s student account. [Child]''s first class is [Day] at [Time].",
         "red_flags": [
-          "Leading with $7 trial (underselling - trial-to-paid conversion is lower)",
+          "Leading with £10 trial (underselling)",
           "No downsell path",
           "Keeps talking after yes",
           "Multiple competing CTAs",
-          "High-pressure tactics or fake urgency",
-          "No reinforcement after decision",
-          "Not scheduling next steps (BAMFAM - Book A Meeting From A Meeting)"
+          "Not staying on line for payment confirmation"
         ],
         "scoring": {
-          "5": "Leads with Annual, has downsell path (Annual->Monthly->Trial), stops talking after yes, clear next steps, includes BAMFAM",
+          "5": "Leads with Annual, has downsell path, stops talking after yes, stays on line for payment, clear next steps",
           "4": "Good close but rushed or skipped a tier",
           "3": "Closes but leads with Monthly or no clear downsell path",
           "2": "Weak close, multiple CTAs, keeps selling after yes",
-          "1": "Leads with $7 trial, no close attempt, or high-pressure tactics"
+          "1": "Leads with £10 trial, no close attempt, or high-pressure tactics"
         }
       }
     },
@@ -331,25 +277,13 @@ insert into scripts (name, course, version, is_active, content) values (
         "match_energy": "If they''re calm, stay calm. If they''re stressed, acknowledge but don''t amp up.",
         "use_names": "Use their name and child''s name throughout. Creates connection."
       },
-      "detectable_markers": [
-        "Uses prospect''s name and child''s name",
-        "Active listening cues (That makes sense, I hear that a lot, Got it)",
-        "Natural conversational flow vs robotic script reading",
-        "No banned phrases"
-      ],
       "banned_phrases": [
-        "Personalized learning (inaccurate for 1-many model)",
-        "Math can be fun! (parents want results, not fun)",
+        "Personalised learning (inaccurate for 1-many model)",
+        "Maths can be fun! (parents want results, not fun)",
         "World-class / Best-in-class (without specific proof)",
         "Unlock potential / Learning journey / Empower",
         "SUPER excited! / AMAZING! (fake enthusiasm)",
         "How are you today? (opener time-waster)"
-      ],
-      "authenticity_check": [
-        "Would I talk to a friend this way?",
-        "Am I leading with their need or my pitch?",
-        "Would I trust someone talking to me like this?",
-        "Would I buy this for my own kid?"
       ],
       "scoring": {
         "5": "Uses names throughout, active listening cues, sounds human/natural, no banned phrases",
@@ -370,8 +304,8 @@ insert into scripts (name, course, version, is_active, content) values (
       },
       "top_issues_priority": [
         "Pain Cycle Missing/Weak (CRITICAL) - If Overview scores 1-2, this is always issue #1",
-        "Features Before Outcomes - If pitch leads with workbooks/classes before Eddie/outcomes",
-        "Eddie Buried - If Eddie credentials mentioned late or briefly",
+        "Features Before Outcomes - If pitch leads with workbooks/classes before teacher credentials/outcomes",
+        "Teacher Credentials Buried - If teacher quality mentioned late or briefly",
         "No Tiered Close - If led with trial or no downsell path",
         "Weak Opening - If How are you today? or no agenda"
       ]
@@ -379,142 +313,118 @@ insert into scripts (name, course, version, is_active, content) values (
   }'::jsonb
 );
 
--- Algebra 1 Script
+-- GCSE Script (Year 10-11: Maths, English, Biology, Chemistry, Physics)
 insert into scripts (name, course, version, is_active, content) values (
-  'Algebra 1 Sales Script v2',
-  'Algebra 1',
-  2,
+  'GCSE Sales Script v1',
+  'GCSE',
+  1,
   true,
   '{
     "framework": "CLOSER (Hormozi)",
-    "target_duration": "8-12 minutes",
+    "target_duration": "10-15 minutes",
     "course_details": {
-      "name": "Algebra 1",
-      "schedule": {
-        "days": "Tue & Thu",
-        "pacific_time": "5pm",
-        "eastern_time": "8pm"
-      }
+      "name": "GCSE (Year 10-11)",
+      "year_groups": ["Year 10", "Year 11"],
+      "subjects": ["Maths", "English", "Biology", "Chemistry", "Physics"],
+      "teachers": {
+        "Maths": {"name": "Neil Trivedi / Joe Sim / Guy Maycock", "credentials": "9-12+ years teaching, 1st Class from UCL / Warwick, 10+ years examining"},
+        "English": {"name": "Alex Sarychkin / Eleanor St John Sutton", "credentials": "11+ years / 6+ years, Double 1st from UPenn"},
+        "Biology": {"name": "Joe Wolfensohn / Laura Armstrong", "credentials": "22+ years combined, 10+ years examining"},
+        "Chemistry": {"name": "Manny Opoku / Lajoy Tucker", "credentials": "16+ years combined, BSc from Imperial, MSc from Oxford"},
+        "Physics": {"name": "Dario Papavassilou / Brook Edgar", "credentials": "12+ years combined, 1st Class MSc & PhD"}
+      },
+      "schedule_note": "2 live lessons per week per subject, weekday evenings",
+      "exam_year_bonus": "Easter Revision Course and Cram Course included for Year 11 - led by actual examiners"
     },
     "pricing": {
-      "annual_premium": {"price": 539, "payment_plan": "3x $180", "framing": "Less than $17/hr for 60 hours"},
-      "annual_essentials": {"price": 489, "payment_plan": "3x $163", "framing": "Save vs monthly"},
-      "monthly_premium": {"price": 149, "framing": "No lock-in, cancel anytime"},
-      "monthly_essentials": {"price": 135, "framing": "No lock-in, cancel anytime"},
-      "trial": {"price": 7, "duration": "7 days", "framing": "Full access, risk-free test"}
+      "annual_1_subject": {"price": 319, "original": 480, "lessons": 74, "payment_plan": "3x £106.33"},
+      "annual_2_subjects": {"price": 574.20, "original": 864, "lessons": 148, "payment_plan": "3x £191.40"},
+      "annual_ultimate": {"price": 789, "original": 1080, "lessons": 222, "payment_plan": "3x £263"},
+      "multi_year_1": {"price": 669, "original": 1280, "lessons": 148, "payment_plan": "3x £223"},
+      "multi_year_ultimate": {"price": 1589, "original": 2880, "lessons": 444, "payment_plan": "3x £529.67"},
+      "monthly": {"1_subject": 80, "2_subjects": 144, "ultimate": 180},
+      "trial": {"price": 10, "duration": "10 days"},
+      "upfront_discount": "5% off if paid upfront",
+      "sibling_discount": "20% off less expensive package"
     },
     "closer_phases": {
       "opening": {
         "name": "Opening (Proof-Promise-Plan)",
         "duration": "30-60 sec",
         "goal": "Set agenda, build credibility, get micro-commitment",
-        "exact_script": "Hi [Name], this is [Rep] from MyEdSpace. Thanks for booking time with me. Quick background: we''ve helped thousands of parents get their kids confident in math, including a lot in Algebra 1 specifically. On this call, I want to understand what''s going on with [Child], show you how we might help, and see if it makes sense. Should take about 10 minutes. How does that sound?",
-        "with_setter_notes": "Hey [Name], [Setter] mentioned [Child] is in [Grade] and [specific issue from notes]. Is that still where things are at?",
+        "exact_script": "Hi there - am I speaking with [Parent]? Thanks so much for booking in a consultation with me. Just to let you know, this call is recorded for training purposes. Is that okay? Brilliant. We''ve helped over 21,000 students across the UK improve their grades and confidence - and last year, 58% of our GCSE students achieved grades 7-9, which is more than double the national average. On this call, I''d love to understand what''s going on with your child, show you how we might help, and see if it''s a good fit. Should take about 10 minutes. How does that sound?",
         "required_elements": [
-          "Greet + thank them for booking",
-          "Brief proof/credibility (thousands of parents)",
-          "Promise outcome (understand situation, show how to help, see if it makes sense)",
-          "Plan for the call (10 minutes)",
-          "Micro-commitment (How does that sound?)"
-        ],
-        "red_flags": [
-          "How are you today? opener (conversion killer)",
-          "Launching into product pitch immediately",
-          "No agenda setting",
-          "Long company introduction"
+          "Greet + confirm speaking with right person",
+          "Recording disclosure",
+          "Proof/credibility (21,000+ students, 58% GCSE 7-9)",
+          "Promise + Plan + Micro-commitment"
         ]
       },
       "clarify": {
-        "name": "C - Clarify",
-        "duration": "1-2 min",
-        "goal": "Get prospect to state their problem/goal",
+        "name": "C - Clarify + Kill Zombies",
+        "duration": "2-3 min",
+        "goal": "Get details and handle decision-maker upfront",
         "exact_script": [
-          "So what''s going on with math that made you reach out?",
-          "Got it. And what grade is [Child] in? Which math course are they taking right now?",
-          "What would success look like for [Child] by the end of this school year?",
-          "And what made you reach out NOW versus a few months ago?"
-        ],
-        "required_elements": [
-          "Ask why they reached out (open-ended)",
-          "Get them to state their problem in their own words",
-          "Cover child''s grade level and current course",
-          "Ask about their goal/success criteria",
-          "Uncover urgency trigger"
+          "So first things first - what''s your child''s name?",
+          "Any other children who might benefit too?",
+          "What year is [Child] in?",
+          "For GCSE, we offer Maths, English, Biology, Chemistry, and Physics. Which subjects are you interested in?",
+          "Before I tell you more - is it only you making this decision, or should we get someone else involved upfront?"
         ]
       },
       "label": {
-        "name": "L - Label",
-        "duration": "30 sec",
-        "goal": "Name their problem back, get confirmation",
-        "exact_script": "Okay, so let me make sure I''ve got this right. [Child] is in [Grade] taking Algebra 1. The main challenge is [their specific pain - use their words]. And what you really want is [their stated goal]. Is that accurate?",
-        "required_elements": [
-          "Restate problem using THEIR words",
-          "Include grade, course, specific challenge, and goal",
-          "Get verbal confirmation",
-          "Acknowledge their input"
+        "name": "L - Label + Discovery",
+        "duration": "1-2 min",
+        "goal": "Understand their situation and confirm back",
+        "exact_script": [
+          "What''s been going on with [Child]''s education that made you reach out?",
+          "What would success look like by the end of this school year?",
+          "What made you reach out now?",
+          "So let me make sure I''ve got this right. [Child] is in [Year] taking [Subjects]. The main challenge is [pain]. And what you really want is [goal]. Is that right?"
         ]
       },
       "overview": {
         "name": "O - Overview (Pain Cycle)",
         "duration": "2-3 min",
         "goal": "Exhaust past attempts, surface all pain",
-        "importance": "THIS IS THE MOST IMPORTANT PHASE. Prospects don''t buy without pain.",
+        "importance": "THIS IS THE MOST IMPORTANT PHASE.",
         "exact_script": [
-          "Before I tell you about what we do, I want to understand what you''ve already tried. What have you done so far to help [Child] with math?",
-          "Okay, and how did that go?",
-          "Got it. What else have you tried?",
-          "Anything else?",
-          "So you''ve tried [list everything], and none of it has really stuck. Is that fair to say?",
-          "How long has this been going on?",
-          "And if nothing changes, what happens? Like, where does [Child] end up in 6 months if this doesn''t get fixed?"
-        ],
-        "active_listening_cues": [
-          "That makes sense.",
-          "I hear that a lot.",
-          "That''s really common at this grade."
+          "Before reaching out to us, what have you tried so far to help [Child]?",
+          "And how did that go?",
+          "Okay. And what else have you tried?",
+          "So you''ve tried [list], and none of it has quite worked. How long has this been going on?",
+          "And if things stay the way they are - what does that mean for [Child] by exam time?"
         ]
       },
       "sell_vacation": {
         "name": "S - Sell the Vacation",
         "duration": "2-3 min",
-        "goal": "Sell outcomes not features, lead with Eddie''s credentials",
-        "permission_script": "Okay, that''s really helpful. Can I tell you about how we might be able to help?",
-        "eddie_intro": "So the teacher is Eddie Kang. UCLA Pure Mathematics degree. Perfect SAT math score. Nine years teaching in high schools and colleges across California. We screened over 3,000 teachers to find him - he was the one. What makes Eddie different is how he explains things. He can take something confusing and make it click. Parents tell us their kids actually start enjoying math, which I know sounds crazy.",
-        "how_it_works": "[Child] joins live twice a week - Tue & Thu at 5pm Pacific / 8pm Eastern. Eddie''s teaching in real-time, kids are chatting and asking questions. Plus workbooks before class, practice problems after, and video solutions for every question. Everything they need.",
-        "proof_points": {
-          "engagement": "20-30 chat messages per student per lesson",
-          "attitude": "83% report attitude improvement",
-          "quality": "Best Online School 2025, 95% parent satisfaction",
-          "price": "$149/mo vs $60-80/hr tutors ($400+/mo)"
-        }
+        "goal": "Sell outcomes with teacher credentials",
+        "teacher_intro": "Our teachers are in the top 1% in the country. For GCSE, you get teachers like Neil Trivedi - 9+ years, 1st Class from UCL, or Guy Maycock with 12+ years and a decade of examining experience. They know exactly what the markers are looking for.",
+        "how_it_works": "[Child] gets 2 live lessons every week per subject with workbooks, practice problems with video solutions, and every lesson recorded.",
+        "gcse_bonus": "Because [Child] is in Year 11, the package includes our Easter Revision Course and Cram Course - led by actual examiners.",
+        "proof": "Last year, 58% of our GCSE students achieved grades 7-9 - more than double the national average. 95% parent satisfaction and 1,700+ five-star Trustpilot reviews."
       },
       "explain": {
         "name": "E - Explain (AAA Objection Handling)",
         "duration": "1-2 min",
-        "goal": "Handle objections: Acknowledge, Associate, Ask",
-        "buy_in_check": "Based on what I''ve explained, does this sound like it would help [Child] with [their stated goal]? Any questions about how the program works?",
-        "aaa_framework": {
-          "acknowledge": "Repeat their concern neutrally",
-          "associate": "Connect to success story or similar situation",
-          "ask": "Return with a question to move forward"
-        },
-        "key_principle": "The person asking questions is closing. Never answer an objection directly."
+        "goal": "Handle objections: Acknowledge, Associate, Ask"
       },
       "reinforce_close": {
         "name": "R - Reinforce + Close",
-        "duration": "1 min",
-        "goal": "Tiered close: Annual -> Monthly -> Trial",
-        "critical_note": "CRITICAL: Follow the tiered close. Don''t lead with trial. Once they say yes, STOP TALKING.",
-        "tier_1_annual": "So here''s what most parents do. The full course is $539 for the year - that''s less than $17 an hour for 60 hours of teaching from Eddie, plus all the workbooks, practice problems, and video solutions.",
-        "tier_2_monthly": "Totally fair. We also have monthly at $149. No long-term commitment - you can cancel anytime.",
-        "tier_3_trial": "Tell you what. Try it for $7 for a week. Full access to everything. If it''s not a fit, you cancel, no questions.",
-        "after_yes": "Great choice. Here''s what happens next: I''ll send you the link to register. [Child] can join their first class on Tuesday at 5pm Pacific."
+        "duration": "1-2 min",
+        "goal": "Tiered close with GCSE-specific urgency",
+        "tier_1_annual": "The full course is £[price]. That works out to around £4-5 per lesson versus £50 for a tutor. You can pay upfront for 5% off or split into 3 instalments.",
+        "multi_year_option": "For Year 10, I''d recommend our Multi-Year package - it covers through to GCSEs next year, including Summer School, Easter Revision, and Cram Course.",
+        "tier_2_monthly": "Monthly at £[80-180]/month - no lock-in, cancel anytime. Note: Monthly doesn''t include Easter Revision or Cram Course.",
+        "tier_3_trial": "Try it for 10 days, just £10. Full access. No auto-renewal.",
+        "exam_year_downsell": "If the full course isn''t right, we have a standalone Easter Revision Course specifically for GCSE students."
       }
     },
     "conviction_tonality": {
       "banned_phrases": [
-        "Personalized learning",
-        "Math can be fun!",
+        "Personalised learning",
+        "Maths can be fun!",
         "World-class / Best-in-class",
         "Unlock potential / Learning journey / Empower",
         "SUPER excited! / AMAZING!",
@@ -524,107 +434,87 @@ insert into scripts (name, course, version, is_active, content) values (
   }'::jsonb
 );
 
--- Geometry Script
+-- A-Level Script (Year 12-13)
 insert into scripts (name, course, version, is_active, content) values (
-  'Geometry Sales Script v2',
-  'Geometry',
-  2,
+  'A-Level Sales Script v1',
+  'A-Level',
+  1,
   true,
   '{
     "framework": "CLOSER (Hormozi)",
-    "target_duration": "8-12 minutes",
+    "target_duration": "10-15 minutes",
     "course_details": {
-      "name": "Geometry",
-      "schedule": {
-        "days": "Mon & Wed",
-        "pacific_time": "6pm",
-        "eastern_time": "9pm"
-      }
+      "name": "A-Level (Year 12-13)",
+      "year_groups": ["Year 12", "Year 13"],
+      "subjects": ["Maths", "Biology", "Chemistry", "Physics", "Further Maths", "English Literature"],
+      "teachers": {
+        "Maths": {"name": "Guy Maycock / Neil Trivedi", "credentials": "12+ years teaching, 10+ years A-Level examining / 9+ years, 1st Class from UCL"},
+        "Biology": {"name": "Laura Armstrong / Joe Wolfensohn", "credentials": "22+ years combined, 10+ years examining"},
+        "Chemistry": {"name": "Manny Opoku / Lajoy Tucker / Davinder Bhachu", "credentials": "Imperial, Oxford & UCL graduates"},
+        "Physics": {"name": "Dario Papavassilou / Brook Edgar", "credentials": "1st Class MSc & PhD"},
+        "Further Maths": {"name": "Guy Maycock / Nick Featherstone", "credentials": "27+ years combined, Masters from Oxford"},
+        "English Literature": {"name": "Eleanor St John Sutton", "credentials": "6+ years teaching, Double 1st from UPenn"}
+      },
+      "schedule_note": "2 live lessons per week per subject",
+      "exam_year_bonus": "Easter Revision Course and Cram Course included for Year 13"
     },
     "pricing": {
-      "annual_premium": {"price": 539, "payment_plan": "3x $180", "framing": "Less than $17/hr for 60 hours"},
-      "annual_essentials": {"price": 489, "payment_plan": "3x $163", "framing": "Save vs monthly"},
-      "monthly_premium": {"price": 149, "framing": "No lock-in, cancel anytime"},
-      "monthly_essentials": {"price": 135, "framing": "No lock-in, cancel anytime"},
-      "trial": {"price": 7, "duration": "7 days", "framing": "Full access, risk-free test"}
+      "annual_1_subject": {"price": 319, "original": 480, "lessons": 74},
+      "annual_2_subjects": {"price": 574.20, "original": 864, "lessons": 148},
+      "annual_ultimate": {"price": 789, "original": 1080, "lessons": 222},
+      "monthly": {"1_subject": 80, "2_subjects": 144, "ultimate": 180},
+      "trial": {"price": 10, "duration": "10 days"}
     },
     "closer_phases": {
       "opening": {
         "name": "Opening (Proof-Promise-Plan)",
         "duration": "30-60 sec",
         "goal": "Set agenda, build credibility, get micro-commitment",
-        "exact_script": "Hi [Name], this is [Rep] from MyEdSpace. Thanks for booking time with me. Quick background: we''ve helped thousands of parents get their kids confident in math, including a lot in Geometry specifically. On this call, I want to understand what''s going on with [Child], show you how we might help, and see if it makes sense. Should take about 10 minutes. How does that sound?",
-        "with_setter_notes": "Hey [Name], [Setter] mentioned [Child] is in [Grade] and [specific issue from notes]. Is that still where things are at?",
-        "required_elements": [
-          "Greet + thank them for booking",
-          "Brief proof/credibility (thousands of parents)",
-          "Promise outcome (understand situation, show how to help, see if it makes sense)",
-          "Plan for the call (10 minutes)",
-          "Micro-commitment (How does that sound?)"
-        ]
+        "exact_script": "Hi there - am I speaking with [Parent]? Thanks so much for booking in a consultation. This call is recorded for training purposes - is that okay? Brilliant. We''ve helped over 21,000 students across the UK, and our students perform on average 3x better than national averages. On this call, I''d love to understand what''s going on, show you how we might help, and see if it''s a good fit. About 10 minutes. How does that sound?"
       },
       "clarify": {
-        "name": "C - Clarify",
-        "duration": "1-2 min",
-        "goal": "Get prospect to state their problem/goal",
+        "name": "C - Clarify + Kill Zombies",
+        "duration": "2-3 min",
+        "goal": "Get details and handle decision-maker upfront",
         "exact_script": [
-          "So what''s going on with math that made you reach out?",
-          "Got it. And what grade is [Child] in? Which math course are they taking right now?",
-          "What would success look like for [Child] by the end of this school year?",
-          "And what made you reach out NOW versus a few months ago?"
+          "What''s your child''s name?",
+          "Any siblings who might need support too?",
+          "What year are they in?",
+          "For A-Level, we offer Maths, Biology, Chemistry, Physics, Further Maths, and English Literature. Which subjects?",
+          "Is it only you making this decision, or should we get someone else involved?"
         ]
       },
       "label": {
-        "name": "L - Label",
-        "duration": "30 sec",
-        "goal": "Name their problem back, get confirmation",
-        "exact_script": "Okay, so let me make sure I''ve got this right. [Child] is in [Grade] taking Geometry. The main challenge is [their specific pain - use their words]. And what you really want is [their stated goal]. Is that accurate?"
+        "name": "L - Label + Discovery",
+        "duration": "1-2 min",
+        "goal": "Understand and confirm back"
       },
       "overview": {
         "name": "O - Overview (Pain Cycle)",
         "duration": "2-3 min",
         "goal": "Exhaust past attempts, surface all pain",
-        "importance": "THIS IS THE MOST IMPORTANT PHASE. Prospects don''t buy without pain.",
-        "exact_script": [
-          "Before I tell you about what we do, I want to understand what you''ve already tried. What have you done so far to help [Child] with math?",
-          "Okay, and how did that go?",
-          "Got it. What else have you tried?",
-          "Anything else?",
-          "So you''ve tried [list everything], and none of it has really stuck. Is that fair to say?",
-          "How long has this been going on?",
-          "And if nothing changes, what happens? Like, where does [Child] end up in 6 months if this doesn''t get fixed?"
-        ]
+        "importance": "THIS IS THE MOST IMPORTANT PHASE."
       },
       "sell_vacation": {
         "name": "S - Sell the Vacation",
         "duration": "2-3 min",
-        "goal": "Sell outcomes not features, lead with Eddie''s credentials",
-        "permission_script": "Okay, that''s really helpful. Can I tell you about how we might be able to help?",
-        "eddie_intro": "So the teacher is Eddie Kang. UCLA Pure Mathematics degree. Perfect SAT math score. Nine years teaching in high schools and colleges across California. We screened over 3,000 teachers to find him - he was the one. What makes Eddie different is how he explains things. He can take something confusing and make it click. Parents tell us their kids actually start enjoying math, which I know sounds crazy.",
-        "how_it_works": "[Child] joins live twice a week - Mon & Wed at 6pm Pacific / 9pm Eastern. Eddie''s teaching in real-time, kids are chatting and asking questions. Plus workbooks before class, practice problems after, and video solutions for every question. Everything they need."
+        "goal": "Lead with teacher credentials, A-Level specific",
+        "teacher_intro": "For A-Level, you get teachers like Guy Maycock - 12+ years teaching and over a decade as an A-Level examiner. He literally knows what the markers are looking for. Laura Armstrong in Biology has 10+ years examining experience."
       },
       "explain": {
         "name": "E - Explain (AAA Objection Handling)",
         "duration": "1-2 min",
-        "goal": "Handle objections: Acknowledge, Associate, Ask",
-        "buy_in_check": "Based on what I''ve explained, does this sound like it would help [Child] with [their stated goal]? Any questions about how the program works?",
-        "key_principle": "The person asking questions is closing. Never answer an objection directly."
+        "goal": "Handle objections: Acknowledge, Associate, Ask"
       },
       "reinforce_close": {
         "name": "R - Reinforce + Close",
-        "duration": "1 min",
-        "goal": "Tiered close: Annual -> Monthly -> Trial",
-        "critical_note": "CRITICAL: Follow the tiered close. Don''t lead with trial. Once they say yes, STOP TALKING.",
-        "tier_1_annual": "So here''s what most parents do. The full course is $539 for the year - that''s less than $17 an hour for 60 hours of teaching from Eddie, plus all the workbooks, practice problems, and video solutions.",
-        "tier_2_monthly": "Totally fair. We also have monthly at $149. No long-term commitment - you can cancel anytime.",
-        "tier_3_trial": "Tell you what. Try it for $7 for a week. Full access to everything. If it''s not a fit, you cancel, no questions.",
-        "after_yes": "Great choice. Here''s what happens next: I''ll send you the link to register. [Child] can join their first class on Monday at 6pm Pacific."
+        "duration": "1-2 min",
+        "goal": "Tiered close"
       }
     },
     "conviction_tonality": {
       "banned_phrases": [
-        "Personalized learning",
-        "Math can be fun!",
+        "Personalised learning",
         "World-class / Best-in-class",
         "Unlock potential / Learning journey / Empower",
         "SUPER excited! / AMAZING!",
@@ -634,107 +524,84 @@ insert into scripts (name, course, version, is_active, content) values (
   }'::jsonb
 );
 
--- Algebra 2 Script
+-- Primary Script (Year 5-6: Maths, English, Science, 11+)
 insert into scripts (name, course, version, is_active, content) values (
-  'Algebra 2 Sales Script v2',
-  'Algebra 2',
-  2,
+  'Primary Sales Script v1',
+  'Primary',
+  1,
   true,
   '{
     "framework": "CLOSER (Hormozi)",
-    "target_duration": "8-12 minutes",
+    "target_duration": "10-15 minutes",
     "course_details": {
-      "name": "Algebra 2",
-      "schedule": {
-        "days": "Tue & Thu",
-        "pacific_time": "6pm",
-        "eastern_time": "9pm"
-      }
+      "name": "Primary (Year 5-6)",
+      "year_groups": ["Year 5", "Year 6"],
+      "subjects": ["Maths", "English", "Science", "11+"],
+      "teachers": {
+        "Maths": {"name": "Neil Trivedi", "credentials": "9+ years teaching, 1st Class in Maths from UCL"},
+        "English": {"name": "Louis Provis", "credentials": "11+ years teaching, MAs from Cambridge & Oxford"},
+        "Science": {"name": "Lajoy Tucker, Hannah Shuter & Emma Williams", "credentials": "40+ years combined"},
+        "11+": {"name": "Nick Featherstone & Louis Provis", "credentials": "26+ years combined, Masters from Oxford"}
+      },
+      "schedule_note": "2 live lessons per week per subject, weekday afternoons/evenings"
     },
     "pricing": {
-      "annual_premium": {"price": 539, "payment_plan": "3x $180", "framing": "Less than $17/hr for 60 hours"},
-      "annual_essentials": {"price": 489, "payment_plan": "3x $163", "framing": "Save vs monthly"},
-      "monthly_premium": {"price": 149, "framing": "No lock-in, cancel anytime"},
-      "monthly_essentials": {"price": 135, "framing": "No lock-in, cancel anytime"},
-      "trial": {"price": 7, "duration": "7 days", "framing": "Full access, risk-free test"}
+      "annual_1_subject": {"price": 319, "original": 480, "lessons": 74},
+      "annual_2_subjects": {"price": 574.20, "original": 864, "lessons": 148},
+      "annual_ultimate": {"price": 789, "original": 1080, "lessons": 222},
+      "monthly": {"1_subject": 80, "2_subjects": 144, "ultimate": 180},
+      "trial": {"price": 10, "duration": "10 days"}
     },
     "closer_phases": {
       "opening": {
         "name": "Opening (Proof-Promise-Plan)",
         "duration": "30-60 sec",
         "goal": "Set agenda, build credibility, get micro-commitment",
-        "exact_script": "Hi [Name], this is [Rep] from MyEdSpace. Thanks for booking time with me. Quick background: we''ve helped thousands of parents get their kids confident in math, including a lot in Algebra 2 specifically. On this call, I want to understand what''s going on with [Child], show you how we might help, and see if it makes sense. Should take about 10 minutes. How does that sound?",
-        "with_setter_notes": "Hey [Name], [Setter] mentioned [Child] is in [Grade] and [specific issue from notes]. Is that still where things are at?",
-        "required_elements": [
-          "Greet + thank them for booking",
-          "Brief proof/credibility (thousands of parents)",
-          "Promise outcome (understand situation, show how to help, see if it makes sense)",
-          "Plan for the call (10 minutes)",
-          "Micro-commitment (How does that sound?)"
-        ]
+        "exact_script": "Hi there - am I speaking with [Parent]? Thanks so much for booking in a consultation. This call is recorded for training purposes - is that okay? Brilliant. We''ve helped over 21,000 students across the UK improve their grades and confidence. On this call, I''d love to understand what''s going on, show you how we might help, and see if it''s a good fit. About 10 minutes. How does that sound?"
       },
       "clarify": {
-        "name": "C - Clarify",
-        "duration": "1-2 min",
-        "goal": "Get prospect to state their problem/goal",
+        "name": "C - Clarify + Kill Zombies",
+        "duration": "2-3 min",
+        "goal": "Get details",
         "exact_script": [
-          "So what''s going on with math that made you reach out?",
-          "Got it. And what grade is [Child] in? Which math course are they taking right now?",
-          "What would success look like for [Child] by the end of this school year?",
-          "And what made you reach out NOW versus a few months ago?"
+          "What''s your child''s name?",
+          "Any siblings?",
+          "What year are they in?",
+          "For Year 5, we offer Maths, English, Science, and 11+ prep. Which are you interested in?",
+          "Is it only you making this decision?"
         ]
       },
       "label": {
-        "name": "L - Label",
-        "duration": "30 sec",
-        "goal": "Name their problem back, get confirmation",
-        "exact_script": "Okay, so let me make sure I''ve got this right. [Child] is in [Grade] taking Algebra 2. The main challenge is [their specific pain - use their words]. And what you really want is [their stated goal]. Is that accurate?"
+        "name": "L - Label + Discovery",
+        "duration": "1-2 min",
+        "goal": "Understand and confirm back"
       },
       "overview": {
         "name": "O - Overview (Pain Cycle)",
         "duration": "2-3 min",
-        "goal": "Exhaust past attempts, surface all pain",
-        "importance": "THIS IS THE MOST IMPORTANT PHASE. Prospects don''t buy without pain.",
-        "exact_script": [
-          "Before I tell you about what we do, I want to understand what you''ve already tried. What have you done so far to help [Child] with math?",
-          "Okay, and how did that go?",
-          "Got it. What else have you tried?",
-          "Anything else?",
-          "So you''ve tried [list everything], and none of it has really stuck. Is that fair to say?",
-          "How long has this been going on?",
-          "And if nothing changes, what happens? Like, where does [Child] end up in 6 months if this doesn''t get fixed?"
-        ]
+        "goal": "Exhaust past attempts",
+        "importance": "THIS IS THE MOST IMPORTANT PHASE."
       },
       "sell_vacation": {
         "name": "S - Sell the Vacation",
         "duration": "2-3 min",
-        "goal": "Sell outcomes not features, lead with Eddie''s credentials",
-        "permission_script": "Okay, that''s really helpful. Can I tell you about how we might be able to help?",
-        "eddie_intro": "So the teacher is Eddie Kang. UCLA Pure Mathematics degree. Perfect SAT math score. Nine years teaching in high schools and colleges across California. We screened over 3,000 teachers to find him - he was the one. What makes Eddie different is how he explains things. He can take something confusing and make it click. Parents tell us their kids actually start enjoying math, which I know sounds crazy.",
-        "how_it_works": "[Child] joins live twice a week - Tue & Thu at 6pm Pacific / 9pm Eastern. Eddie''s teaching in real-time, kids are chatting and asking questions. Plus workbooks before class, practice problems after, and video solutions for every question. Everything they need."
+        "goal": "Lead with teacher credentials",
+        "teacher_intro": "For Year 5 Maths, [Child] will be taught by Neil Trivedi - 9+ years of teaching, 1st Class in Maths from UCL. For English, Louis Provis with MAs from both Cambridge and Oxford. These aren''t just any teachers."
       },
       "explain": {
         "name": "E - Explain (AAA Objection Handling)",
         "duration": "1-2 min",
-        "goal": "Handle objections: Acknowledge, Associate, Ask",
-        "buy_in_check": "Based on what I''ve explained, does this sound like it would help [Child] with [their stated goal]? Any questions about how the program works?",
-        "key_principle": "The person asking questions is closing. Never answer an objection directly."
+        "goal": "Handle objections"
       },
       "reinforce_close": {
         "name": "R - Reinforce + Close",
-        "duration": "1 min",
-        "goal": "Tiered close: Annual -> Monthly -> Trial",
-        "critical_note": "CRITICAL: Follow the tiered close. Don''t lead with trial. Once they say yes, STOP TALKING.",
-        "tier_1_annual": "So here''s what most parents do. The full course is $539 for the year - that''s less than $17 an hour for 60 hours of teaching from Eddie, plus all the workbooks, practice problems, and video solutions.",
-        "tier_2_monthly": "Totally fair. We also have monthly at $149. No long-term commitment - you can cancel anytime.",
-        "tier_3_trial": "Tell you what. Try it for $7 for a week. Full access to everything. If it''s not a fit, you cancel, no questions.",
-        "after_yes": "Great choice. Here''s what happens next: I''ll send you the link to register. [Child] can join their first class on Tuesday at 6pm Pacific."
+        "duration": "1-2 min",
+        "goal": "Tiered close"
       }
     },
     "conviction_tonality": {
       "banned_phrases": [
-        "Personalized learning",
-        "Math can be fun!",
+        "Personalised learning",
         "World-class / Best-in-class",
         "Unlock potential / Learning journey / Empower",
         "SUPER excited! / AMAZING!",
