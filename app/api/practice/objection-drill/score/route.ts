@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import OpenAI from 'openai';
 import { objections, type Objection } from '@/lib/practice/objections';
 
+export const dynamic = 'force-dynamic';
 let _openai: OpenAI | null = null;
 function getOpenAI() {
   if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

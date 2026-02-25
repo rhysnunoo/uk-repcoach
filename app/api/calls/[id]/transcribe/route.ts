@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { transcribeWithWhisper } from '@/lib/openai/transcribe';
 import { scoreCall } from '@/lib/scoring/score';
 
+export const dynamic = 'force-dynamic';
 interface TranscribeRouteParams {
   params: Promise<{ id: string }>;
 }

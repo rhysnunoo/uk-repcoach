@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
 import type { CallStatus } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
 let _openai: OpenAI | null = null;
 function getOpenAI() {
   if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

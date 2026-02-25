@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { cache, cacheKey, CACHE_TTL } from '@/lib/cache/simple-cache';
 
+export const dynamic = 'force-dynamic';
 interface CallWithScores {
   id: string;
   rep_id: string;

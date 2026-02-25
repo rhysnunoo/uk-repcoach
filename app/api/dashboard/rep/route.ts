@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { cache, cacheKey, CACHE_TTL } from '@/lib/cache/simple-cache';
 
+export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const supabase = await createClient();

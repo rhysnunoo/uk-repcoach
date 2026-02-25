@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { getProfile } from '@/lib/supabase/server';
 import type { UserRole } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const profile = await getProfile();

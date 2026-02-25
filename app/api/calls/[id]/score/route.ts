@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import { scoreCall, rescoreCall } from '@/lib/scoring/score';
 
+export const dynamic = 'force-dynamic';
 interface ScoreRouteParams {
   params: Promise<{ id: string }>;
 }

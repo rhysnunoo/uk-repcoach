@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getProfile } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
+export const dynamic = 'force-dynamic';
 interface ReassignRouteParams {
   params: Promise<{ id: string }>;
 }

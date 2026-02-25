@@ -6,6 +6,7 @@ import { personas } from '@/lib/practice/personas';
 import { scorePracticeSession } from '@/lib/scoring/practice-scoring';
 import type { PracticeMessage, SessionState, PersonaType, ScriptContent } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
 let _openai: OpenAI | null = null;
 function getOpenAI() {
   if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
