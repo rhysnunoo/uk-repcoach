@@ -2,7 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Check if a call already exists based on phone number and call time
- * Used to prevent duplicates between HubSpot and Ringover imports
+ * Used to prevent duplicate call imports
  *
  * Matching criteria:
  * 1. Same phone number (normalized)

@@ -3,7 +3,6 @@ import { getProfile, createClient } from '@/lib/supabase/server';
 import { AppLayout } from '@/components/layout/app-layout';
 import { CallUploader } from '@/components/calls/call-uploader';
 import { BulkUploader } from '@/components/calls/bulk-uploader';
-import { RingoverUploader } from '@/components/calls/ringover-uploader';
 import { UploadTabs } from '@/components/calls/upload-tabs';
 
 interface UploadPageProps {
@@ -61,9 +60,6 @@ export default async function UploadCallPage({ searchParams }: UploadPageProps) 
             reps={reps}
             currentUserId={profile.id}
           />
-        )}
-        {mode === 'ringover' && (
-          <RingoverUploader />
         )}
       </div>
     </AppLayout>

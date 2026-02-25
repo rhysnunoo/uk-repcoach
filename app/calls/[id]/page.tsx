@@ -214,7 +214,7 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
                 <div className="flex justify-between">
                   <dt className="text-gray-500">Source</dt>
                   <dd className="font-medium">
-                    {call.source === 'hubspot' ? 'HubSpot' : call.source === 'ringover' ? 'Ringover' : 'Manual Upload'}
+                    {call.source === 'manual' ? 'Manual Upload' : call.source}
                   </dd>
                 </div>
                 <div className="flex justify-between">
@@ -241,14 +241,6 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
                     )}
                   </dd>
                 </div>
-                {call.hubspot_call_id && (
-                  <div className="flex justify-between">
-                    <dt className="text-gray-500">HubSpot ID</dt>
-                    <dd className="font-medium text-xs font-mono">
-                      {call.hubspot_call_id}
-                    </dd>
-                  </div>
-                )}
               </dl>
             </div>
 
