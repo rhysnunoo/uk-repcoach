@@ -60,7 +60,7 @@ export async function POST(request: NextRequest, { params }: PracticeRouteParams
     const persona = personas[session.persona as PersonaType];
     const currentState = (session.session_state || {}) as SessionState;
     const messages = (session.messages || []) as PracticeMessage[];
-    const scriptContent = session.scripts?.content as Record<string, unknown> | null;
+    const scriptContent = session.scripts?.content as ScriptContent | null;
 
     // Build conversation history
     const conversationHistory = messages.map((msg) => ({
@@ -176,7 +176,7 @@ export async function PATCH(request: NextRequest, { params }: PracticeRouteParam
 
       // Score the session
       const persona = personas[session.persona as PersonaType];
-      const scriptContent = session.scripts?.content as Record<string, unknown> | null;
+      const scriptContent = session.scripts?.content as ScriptContent | null;
       await scoreSession(
         sessionId,
         session.messages as PracticeMessage[],

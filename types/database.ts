@@ -1,5 +1,5 @@
 export type UserRole = 'rep' | 'manager' | 'admin';
-export type CallSource = 'hubspot' | 'ringover' | 'manual';
+export type CallSource = 'manual' | 'bitrix';
 export type CallStatus = 'pending' | 'transcribing' | 'scoring' | 'complete' | 'error';
 export type PracticeStatus = 'active' | 'completed' | 'abandoned';
 export type PersonaType = 'skeptical_parent' | 'price_sensitive' | 'engaged_ready' | 'spouse_blocker' | 'math_hater';
@@ -9,8 +9,6 @@ export interface Profile {
   email: string;
   full_name: string | null;
   role: UserRole;
-  hubspot_owner_id: string | null;
-  ringover_user_id: string | null;
   avatar_url: string | null;
   created_at: string;
   updated_at: string;
@@ -118,10 +116,6 @@ export interface Call {
   script_id: string | null;
   source: CallSource;
   status: CallStatus;
-  hubspot_call_id: string | null;
-  hubspot_contact_id: string | null;
-  hubspot_deal_id: string | null;
-  ringover_call_id: string | null;
   recording_url: string | null;
   storage_path: string | null;
   transcript: TranscriptSegment[] | null;
@@ -202,28 +196,6 @@ export interface CallNote {
   is_flagged: boolean;
   created_at: string;
   updated_at: string;
-}
-
-export interface HubspotSyncLog {
-  id: string;
-  sync_type: 'manual' | 'cron';
-  started_at: string;
-  ended_at: string | null;
-  calls_synced: number;
-  calls_failed: number;
-  error_message: string | null;
-  details: Record<string, unknown> | null;
-}
-
-export interface RingoverSyncLog {
-  id: string;
-  sync_type: 'manual' | 'cron';
-  started_at: string;
-  ended_at: string | null;
-  calls_synced: number;
-  calls_failed: number;
-  error_message: string | null;
-  details: Record<string, unknown> | null;
 }
 
 // Dashboard Types
@@ -379,8 +351,6 @@ export type Database = {
           email: string;
           full_name: string | null;
           role: UserRole;
-          hubspot_owner_id: string | null;
-          ringover_user_id: string | null;
           avatar_url: string | null;
           created_at: string;
           updated_at: string;
@@ -390,16 +360,12 @@ export type Database = {
           email: string;
           full_name?: string | null;
           role?: UserRole;
-          hubspot_owner_id?: string | null;
-          ringover_user_id?: string | null;
           avatar_url?: string | null;
         };
         Update: {
           email?: string;
           full_name?: string | null;
           role?: UserRole;
-          hubspot_owner_id?: string | null;
-          ringover_user_id?: string | null;
           avatar_url?: string | null;
         };
         Relationships: [];
@@ -438,10 +404,6 @@ export type Database = {
           script_id: string | null;
           source: CallSource;
           status: CallStatus;
-          hubspot_call_id: string | null;
-          hubspot_contact_id: string | null;
-          hubspot_deal_id: string | null;
-          ringover_call_id: string | null;
           recording_url: string | null;
           storage_path: string | null;
           transcript: TranscriptSegment[] | null;
@@ -462,10 +424,6 @@ export type Database = {
           script_id?: string | null;
           source: CallSource;
           status?: CallStatus;
-          hubspot_call_id?: string | null;
-          hubspot_contact_id?: string | null;
-          hubspot_deal_id?: string | null;
-          ringover_call_id?: string | null;
           recording_url?: string | null;
           storage_path?: string | null;
           transcript?: TranscriptSegment[] | null;
@@ -484,10 +442,6 @@ export type Database = {
           script_id?: string | null;
           source?: CallSource;
           status?: CallStatus;
-          hubspot_call_id?: string | null;
-          hubspot_contact_id?: string | null;
-          hubspot_deal_id?: string | null;
-          ringover_call_id?: string | null;
           recording_url?: string | null;
           storage_path?: string | null;
           transcript?: TranscriptSegment[] | null;
@@ -501,7 +455,15 @@ export type Database = {
           error_message?: string | null;
           bookmarks?: CallBookmark[] | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "calls_script_id_fkey";
+            columns: ["script_id"];
+            isOneToOne: false;
+            referencedRelation: "scripts";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       scores: {
         Row: {
@@ -574,7 +536,15 @@ export type Database = {
           started_at?: string;
           ended_at?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "practice_sessions_script_id_fkey";
+            columns: ["script_id"];
+            isOneToOne: false;
+            referencedRelation: "scripts";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       call_notes: {
         Row: {
@@ -597,68 +567,6 @@ export type Database = {
           author_id?: string;
           content?: string;
           is_flagged?: boolean;
-        };
-        Relationships: [];
-      };
-      hubspot_sync_log: {
-        Row: {
-          id: string;
-          sync_type: 'manual' | 'cron';
-          started_at: string;
-          ended_at: string | null;
-          calls_synced: number;
-          calls_failed: number;
-          error_message: string | null;
-          details: Record<string, unknown> | null;
-        };
-        Insert: {
-          sync_type: 'manual' | 'cron';
-          started_at: string;
-          ended_at?: string | null;
-          calls_synced?: number;
-          calls_failed?: number;
-          error_message?: string | null;
-          details?: Record<string, unknown> | null;
-        };
-        Update: {
-          sync_type?: 'manual' | 'cron';
-          started_at?: string;
-          ended_at?: string | null;
-          calls_synced?: number;
-          calls_failed?: number;
-          error_message?: string | null;
-          details?: Record<string, unknown> | null;
-        };
-        Relationships: [];
-      };
-      ringover_sync_log: {
-        Row: {
-          id: string;
-          sync_type: 'manual' | 'cron';
-          started_at: string;
-          ended_at: string | null;
-          calls_synced: number;
-          calls_failed: number;
-          error_message: string | null;
-          details: Record<string, unknown> | null;
-        };
-        Insert: {
-          sync_type: 'manual' | 'cron';
-          started_at: string;
-          ended_at?: string | null;
-          calls_synced?: number;
-          calls_failed?: number;
-          error_message?: string | null;
-          details?: Record<string, unknown> | null;
-        };
-        Update: {
-          sync_type?: 'manual' | 'cron';
-          started_at?: string;
-          ended_at?: string | null;
-          calls_synced?: number;
-          calls_failed?: number;
-          error_message?: string | null;
-          details?: Record<string, unknown> | null;
         };
         Relationships: [];
       };

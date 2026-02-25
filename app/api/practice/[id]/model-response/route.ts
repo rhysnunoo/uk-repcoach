@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
 import { personas } from '@/lib/practice/personas';
-import type { PracticeMessage, SessionState, PersonaType } from '@/types/database';
+import type { PracticeMessage, SessionState, PersonaType, ScriptContent } from '@/types/database';
 
 let _openai: OpenAI | null = null;
 function getOpenAI() {
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const messages = (session.messages || []) as PracticeMessage[];
     const sessionState = (session.session_state || {}) as SessionState;
     const persona = personas[session.persona as PersonaType];
-    const scriptContent = session.scripts?.content as Record<string, unknown> | null;
+    const scriptContent = session.scripts?.content as ScriptContent | null;
 
     // Build conversation history up to the specified turn
     // We want to generate what the rep SHOULD have said at turnIndex

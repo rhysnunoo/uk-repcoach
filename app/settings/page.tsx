@@ -3,7 +3,6 @@ import { getProfile } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { AppLayout } from '@/components/layout/app-layout';
 import { UserManagement } from '@/components/settings/user-management';
-import { RingoverSettings } from '@/components/settings/ringover-settings';
 
 export default async function SettingsPage() {
   const profile = await getProfile();
@@ -28,13 +27,6 @@ export default async function SettingsPage() {
     console.error('Failed to fetch profiles:', error);
   }
 
-  // Fetch Ringover sync logs
-  const { data: syncLogs } = await adminClient
-    .from('ringover_sync_log')
-    .select('*')
-    .order('started_at', { ascending: false })
-    .limit(20);
-
   return (
     <AppLayout profile={profile}>
       <div className="space-y-6">
@@ -46,8 +38,6 @@ export default async function SettingsPage() {
         </div>
 
         <UserManagement profiles={profiles || []} />
-
-        <RingoverSettings syncLogs={syncLogs || []} />
       </div>
     </AppLayout>
   );

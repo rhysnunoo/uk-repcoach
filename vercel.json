@@ -1,12 +1,3 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/hubspot-sync",
-      "schedule": "0 */6 * * *"
-    },
-    {
-      "path": "/api/cron/ringover-sync",
-      "schedule": "0 */1 * * *"
-    }
-  ]
+  "crons": []
 }

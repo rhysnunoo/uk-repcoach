@@ -202,7 +202,7 @@ export const ManagerDashboard = memo(function ManagerDashboard({
             <AlertItem
               type="neutral"
               title="No scored calls yet"
-              description="Set up HubSpot sync or have reps upload calls to start tracking"
+              description="Have reps upload calls to start tracking"
             />
           )}
         </div>

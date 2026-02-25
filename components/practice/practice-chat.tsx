@@ -527,28 +527,28 @@ function PracticeScoreDetails({ feedback }: { feedback: string | null }) {
                 <p className="text-gray-600">{phase.feedback}</p>
 
                 {/* You Said vs Should Say comparison */}
-                {(phase.you_said?.length > 0 || phase.should_say?.length > 0) && (
+                {((phase.you_said?.length ?? 0) > 0 || (phase.should_say?.length ?? 0) > 0) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {phase.you_said?.length > 0 && (
+                    {(phase.you_said?.length ?? 0) > 0 && (
                       <div className="bg-red-50 p-3 border border-red-200 rounded">
                         <h5 className="text-xs font-semibold text-red-800 mb-2 flex items-center gap-1">
                           <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                           You Said
                         </h5>
-                        {phase.you_said.map((quote, i) => (
+                        {phase.you_said!.map((quote, i) => (
                           <p key={i} className="text-sm text-red-700 italic mb-1">
                             {`"${quote}"`}
                           </p>
                         ))}
                       </div>
                     )}
-                    {phase.should_say?.length > 0 && (
+                    {(phase.should_say?.length ?? 0) > 0 && (
                       <div className="bg-green-50 p-3 border border-green-200 rounded">
                         <h5 className="text-xs font-semibold text-green-800 mb-2 flex items-center gap-1">
                           <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                           Try This Instead
                         </h5>
-                        {phase.should_say.map((suggestion, i) => (
+                        {phase.should_say!.map((suggestion, i) => (
                           <p key={i} className="text-sm text-green-700 mb-1">
                             {suggestion}
                           </p>

@@ -10,7 +10,6 @@ export function UploadTabs({ currentMode }: UploadTabsProps) {
   const tabs = [
     { id: 'single', label: 'Single Upload', href: '/calls/upload' },
     { id: 'bulk', label: 'Bulk Upload', href: '/calls/upload?mode=bulk' },
-    { id: 'ringover', label: 'Ringover Import', href: '/calls/upload?mode=ringover' },
   ];
 
   return (

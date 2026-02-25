@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
+import type { CallStatus } from '@/types/database';
 
 let _openai: OpenAI | null = null;
 function getOpenAI() {
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     // Filter by status if provided
     if (status) {
-      query = query.eq('status', status);
+      query = query.eq('status', status as CallStatus);
     }
 
     const { data: calls, error } = await query;
@@ -309,7 +310,7 @@ async function processCallAsync(callId: string, storagePath: string) {
     console.log(`[processCallAsync] Transcript saved, triggering scoring...`);
 
     // Trigger scoring
-    await scoreCall(callId);
+    await scoreCallDirect(callId);
     console.log(`[processCallAsync] Processing complete for call ${callId}`);
   } catch (error) {
     console.error('[processCallAsync] Processing error:', error);

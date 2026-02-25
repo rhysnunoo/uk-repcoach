@@ -72,7 +72,6 @@ export function CallFilters({ onFilterChange }: CallFiltersProps) {
             className="input"
           >
             <option value="">All Sources</option>
-            <option value="hubspot">HubSpot</option>
             <option value="manual">Manual Upload</option>
           </select>
         </div>

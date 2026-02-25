@@ -193,20 +193,7 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
                         </td>
                       )}
                       <td className="font-medium">
-                        {call.contact_phone ? (
-                          <a
-                            href={`https://app.hubspot.com/contacts/${process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID}/objects/0-1/views/all/list?query=${encodeURIComponent(call.contact_phone)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline"
-                            title="Search in HubSpot"
-                          >
-                            {call.contact_name || call.contact_phone}
-                            <span className="ml-1 text-xs">↗</span>
-                          </a>
-                        ) : (
-                          call.contact_name || 'Unknown'
-                        )}
+                        {call.contact_name || call.contact_phone || 'Unknown'}
                       </td>
                       <td className="text-gray-600">
                         {call.duration_seconds
@@ -262,18 +249,13 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
               <p className="mt-2 text-sm text-gray-500">
                 {Object.keys(params).length > 0
                   ? 'Try adjusting your filters.'
-                  : 'Upload a call recording or sync from HubSpot to get started.'}
+                  : 'Upload a call recording to get started.'}
               </p>
               {Object.keys(params).length === 0 && (
                 <div className="mt-6 flex justify-center gap-4">
                   <Link href="/calls/upload" className="btn-primary">
                     Upload Call
                   </Link>
-                  {isManager && (
-                    <Link href="/settings" className="btn-secondary">
-                      Configure HubSpot
-                    </Link>
-                  )}
                 </div>
               )}
             </div>

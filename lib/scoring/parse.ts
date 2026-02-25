@@ -20,6 +20,7 @@ const objectionSchema = z.object({
   objection: z.string(),
   category: z.string(),
   handling_score: z.number().min(0).max(100),
+  used_aaa: z.boolean().default(false),
   feedback: z.string(),
 });
 
