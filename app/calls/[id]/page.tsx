@@ -113,7 +113,7 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
 
         {/* Processing Status */}
         {call.status !== 'complete' && call.status !== 'error' && (
-          <CallStatusPoller callId={id} status={call.status} />
+          <CallStatusPoller callId={id} status={call.status} durationSeconds={call.duration_seconds} />
         )}
 
         {/* Error Status */}
