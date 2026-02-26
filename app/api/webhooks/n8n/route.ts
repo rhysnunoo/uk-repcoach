@@ -96,10 +96,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'skipped', reason: 'Call already exists' });
     }
 
-    // Find rep by bitrix_user_id in lookup table
+    // Find rep by bitrix_user_id in profiles table
     const { data: rep } = await adminClient
-      .from('bitrix_user_mapping')
-      .select('bitrix_user_id, full_name, email')
+      .from('profiles')
+      .select('id, bitrix_user_id, full_name, email')
       .eq('bitrix_user_id', payload.bitrix_user_id)
       .single();
 
@@ -128,6 +128,7 @@ export async function POST(request: NextRequest) {
     const { data: newCall, error: insertError } = await adminClient
       .from('calls')
       .insert({
+        rep_id: rep.id,
         bitrix_user_id: rep.bitrix_user_id,
         source: 'bitrix',
         status: 'transcribing',
