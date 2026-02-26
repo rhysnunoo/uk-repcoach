@@ -44,7 +44,7 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
   // Fetch call with transcript
   const { data: call, error: callError } = await adminClient
     .from('calls')
-    .select('*, scripts(*)')
+    .select('*')
     .eq('id', callId)
     .single();
 
@@ -56,9 +56,8 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
     throw new Error('No transcript available for scoring');
   }
 
-  // Get script content - use empty object if no script (defaults will be used)
-  const scripts = call.scripts as unknown as { content: ScriptContent }[] | null;
-  const scriptContent = scripts?.[0]?.content || {} as ScriptContent;
+  // Use default scoring (no script-specific content)
+  const scriptContent = {} as ScriptContent;
 
   // Update status
   await adminClient

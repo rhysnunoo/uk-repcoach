@@ -96,19 +96,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'skipped', reason: 'Call already exists' });
     }
 
-    // Find rep by bitrix_user_id
-    const { data: profile } = await adminClient
-      .from('profiles')
-      .select('id, full_name')
+    // Find rep by bitrix_user_id in lookup table
+    const { data: rep } = await adminClient
+      .from('bitrix_user_mapping')
+      .select('bitrix_user_id, full_name, email')
       .eq('bitrix_user_id', payload.bitrix_user_id)
       .single();
 
-    if (!profile) {
+    if (!rep) {
       console.log('[n8n Webhook] No matching rep for bitrix_user_id:', payload.bitrix_user_id);
       return NextResponse.json({ status: 'skipped', reason: 'No matching rep found' });
     }
 
-    console.log('[n8n Webhook] Matched rep:', profile.full_name, '(', profile.id, ')');
+    console.log('[n8n Webhook] Matched rep:', rep.full_name, '(', rep.email, ')');
 
     // Check for duplicates from other sources
     const callDate = payload.call_date || new Date().toISOString();
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     const { data: newCall, error: insertError } = await adminClient
       .from('calls')
       .insert({
-        rep_id: profile.id,
+        bitrix_user_id: rep.bitrix_user_id,
         source: 'bitrix',
         status: 'transcribing',
         bitrix_call_id: payload.bitrix_call_id,
