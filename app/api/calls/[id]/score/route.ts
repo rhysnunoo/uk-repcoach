@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import { scoreCall, rescoreCall } from '@/lib/scoring/score';
 
+// Allow up to 2 minutes for scoring
+export const maxDuration = 120;
+
 interface ScoreRouteParams {
   params: Promise<{ id: string }>;
 }

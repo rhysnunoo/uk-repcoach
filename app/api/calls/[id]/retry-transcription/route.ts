@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import OpenAI from 'openai';
 
+// Allow up to 5 minutes for transcription + scoring of long calls
+export const maxDuration = 300;
+
 let _openai: OpenAI | null = null;
 function getOpenAI() {
   if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -89,11 +92,16 @@ export async function POST(request: NextRequest, { params }: RetryTranscriptionP
         })
         .eq('id', callId);
 
-      // Trigger scoring directly (avoid self-fetch anti-pattern)
+      // Trigger scoring and await it (maxDuration=300 keeps function alive)
       const { scoreCall } = await import('@/lib/scoring/score');
-      scoreCall(callId).catch(err => console.error('Failed to trigger scoring:', err));
+      try {
+        await scoreCall(callId);
+      } catch (err) {
+        console.error('Scoring failed after transcription:', err);
+        // Transcript was saved; scoring error is handled inside scoreCall
+      }
 
-      return NextResponse.json({ success: true, message: 'Transcription complete, scoring in progress' });
+      return NextResponse.json({ success: true, message: 'Transcription and scoring complete' });
     } catch (transcriptionError) {
       console.error('Transcription error:', transcriptionError);
       await adminClient

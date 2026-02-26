@@ -49,6 +49,23 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
     notFound();
   }
 
+  // Detect stuck calls — if processing for >10 minutes, mark as error
+  if (['transcribing', 'scoring'].includes(call.status) && call.updated_at) {
+    const stuckThreshold = 10 * 60 * 1000; // 10 minutes
+    const lastUpdate = new Date(call.updated_at).getTime();
+    if (Date.now() - lastUpdate > stuckThreshold) {
+      await adminClient
+        .from('calls')
+        .update({
+          status: 'error',
+          error_message: `Processing timed out (stuck in "${call.status}" for over 10 minutes). Please retry.`,
+        })
+        .eq('id', id);
+      call.status = 'error';
+      call.error_message = `Processing timed out (stuck in "${call.status}" for over 10 minutes). Please retry.`;
+    }
+  }
+
   // Fetch scores
   const { data: scores } = await adminClient
     .from('scores')
