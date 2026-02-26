@@ -50,7 +50,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const payload: N8nWebhookPayload = await request.json();
+    let payload: N8nWebhookPayload;
+    try {
+      payload = await request.json();
+    } catch {
+      console.error('[n8n Webhook] Invalid or empty JSON body');
+      return NextResponse.json(
+        { error: 'Invalid or empty JSON body. Ensure Content-Type is application/json and body is valid JSON.' },
+        { status: 400 }
+      );
+    }
+
     console.log('[n8n Webhook] Payload:', JSON.stringify({
       bitrix_call_id: payload.bitrix_call_id,
       bitrix_user_id: payload.bitrix_user_id,
