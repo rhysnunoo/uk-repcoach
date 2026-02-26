@@ -56,8 +56,18 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
     throw new Error('No transcript available for scoring');
   }
 
-  // Use default scoring (no script-specific content)
-  const scriptContent = {} as ScriptContent;
+  // Get script content if the call has a linked script
+  let scriptContent = {} as ScriptContent;
+  if (call.script_id) {
+    const { data: script } = await adminClient
+      .from('scripts')
+      .select('content')
+      .eq('id', call.script_id)
+      .single();
+    if (script?.content) {
+      scriptContent = script.content;
+    }
+  }
 
   // Update status
   await adminClient
