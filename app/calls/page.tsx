@@ -189,7 +189,7 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
                       </td>
                       {isManager && (
                         <td className="font-medium text-sm">
-                          {repMap[call.rep_id]?.full_name || repMap[call.rep_id]?.email || 'Unknown'}
+                          {(call.rep_id && repMap[call.rep_id]?.full_name) || (call.rep_id && repMap[call.rep_id]?.email) || 'Unknown'}
                         </td>
                       )}
                       <td className="font-medium">

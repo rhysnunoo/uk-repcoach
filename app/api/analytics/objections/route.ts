@@ -95,11 +95,11 @@ export async function GET() {
     }
 
     // Fetch rep names
-    const repIds = [...new Set(calls.map(c => c.rep_id))];
-    const { data: profiles } = await adminClient
+    const repIds = [...new Set(calls.map(c => c.rep_id).filter((id): id is string => id !== null))];
+    const { data: profiles } = repIds.length > 0 ? await adminClient
       .from('profiles')
       .select('id, full_name, email')
-      .in('id', repIds);
+      .in('id', repIds) : { data: null };
 
     const repNames: Record<string, string> = {};
     profiles?.forEach(p => {
@@ -131,8 +131,8 @@ export async function GET() {
       if (cachedObjections && (now - cachedObjections.extractedAt) < OBJECTION_CACHE_TTL) {
         objectionAnalyses.push({
           call_id: call.id,
-          rep_id: call.rep_id,
-          rep_name: repNames[call.rep_id] || 'Unknown Rep',
+          rep_id: call.rep_id || 'unknown',
+          rep_name: (call.rep_id && repNames[call.rep_id]) || 'Unknown Rep',
           call_date: call.call_date,
           outcome: call.outcome,
           objections: cachedObjections.objections,
@@ -153,8 +153,8 @@ export async function GET() {
 
         objectionAnalyses.push({
           call_id: call.id,
-          rep_id: call.rep_id,
-          rep_name: repNames[call.rep_id] || 'Unknown Rep',
+          rep_id: call.rep_id || 'unknown',
+          rep_name: (call.rep_id && repNames[call.rep_id]) || 'Unknown Rep',
           call_date: call.call_date,
           outcome: call.outcome,
           objections,
