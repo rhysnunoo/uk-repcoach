@@ -265,7 +265,7 @@ YOU ARE THE PROSPECT (the parent receiving the sales call). You are NOT the sale
 You are ${prospectName}, a parent who received a call from a MyEdSpace sales rep.
 Always respond as ${prospectName} - you are the PROSPECT being called, not the caller.
 The rep should discover your child's name and details during the call - don't volunteer this information immediately.
-If the rep asks about your child, make up a realistic name and grade level appropriate for the course being discussed.
+If the rep asks about your child, make up a realistic name and year group appropriate for the subjects being discussed.
 Remember: You are the PARENT receiving this call. React to what the sales rep says, ask questions, raise objections - but NEVER try to sell the product yourself.`;
 
   // Add scenario context if available
@@ -288,22 +288,22 @@ Urgency Level: ${urgencyLevel || 'medium'} - ${
 
   // Add script context if available
   if (scriptContent) {
-    const courseDetails = scriptContent.course_details as { name?: string; schedule?: { days?: string; pacific_time?: string } } | undefined;
+    const courseDetails = scriptContent.course_details as { name?: string; schedule?: { days?: string; time?: string } } | undefined;
     const pricing = scriptContent.pricing as { annual_premium?: { price?: number }; monthly_premium?: { price?: number }; trial?: { price?: number } } | undefined;
     const sellVacation = (scriptContent.closer_phases as Record<string, unknown>)?.sell_vacation as { eddie_intro?: string; proof_points?: Record<string, string> } | undefined;
 
     prompt += `\n\n## Product Context (What the rep is selling)
-The rep is selling MyEdSpace ${courseDetails?.name || 'math tutoring'} program.
+The rep is selling MyEdSpace ${courseDetails?.name || 'online tutoring'} program.
 
 Key Product Info:
-- Course: ${courseDetails?.name || 'Math'} - Live classes ${courseDetails?.schedule?.days || 'twice a week'} at ${courseDetails?.schedule?.pacific_time || '5pm'} Pacific
-- Teacher: Eddie Kang - UCLA Pure Mathematics degree, Perfect SAT Math score, 9+ years teaching
-- Annual: $${pricing?.annual_premium?.price || 539} (less than $17/hr for 60 hours)
-- Monthly: $${pricing?.monthly_premium?.price || 149}/month, cancel anytime
-- Trial: $${pricing?.trial?.price || 7} for 7 days full access
+- Course: ${courseDetails?.name || 'Online Tutoring'} - Live classes ${courseDetails?.schedule?.days || 'twice a week per subject'} at ${courseDetails?.schedule?.time || '16:30'}
+- Teachers: Top 1% of UK teachers - degrees from Oxford, Cambridge, UCL, Imperial, Warwick. Combined 100+ years teaching experience.
+- Annual: £${pricing?.annual_premium?.price || '319+'}  (around £4-5 per hour)
+- Monthly: £${pricing?.monthly_premium?.price || '80+'}/month, cancel anytime
+- Trial: £${pricing?.trial?.price || 10} for 10 days full access
 
 Key Proof Points:
-${sellVacation?.proof_points ? Object.entries(sellVacation.proof_points).map(([key, val]) => `- ${key}: ${val}`).join('\n') : '- 83% report attitude improvement\n- 20-30 chat messages per student per lesson\n- Best Online School 2025, 95% parent satisfaction'}`;
+${sellVacation?.proof_points ? Object.entries(sellVacation.proof_points).map(([key, val]) => `- ${key}: ${val}`).join('\n') : '- 58% GCSE grades 7-9\n- ~25 messages per student per lesson\n- 1,700+ Trustpilot reviews, 95% parent satisfaction'}`;
   }
 
   // Add current state context

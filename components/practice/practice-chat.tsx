@@ -535,7 +535,7 @@ function PracticeScoreDetails({ feedback }: { feedback: string | null }) {
                           <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                           You Said
                         </h5>
-                        {phase.you_said!.map((quote, i) => (
+                        {phase.you_said?.map((quote, i) => (
                           <p key={i} className="text-sm text-red-700 italic mb-1">
                             {`"${quote}"`}
                           </p>
@@ -548,7 +548,7 @@ function PracticeScoreDetails({ feedback }: { feedback: string | null }) {
                           <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                           Try This Instead
                         </h5>
-                        {phase.should_say!.map((suggestion, i) => (
+                        {phase.should_say?.map((suggestion, i) => (
                           <p key={i} className="text-sm text-green-700 mb-1">
                             {suggestion}
                           </p>
