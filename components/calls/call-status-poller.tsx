@@ -39,16 +39,35 @@ export function CallStatusPoller({ callId, status, durationSeconds }: CallStatus
 
   const currentStepIndex = getStepIndex(status);
 
-  // Poll for status updates
+  // Poll for status updates with backoff
+  // Start at 3s, increase to 10s after 1 min, then 30s after 5 min
   useEffect(() => {
     if (!['pending', 'transcribing', 'scoring'].includes(status)) return;
 
-    const pollInterval = setInterval(() => {
-      router.refresh();
-    }, 3000);
+    let timeoutId: ReturnType<typeof setTimeout>;
 
-    return () => clearInterval(pollInterval);
-  }, [status, callId, router]);
+    const schedulePoll = () => {
+      const elapsed = Date.now() - startTime;
+      let interval: number;
+
+      if (elapsed < 60_000) {
+        interval = 3_000;       // first minute: every 3s
+      } else if (elapsed < 300_000) {
+        interval = 10_000;      // 1-5 minutes: every 10s
+      } else {
+        interval = 30_000;      // 5+ minutes: every 30s
+      }
+
+      timeoutId = setTimeout(() => {
+        router.refresh();
+        schedulePoll();
+      }, interval);
+    };
+
+    schedulePoll();
+
+    return () => clearTimeout(timeoutId);
+  }, [status, callId, router, startTime]);
 
   // Track elapsed time for progress estimation
   useEffect(() => {
@@ -219,6 +238,19 @@ export function CallStatusPoller({ callId, status, durationSeconds }: CallStatus
           );
         })}
       </div>
+
+      {/* Slow processing warning */}
+      {elapsedMs > 180_000 && (
+        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-md p-3">
+          <p className="text-xs text-amber-700 font-medium">
+            This is taking longer than expected.
+          </p>
+          <p className="text-xs text-amber-600 mt-0.5">
+            The call is still processing — if it doesn&apos;t complete within a few more minutes,
+            try going back and re-triggering the transcription.
+          </p>
+        </div>
+      )}
 
       <p className="text-xs text-gray-400 mt-4 text-center">
         This page updates automatically — no need to refresh.
