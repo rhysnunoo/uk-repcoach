@@ -106,7 +106,7 @@ export function extractScriptContent(
   let pricing = '';
   if (scriptContent.pricing) {
     const p = scriptContent.pricing;
-    pricing = `Annual: $${p.annual_premium.price}/year, Monthly: $${p.monthly_premium.price}/month`;
+    pricing = `Annual: £${p.annual_premium?.price}/year, Monthly: £${p.monthly_premium?.price}/month`;
   }
 
   // Get teacher info

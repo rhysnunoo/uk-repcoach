@@ -19,8 +19,7 @@ export async function GET() {
     }
 
     // Get rep stats using RPC function
-    const { data: stats, error: statsError } = await supabase
-      .rpc('get_rep_stats', { p_rep_id: user.id });
+    const { data: stats, error: statsError } = await (supabase.rpc as Function)('get_rep_stats', { p_rep_id: user.id });
 
     if (statsError) {
       console.error('Failed to get rep stats:', statsError);

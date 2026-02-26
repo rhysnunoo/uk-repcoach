@@ -20,10 +20,10 @@ export const objections: Objection[] = [
     tips: [
       'Acknowledge their concern',
       'Break down the cost per hour/session',
-      'Compare to alternatives (private tutors cost $60-100/hr)',
+      'Compare to alternatives (private tutors cost £50+/hr)',
       'Focus on the value and results',
     ],
-    sampleResponse: "I completely understand - budgets are tight. Let me share something: at $539 for the year, that's less than $17 per hour for 60 hours of live instruction. Compare that to private tutors at $60-100 an hour. Plus, most parents tell us the improvement in grades and confidence makes it worth every penny. What if we started with the 7-day trial for just $7 to see if it's a good fit?",
+    sampleResponse: "I completely understand - budgets are tight. Let me share something: at £319+ for the year, that works out to around £4-5 per hour for 60 hours of live instruction. Compare that to private tutors at £50+ an hour. Plus, most parents tell us the improvement in grades and confidence makes it worth every penny. What if we started with the 10-day trial for just £10 to see if it's a good fit?",
   },
   {
     id: 'price_compare_kumon',
@@ -31,12 +31,12 @@ export const objections: Objection[] = [
     objection: "Kumon is cheaper than this.",
     difficulty: 'hard',
     tips: [
-      'Know your competitor pricing (Kumon is ~$150/month)',
+      'Know your competitor details (Kumon is worksheet-based, no live teaching)',
       'Highlight live instruction vs worksheets',
       'Emphasize engagement and results',
-      'Point out hidden costs (drive time, gas)',
+      'Point out hidden costs (drive time, petrol)',
     ],
-    sampleResponse: "Actually, Kumon runs about $150 a month for worksheets - we're comparable or less for live instruction. The big difference is your child gets real teaching from Eddie, not just repetitive worksheets. Plus, you save drive time and gas. Most parents who switch from Kumon tell us their kids are way more engaged when they can ask questions in real-time.",
+    sampleResponse: "Kumon is worksheet-based with no live teaching - we offer actual live instruction from real teachers. The big difference is your child gets real teaching from our teachers, not just repetitive worksheets. Plus, you save drive time and petrol. Most parents who switch from Kumon tell us their kids are way more engaged when they can ask questions in real-time.",
   },
   {
     id: 'price_free_options',
@@ -49,14 +49,14 @@ export const objections: Objection[] = [
       'Mention accountability and structure',
       'Share that many students use both',
     ],
-    sampleResponse: "Khan Academy is fantastic - we actually recommend it for extra practice! The difference is that with free videos, your child is learning alone without anyone to answer questions or notice when they're confused. Our live classes mean Eddie can see exactly where students struggle and address it immediately. That real-time feedback is what drives the breakthrough moments.",
+    sampleResponse: "Khan Academy is fantastic - we actually recommend it for extra practice! The difference is that with free videos, your child is learning alone without anyone to answer questions or notice when they're confused. Our live classes mean the teachers can see exactly where students struggle and address it immediately. That real-time feedback is what drives the breakthrough moments.",
   },
 
   // Timing Objections
   {
     id: 'timing_not_now',
     category: 'timing',
-    objection: "We're not ready to commit to anything right now. Maybe next semester.",
+    objection: "We're not ready to commit to anything right now. Maybe next term.",
     difficulty: 'medium',
     tips: [
       'Understand their reason for waiting',
@@ -64,7 +64,7 @@ export const objections: Objection[] = [
       'Mention the cost of waiting (falling further behind)',
       'Offer the low-commitment trial',
     ],
-    sampleResponse: "I hear you - timing matters. Can I ask what's making you want to wait? The reason I ask is that math builds on itself, and most parents who wait tell us they wish they hadn't because their child fell further behind. What if we did the 7-day trial now? That way you can see if it works before committing to anything bigger.",
+    sampleResponse: "I hear you - timing matters. Can I ask what's making you want to wait? The reason I ask is that maths builds on itself, and most parents who wait tell us they wish they hadn't because their child fell further behind. What if we did the 10-day trial now? That way you can see if it works before committing to anything bigger.",
   },
   {
     id: 'timing_school_just_started',
@@ -77,7 +77,7 @@ export const objections: Objection[] = [
       'Mention early intervention benefits',
       'Suggest getting ahead instead of catching up',
     ],
-    sampleResponse: "That makes sense - you want to give them a chance. Here's what we've found though: the parents who catch issues early in the semester have kids who stay confident all year. Waiting until they're already struggling means playing catch-up. Starting now means your child builds strong foundations from day one. Would you rather prevent a problem or fix one?",
+    sampleResponse: "That makes sense - you want to give them a chance. Here's what we've found though: the parents who catch issues early in the term have kids who stay confident all year. Waiting until they're already struggling means playing catch-up. Starting now means your child builds strong foundations from day one. Would you rather prevent a problem or fix one?",
   },
   {
     id: 'timing_think_about_it',
@@ -105,7 +105,7 @@ export const objections: Objection[] = [
       'Explain how this is different',
       'Offer specific evidence/guarantees',
     ],
-    sampleResponse: "I'm sorry to hear that - that's frustrating. What did you try before, and what went wrong? I ask because we hear this a lot, and usually it's one of a few things: boring worksheets, tutors who couldn't explain things well, or kids who just didn't engage. Eddie's classes are designed specifically to avoid those problems - live, interactive, and students actually participate with 20-30 chat messages per class.",
+    sampleResponse: "I'm sorry to hear that - that's frustrating. What did you try before, and what went wrong? I ask because we hear this a lot, and usually it's one of a few things: boring worksheets, tutors who couldn't explain things well, or kids who just didn't engage. Our classes are designed specifically to avoid those problems - live, interactive, and students actually participate with around 25 messages per class.",
   },
   {
     id: 'trust_online_concern',
@@ -118,7 +118,7 @@ export const objections: Objection[] = [
       'Share engagement statistics',
       'Offer to let them observe a class',
     ],
-    sampleResponse: "That's a valid concern - a lot of online learning is just videos kids ignore. What makes our classes different is they're live and interactive. Eddie calls on students, they answer in the chat, and there's real back-and-forth. We track engagement - average students send 20-30 messages per class. They can't zone out because they're constantly participating.",
+    sampleResponse: "That's a valid concern - a lot of online learning is just videos kids ignore. What makes our classes different is they're live and interactive. The teachers call on students, they answer in the chat, and there's real back-and-forth. We track engagement - average students send around 25 messages per class. They can't zone out because they're constantly participating.",
   },
   {
     id: 'trust_proof',
@@ -131,7 +131,7 @@ export const objections: Objection[] = [
       'Offer testimonials or references',
       'Point to the trial as risk-free proof',
     ],
-    sampleResponse: "Great question - 83% of parents report their child's attitude toward math improved within the first month. We were named Best Online School 2025 with 95% parent satisfaction. But honestly, the best proof is the 7-day trial. You'll see firsthand how your child responds to Eddie's teaching. If it doesn't work, you've risked $7. If it does, you've found the solution.",
+    sampleResponse: "Great question - 58% of our GCSE students scored grades 7-9, we have 95% parent satisfaction, and over 1,700 Trustpilot reviews. But honestly, the best proof is the 10-day trial. You'll see firsthand how your child responds to the teachers. If it doesn't work, you've risked £10. If it does, you've found the solution.",
   },
 
   // Competition Objections
@@ -146,20 +146,20 @@ export const objections: Objection[] = [
       'Ask what they\'re comparing',
       'Highlight live instruction advantage',
     ],
-    sampleResponse: "Smart to compare options! Who else are you looking at? The main thing that sets us apart is Eddie himself - UCLA math degree, perfect SAT score, 9 years experience - teaching live, twice a week. Most services are either expensive private tutors or self-paced videos. We're live group instruction at an affordable price. What matters most to you in making this decision?",
+    sampleResponse: "Smart to compare options! Who else are you looking at? The main thing that sets us apart is our teachers - top 1% of UK teachers, with degrees from Oxford, Cambridge, UCL, and Imperial, and a combined 100+ years of experience - teaching live, twice a week. Most services are either expensive private tutors or self-paced videos. We're live group instruction at an affordable price. What matters most to you in making this decision?",
   },
   {
     id: 'competition_mathnasium',
     category: 'competition',
-    objection: "We're thinking about Mathnasium instead.",
+    objection: "We're thinking about Explore Learning instead.",
     difficulty: 'medium',
     tips: [
-      'Acknowledge Mathnasium is reputable',
+      'Acknowledge Explore Learning is reputable',
       'Compare pricing and convenience',
       'Highlight specific differences',
       'Don\'t be defensive',
     ],
-    sampleResponse: "Mathnasium does good work! Here's the difference: they're about $400/month for in-person sessions, and you have to drive there. We're $539 for the whole year with classes from home. Both work - it really depends on whether your child does better with in-person attention or the convenience and consistency of online live classes. What's your sense of what your child needs?",
+    sampleResponse: "Explore Learning does good work! Here's the difference: they're more expensive for in-person sessions, and you have to drive there. We're £319+ for the whole year with classes from home. Both work - it really depends on whether your child does better with in-person attention or the convenience and consistency of online live classes. What's your sense of what your child needs?",
   },
 
   // Need Objections
@@ -174,7 +174,7 @@ export const objections: Objection[] = [
       'Discuss confidence vs. grades',
       'Mention building for future challenges',
     ],
-    sampleResponse: "That's great that they're doing okay! Can I ask - are they working hard for those Bs, or is it coming easily? Sometimes B students are actually struggling more than they show. And looking ahead, as math gets harder in high school, building strong foundations now means they stay confident. Is your child enjoying math, or just getting through it?",
+    sampleResponse: "That's great that they're doing okay! Can I ask - are they working hard for those Bs, or is it coming easily? Sometimes B students are actually struggling more than they show. And looking ahead, as maths gets harder in secondary school, building strong foundations now means they stay confident. Is your child enjoying maths, or just getting through it?",
   },
   {
     id: 'need_summer',
@@ -187,7 +187,7 @@ export const objections: Objection[] = [
       'Plant seeds for future contact',
       'Offer value even if not buying now',
     ],
-    sampleResponse: "I respect that - you know your child best. One thing I'll mention: parents who wait until struggling often say they wish they'd started earlier, because catching up is harder than staying ahead. If things are good now, that's awesome. Would you be open to me checking in next semester, or if you'd like, we can stay in touch in case things change?",
+    sampleResponse: "I respect that - you know your child best. One thing I'll mention: parents who wait until struggling often say they wish they'd started earlier, because catching up is harder than staying ahead. If things are good now, that's great. Would you be open to me checking in next term, or if you'd like, we can stay in touch in case things change?",
   },
 
   // Authority Objections
@@ -215,7 +215,7 @@ export const objections: Objection[] = [
       'Share how kids typically respond',
       'Offer engagement guarantees',
     ],
-    sampleResponse: "That's so important - if they're not into it, it won't work. Here's what I suggest: try the 7-day trial and let them experience a class. Most kids are skeptical at first, but once they see Eddie's teaching style and start participating in the chat, they actually enjoy it. If after a class or two they hate it, you'll know. Fair?",
+    sampleResponse: "That's so important - if they're not into it, it won't work. Here's what I suggest: try the 10-day trial and let them experience a class. Most kids are sceptical at first, but once they see the teachers' teaching style and start participating in the chat, they actually enjoy it. If after a class or two they hate it, you'll know. Fair?",
   },
 ];
 

@@ -141,12 +141,12 @@ Traits: ${persona.traits.join(', ')}
 
 ### Teacher Info
 ${courseDetails?.teacher ? `- Name: ${courseDetails.teacher.name}
-- Credentials: ${Array.isArray(courseDetails.teacher.credentials) ? courseDetails.teacher.credentials.join(', ') : 'Expert math teacher'}` : ''}
+- Credentials: ${Array.isArray(courseDetails.teacher.credentials) ? courseDetails.teacher.credentials.join(', ') : 'Top 1% of UK teachers, Oxford/Cambridge/UCL/Imperial/Warwick'}` : ''}
 
 ### Pricing
-${pricing?.annual_premium ? `- Annual: $${pricing.annual_premium.price}` : ''}
-${pricing?.monthly_premium ? `- Monthly: $${pricing.monthly_premium.price}` : ''}
-${pricing?.trial ? `- Trial: $${pricing.trial.price}` : ''}
+${pricing?.annual_premium ? `- Annual: £${pricing.annual_premium.price}` : ''}
+${pricing?.monthly_premium ? `- Monthly: £${pricing.monthly_premium.price}` : ''}
+${pricing?.trial ? `- Trial: £${pricing.trial.price}` : ''}
 
 ### Script Lines by Phase
 `;
@@ -178,7 +178,7 @@ Generate the IDEAL response for the sales rep at this point in the conversation.
 - Stay focused on helping the prospect
 - Keep the response concise and conversational (1-3 sentences typical)
 
-CRITICAL: Use ONLY the script content provided above. Use the exact teacher name, credentials, and pricing from the script. Do NOT make up different details or statistics.
+CRITICAL: Use ONLY the script content provided above. Use the exact teacher credentials, credentials, and pricing from the script. Do NOT make up different details or statistics.
 
 IMPORTANT: Only output the rep's response. No explanations or commentary.`;
 

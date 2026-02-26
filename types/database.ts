@@ -9,6 +9,7 @@ export interface Profile {
   email: string;
   full_name: string | null;
   role: UserRole;
+  bitrix_user_id: string | null;
   avatar_url: string | null;
   created_at: string;
   updated_at: string;
@@ -43,8 +44,7 @@ export interface CourseDetails {
   name: string;
   schedule: {
     days: string;
-    pacific_time: string;
-    eastern_time: string;
+    time: string;
   };
   teacher: {
     name: string;
@@ -93,9 +93,10 @@ export interface ScoringCriteria {
 }
 
 export interface PricingInfo {
-  annual_premium: { price: number; value_statement: string };
-  monthly_premium: { price: number; value_statement: string };
-  trial: { price: number; duration: string; value_statement: string };
+  annual_premium?: { price: number; value_statement?: string; framing?: string };
+  monthly_premium?: { price: number; value_statement?: string; framing?: string };
+  trial?: { price: number; duration?: string; value_statement?: string; framing?: string };
+  [key: string]: unknown;
 }
 
 export type CloserPhase = 'opening' | 'clarify' | 'label' | 'overview' | 'sell_vacation' | 'price_presentation' | 'explain' | 'reinforce';
@@ -116,6 +117,7 @@ export interface Call {
   script_id: string | null;
   source: CallSource;
   status: CallStatus;
+  bitrix_call_id: string | null;
   recording_url: string | null;
   storage_path: string | null;
   transcript: TranscriptSegment[] | null;
@@ -351,6 +353,7 @@ export type Database = {
           email: string;
           full_name: string | null;
           role: UserRole;
+          bitrix_user_id: string | null;
           avatar_url: string | null;
           created_at: string;
           updated_at: string;
@@ -360,12 +363,14 @@ export type Database = {
           email: string;
           full_name?: string | null;
           role?: UserRole;
+          bitrix_user_id?: string | null;
           avatar_url?: string | null;
         };
         Update: {
           email?: string;
           full_name?: string | null;
           role?: UserRole;
+          bitrix_user_id?: string | null;
           avatar_url?: string | null;
         };
         Relationships: [];
@@ -404,6 +409,7 @@ export type Database = {
           script_id: string | null;
           source: CallSource;
           status: CallStatus;
+          bitrix_call_id: string | null;
           recording_url: string | null;
           storage_path: string | null;
           transcript: TranscriptSegment[] | null;
@@ -424,6 +430,7 @@ export type Database = {
           script_id?: string | null;
           source: CallSource;
           status?: CallStatus;
+          bitrix_call_id?: string | null;
           recording_url?: string | null;
           storage_path?: string | null;
           transcript?: TranscriptSegment[] | null;
@@ -442,6 +449,7 @@ export type Database = {
           script_id?: string | null;
           source?: CallSource;
           status?: CallStatus;
+          bitrix_call_id?: string | null;
           recording_url?: string | null;
           storage_path?: string | null;
           transcript?: TranscriptSegment[] | null;
