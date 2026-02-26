@@ -1,19 +1,13 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { scoreCall as performScoring } from '@/lib/scoring/score';
 
-interface ScoringJob {
-  call_id: string;
-  attempt: number;
-  max_attempts: number;
-  created_at: string;
-  last_error?: string;
-}
-
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 5000, 15000]; // 1s, 5s, 15s
 
 /**
- * Queue a call for scoring with automatic retry
+ * Queue a call for scoring with automatic retry.
+ * IMPORTANT: This function awaits the full scoring pipeline.
+ * The caller must ensure the request has enough time (maxDuration >= 120s).
  */
 export async function queueCallForScoring(callId: string): Promise<void> {
   const adminClient = createAdminClient();
@@ -27,62 +21,55 @@ export async function queueCallForScoring(callId: string): Promise<void> {
     })
     .eq('id', callId);
 
-  // Start scoring in background
-  processScoringJob({ call_id: callId, attempt: 1, max_attempts: MAX_RETRIES, created_at: new Date().toISOString() });
+  // Process scoring synchronously with retries
+  await processScoringJob(callId);
 }
 
 /**
- * Process a scoring job with retry logic
+ * Process a scoring job with retry logic.
+ * All retries happen inline (no setTimeout) so Vercel doesn't kill them.
  */
-async function processScoringJob(job: ScoringJob): Promise<void> {
+async function processScoringJob(callId: string): Promise<void> {
   const adminClient = createAdminClient();
+  let lastError: string | undefined;
 
-  try {
-    console.log(`[ScoringQueue] Processing call ${job.call_id} (attempt ${job.attempt}/${job.max_attempts})`);
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      console.log(`[ScoringQueue] Processing call ${callId} (attempt ${attempt}/${MAX_RETRIES})`);
+      await performScoring(callId);
+      console.log(`[ScoringQueue] Successfully scored call ${callId}`);
+      return; // Success — exit
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`[ScoringQueue] Attempt ${attempt} failed for call ${callId}:`, lastError);
 
-    // Perform scoring
-    await performScoring(job.call_id);
+      if (attempt < MAX_RETRIES) {
+        const delay = RETRY_DELAYS[attempt - 1] || 15000;
+        console.log(`[ScoringQueue] Retrying call ${callId} in ${delay}ms`);
 
-    console.log(`[ScoringQueue] Successfully scored call ${job.call_id}`);
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error(`[ScoringQueue] Error scoring call ${job.call_id}:`, errorMessage);
+        // Update status to show retry in progress
+        await adminClient
+          .from('calls')
+          .update({
+            error_message: `Attempt ${attempt} failed: ${lastError}. Retrying...`,
+          })
+          .eq('id', callId);
 
-    // Check if we should retry
-    if (job.attempt < job.max_attempts) {
-      const delay = RETRY_DELAYS[job.attempt - 1] || 15000;
-
-      console.log(`[ScoringQueue] Scheduling retry ${job.attempt + 1} for call ${job.call_id} in ${delay}ms`);
-
-      // Update status to show retry pending
-      await adminClient
-        .from('calls')
-        .update({
-          error_message: `Attempt ${job.attempt} failed: ${errorMessage}. Retrying...`,
-        })
-        .eq('id', job.call_id);
-
-      // Schedule retry
-      setTimeout(() => {
-        processScoringJob({
-          ...job,
-          attempt: job.attempt + 1,
-          last_error: errorMessage,
-        });
-      }, delay);
-    } else {
-      // Max retries exceeded - mark as error
-      console.error(`[ScoringQueue] Max retries exceeded for call ${job.call_id}`);
-
-      await adminClient
-        .from('calls')
-        .update({
-          status: 'error',
-          error_message: `Scoring failed after ${job.max_attempts} attempts. Last error: ${errorMessage}`,
-        })
-        .eq('id', job.call_id);
+        // Inline delay — no setTimeout, so Vercel won't kill it
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
     }
   }
+
+  // All retries exhausted
+  console.error(`[ScoringQueue] Max retries exceeded for call ${callId}`);
+  await adminClient
+    .from('calls')
+    .update({
+      status: 'error',
+      error_message: `Scoring failed after ${MAX_RETRIES} attempts. Last error: ${lastError}`,
+    })
+    .eq('id', callId);
 }
 
 /**

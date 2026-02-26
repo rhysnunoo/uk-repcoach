@@ -239,16 +239,24 @@ export function CallStatusPoller({ callId, status, durationSeconds }: CallStatus
         })}
       </div>
 
-      {/* Slow processing warning */}
+      {/* Slow processing warning — show after 3 min, with retry after 5 min */}
       {elapsedMs > 180_000 && (
         <div className="mt-4 bg-amber-50 border border-amber-200 rounded-md p-3">
           <p className="text-xs text-amber-700 font-medium">
             This is taking longer than expected.
           </p>
-          <p className="text-xs text-amber-600 mt-0.5">
-            The call is still processing — if it doesn&apos;t complete within a few more minutes,
-            try going back and re-triggering the transcription.
-          </p>
+          {elapsedMs > 300_000 ? (
+            <p className="text-xs text-amber-600 mt-0.5">
+              Processing appears stuck. Please go back to the{' '}
+              <a href="/calls" className="underline font-medium">calls list</a>
+              {' '}and try reopening this call — stuck calls will be automatically marked for retry.
+            </p>
+          ) : (
+            <p className="text-xs text-amber-600 mt-0.5">
+              The call is still processing — if it doesn&apos;t complete within a few more minutes,
+              try going back and re-triggering the transcription.
+            </p>
+          )}
         </div>
       )}
 

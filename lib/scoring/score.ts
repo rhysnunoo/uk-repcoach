@@ -7,7 +7,10 @@ import type { ScriptContent, TranscriptSegment } from '@/types/database';
 
 let _openai: OpenAI | null = null;
 function getOpenAI() {
-  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  if (!_openai) _openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    timeout: 90_000, // 90s hard timeout per request — prevents hanging forever
+  });
   return _openai;
 }
 

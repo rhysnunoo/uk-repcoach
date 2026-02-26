@@ -7,6 +7,9 @@ import {
   retryFailedScoringJobs,
 } from '@/lib/queue/scoring-queue';
 
+// Each call takes up to ~2 min to score; batch of 10 = ~20 min max but we cap at 5 min
+export const maxDuration = 300;
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -81,12 +84,21 @@ export async function POST(request: NextRequest) {
         .in('id', callIds);
 
       const validCallIds = (calls || []).map((c) => c.id);
-      await Promise.all(validCallIds.map(id => queueCallForScoring(id)));
+      const results: { id: string; status: 'scored' | 'error' }[] = [];
+
+      // Process sequentially — each call needs GPT time, parallel would timeout
+      for (const id of validCallIds) {
+        try {
+          await queueCallForScoring(id);
+          results.push({ id, status: 'scored' });
+        } catch {
+          results.push({ id, status: 'error' });
+        }
+      }
 
       return NextResponse.json({
-        message: `Queued ${validCallIds.length} calls for scoring`,
-        queued: validCallIds.length,
-        callIds: validCallIds,
+        message: `Processed ${results.length} calls`,
+        results,
       });
     }
 
