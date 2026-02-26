@@ -113,7 +113,8 @@ export interface CallBookmark {
 
 export interface Call {
   id: string;
-  rep_id: string;
+  rep_id: string | null;
+  bitrix_user_id: string | null;
   script_id: string | null;
   source: CallSource;
   status: CallStatus;
@@ -405,7 +406,8 @@ export type Database = {
       calls: {
         Row: {
           id: string;
-          rep_id: string;
+          rep_id: string | null;
+          bitrix_user_id: string | null;
           script_id: string | null;
           source: CallSource;
           status: CallStatus;
@@ -426,7 +428,8 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          rep_id: string;
+          rep_id?: string | null;
+          bitrix_user_id?: string | null;
           script_id?: string | null;
           source: CallSource;
           status?: CallStatus;
@@ -445,7 +448,8 @@ export type Database = {
           bookmarks?: CallBookmark[] | null;
         };
         Update: {
-          rep_id?: string;
+          rep_id?: string | null;
+          bitrix_user_id?: string | null;
           script_id?: string | null;
           source?: CallSource;
           status?: CallStatus;
@@ -575,6 +579,24 @@ export type Database = {
           author_id?: string;
           content?: string;
           is_flagged?: boolean;
+        };
+        Relationships: [];
+      };
+      bitrix_user_mapping: {
+        Row: {
+          bitrix_user_id: string;
+          email: string;
+          full_name: string | null;
+        };
+        Insert: {
+          bitrix_user_id: string;
+          email: string;
+          full_name?: string | null;
+        };
+        Update: {
+          bitrix_user_id?: string;
+          email?: string;
+          full_name?: string | null;
         };
         Relationships: [];
       };
