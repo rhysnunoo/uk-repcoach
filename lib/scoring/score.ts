@@ -30,7 +30,6 @@ export interface ScoreResult {
     objection: string;
     category: string;
     handling_score: number;
-    used_aaa: boolean;
     feedback: string;
   }>;
   error?: string;
@@ -58,7 +57,8 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
   }
 
   // Get script content - use empty object if no script (defaults will be used)
-  const scriptContent = (call.scripts?.content as ScriptContent) || {} as ScriptContent;
+  const scripts = call.scripts as unknown as { content: ScriptContent }[] | null;
+  const scriptContent = scripts?.[0]?.content || {} as ScriptContent;
 
   // Update status
   await adminClient

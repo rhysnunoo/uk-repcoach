@@ -24,12 +24,12 @@ export function createScoringSystemPrompt(scriptContent: ScriptContent): string 
 ${courseDetails.teacher ? `- Teacher: ${courseDetails.teacher.name}
 - Credentials: ${Array.isArray(courseDetails.teacher.credentials) ? courseDetails.teacher.credentials.join(', ') : 'Not specified'}` : 'Not specified in script'}
 ${courseDetails.name ? `- Course: ${courseDetails.name}` : ''}
-${courseDetails.schedule ? `- Schedule: ${courseDetails.schedule.days} at ${courseDetails.schedule.pacific_time} PT / ${courseDetails.schedule.eastern_time} ET` : ''}
+${courseDetails.schedule ? `- Schedule: ${courseDetails.schedule.days} at ${courseDetails.schedule.time || ''}` : ''}
 
 ### Pricing (from script)
-${pricing.annual_premium ? `- Annual: $${pricing.annual_premium.price} (${pricing.annual_premium.value_statement || ''})` : ''}
-${pricing.monthly_premium ? `- Monthly: $${pricing.monthly_premium.price} (${pricing.monthly_premium.value_statement || ''})` : ''}
-${pricing.trial ? `- Trial: $${pricing.trial.price} for ${pricing.trial.duration} (${pricing.trial.value_statement || ''})` : ''}
+${pricing.annual_premium ? `- Annual: £${pricing.annual_premium.price} (${pricing.annual_premium.framing || pricing.annual_premium.value_statement || ''})` : ''}
+${pricing.monthly_premium ? `- Monthly: £${pricing.monthly_premium.price} (${pricing.monthly_premium.framing || pricing.monthly_premium.value_statement || ''})` : ''}
+${pricing.trial ? `- Trial: £${pricing.trial.price} for ${pricing.trial.duration} (${pricing.trial.framing || pricing.trial.value_statement || ''})` : ''}
 
 ### Opening Script
 ${getExactScript('opening') || 'Not specified'}
@@ -92,7 +92,7 @@ ${scriptReference}
 **Required Elements:**
 - Ask why they reached out (open-ended question)
 - Get them to state their problem in their OWN words
-- Cover child's grade level and current course
+- Cover child's year group and subjects
 - Ask about their goal/success criteria
 - Uncover urgency trigger ("What made you reach out NOW?")
 
@@ -112,7 +112,7 @@ ${scriptReference}
 ### Label (L)
 **Required Elements:**
 - Restate problem using THEIR exact words
-- Include grade, course, specific challenge, AND goal
+- Include year group, subjects, specific challenge, AND goal
 - Get verbal confirmation ("Is that accurate?" / "Is that right?")
 - Acknowledge their input
 
@@ -133,7 +133,7 @@ ${scriptReference}
 ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.importance}**` : '**CRITICAL: Prospects don\'t buy without pain. This phase is weighted heavily.**'}
 
 **Required Elements (ALL MUST BE PRESENT FOR HIGH SCORE):**
-1. Ask about ALL past attempts ("What have you done so far to help [Child] with math?")
+1. Ask about ALL past attempts ("What have you done so far to help [Child] with maths?")
 2. Follow up with "How did that go?" for EACH attempt mentioned
 3. Exhaust with "What else?" until nothing left (must ask at least 2-3 times)
 4. Summarize and confirm all attempts failed
@@ -158,7 +158,7 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 
 ### Sell the Vacation (S)
 **Required Elements:**
-- Lead with Eddie's credentials (UCLA Pure Math, perfect SAT, 9 years, screened 3000+)
+- Lead with teacher credentials (top 1%, Oxford/Cambridge/UCL/Imperial/Warwick, combined 100+ years)
 - Bridge from their SPECIFIC pain point (not generic pitch)
 - Paint outcome picture (confident kid, easier homework - NOT features)
 - Use relevant proof point matched to their concern
@@ -167,28 +167,28 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 **Red Flags:**
 - Generic pitch not tailored to their situation
 - Features before benefits (workbooks, practice problems... first)
-- Eddie buried in details or mentioned as afterthought
+- Teacher credentials buried in details or mentioned as afterthought
 - No specific numbers or proof
 - Monologues over 3 minutes
 
 **Scoring:**
-- 5 (100%): Leads with Eddie credentials, bridges from their specific pain, paints outcomes (not features), uses relevant proof point, under 3 min
-- 4 (80%): Good pitch but Eddie buried or generic proof point
-- 3 (60%): Mentions Eddie but generic pitch not tailored to their situation
+- 5 (100%): Leads with teacher credentials, bridges from their specific pain, paints outcomes (not features), uses relevant proof point, under 3 min
+- 4 (80%): Good pitch but teacher credentials buried or generic proof point
+- 3 (60%): Mentions our teachers but generic pitch not tailored to their situation
 - 2 (40%): Feature dump, no connection to their pain
-- 1 (20%): No mention of Eddie, no proof points, robotic feature list
+- 1 (20%): No mention of the teachers, no proof points, robotic feature list
 
 ### Price Presentation (P)
 **Required Elements:**
 - Check for buy-in BEFORE presenting price ("Does this sound like it could help?")
-- Lead with Annual plan ($539) - highest value anchor
-- Frame as investment, not cost (breakdown per month, per lesson)
+- Lead with Annual plan (£319+) - highest value anchor
+- Frame as investment, not cost (around £4-5 per hour)
 - Present one tier at a time, wait for response
-- Have downsell tiers ready: Monthly ($149) → Trial ($7)
+- Have downsell tiers ready: Monthly (£80+) → Trial (£10)
 
 **Red Flags:**
 - Presenting price without getting buy-in first = Score 2-3
-- Leading with $7 trial = Score 1-2 (undersells value)
+- Leading with £10 trial = Score 1-2 (undersells value)
 - Apologizing for the price
 - Presenting all options at once (overwhelming)
 - Rushing through pricing
@@ -198,7 +198,7 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 - 4 (80%): Good presentation but missed buy-in question OR rushed slightly
 - 3 (60%): Presents pricing but skipped buy-in or led with monthly
 - 2 (40%): Presents all tiers at once, no value framing, or apologetic about price
-- 1 (20%): Leads with $7 trial, no buy-in check, or skips pricing entirely
+- 1 (20%): Leads with £10 trial, no buy-in check, or skips pricing entirely
 
 ### Explain / AAA Objection Handling (E)
 **Required Elements:**
@@ -251,7 +251,7 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 - 1 (20%): No close attempt, loses the sale after they were ready, or high-pressure tactics
 
 ## BANNED PHRASES (Deduct points if used)
-${Array.isArray(bannedPhrases) && bannedPhrases.length > 0 ? bannedPhrases.join(', ') : 'Personalized learning, Math can be fun!, World-class, Unlock potential, Learning journey, Empower, SUPER excited!, AMAZING!, How are you today?'}
+${Array.isArray(bannedPhrases) && bannedPhrases.length > 0 ? bannedPhrases.join(', ') : 'Personalised learning, Maths can be fun!, World-class, Unlock potential, Learning journey, Empower, SUPER excited!, AMAZING!, How are you today?'}
 
 ## OVERALL SCORING
 - Weight Overview (Pain Cycle) at 25% - it's the most critical
@@ -267,7 +267,7 @@ Score each phase STRICTLY against these criteria. For each phase:
 5. Be specific about what they should have said - **USE THE ACTUAL SCRIPT CONTENT PROVIDED ABOVE, do NOT make up different wording**
 
 ## CRITICAL: Use Actual Script Content
-When suggesting what the rep "should have said", ONLY use the exact wording from the ACTUAL SCRIPT CONTENT section above. Do NOT invent or make up script lines. If the script says the teacher is "Eddie Kang" with specific credentials, use those exact credentials - do not add or change details like "founded MyEdSpace" unless it's in the actual script.`;
+When suggesting what the rep "should have said", ONLY use the exact wording from the ACTUAL SCRIPT CONTENT section above. Do NOT invent or make up script lines. If the script describes the teachers with specific credentials, use those exact credentials - do not add or change details unless they are in the actual script.`;
 }
 
 export function createScoringUserPrompt(transcript: TranscriptSegment[]): string {
@@ -400,12 +400,12 @@ Respond with a JSON object. Be STRICT - if they didn't do something, score it lo
 **IMPORTANT SCORING REMINDERS:**
 - If they didn't ask "What else have you tried?" multiple times in Overview, score cannot be above 60%
 - If they didn't ask about consequences ("If nothing changes, what happens?"), deduct from Overview
-- If they led with the $7 trial instead of Annual, Reinforce score cannot be above 40%
+- If they led with the £10 trial instead of Annual, Reinforce score cannot be above 40%
 - If they used "How are you today?" opener, Opening score = 20%
 - Be specific about what's MISSING, not just what's there
 
 **CRITICAL - USE ACTUAL SCRIPT ONLY:**
-When providing "improvements" (what they should have said), ONLY use the exact wording from the ACTUAL SCRIPT CONTENT provided in the system prompt. Do NOT invent script lines or add details not in the script. For example, if the script says Eddie has "UCLA Pure Math degree", do NOT say he "founded MyEdSpace" unless that's explicitly in the script.
+When providing "improvements" (what they should have said), ONLY use the exact wording from the ACTUAL SCRIPT CONTENT provided in the system prompt. Do NOT invent script lines or add details not in the script. For example, if the script describes teacher credentials, use those exact credentials - do NOT add or change details unless they are explicitly in the script.
 
 **CRITICAL - QUOTES REQUIREMENT (DO NOT SKIP):**
 For EVERY single phase, you MUST include 1-2 quotes in the "quotes" array. This is MANDATORY - the UI displays "You Said" vs "Script Says" for each phase, and it breaks if quotes are missing.

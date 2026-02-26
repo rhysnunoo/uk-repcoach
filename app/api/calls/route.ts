@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { scoreCall } from '@/lib/scoring/score';
 import OpenAI from 'openai';
 import type { CallStatus } from '@/types/database';
 
@@ -572,12 +573,12 @@ async function scoreCallDirect(callId: string) {
 async function detectScriptFromTranscript(transcriptText: string, adminClient: ReturnType<typeof createAdminClient>): Promise<string | null> {
   const text = transcriptText.toLowerCase();
 
-  // Keywords for each course
+  // Keywords for each year group
   const courseKeywords: Record<string, string[]> = {
-    'Pre-Algebra': ['pre-algebra', 'pre algebra', 'prealgebra', '6th grade', '7th grade', 'middle school math'],
-    'Algebra 1': ['algebra 1', 'algebra one', '8th grade', '9th grade', 'freshman'],
-    'Geometry': ['geometry', 'proofs', 'triangles', 'geometric'],
-    'Algebra 2': ['algebra 2', 'algebra two', 'algebra ii', '10th grade', '11th grade', 'junior'],
+    'Year 5-6': ['year 5', 'year 6', 'year five', 'year six', 'primary', 'ks2', '11+', '11 plus'],
+    'Year 7-9': ['year 7', 'year 8', 'year 9', 'year seven', 'year eight', 'year nine', 'ks3', 'key stage 3'],
+    'Year 10-11': ['year 10', 'year 11', 'year ten', 'year eleven', 'gcse', 'key stage 4', 'ks4'],
+    'Year 12-13': ['year 12', 'year 13', 'year twelve', 'year thirteen', 'a-level', 'a level', 'sixth form'],
   };
 
   // Count matches for each course
