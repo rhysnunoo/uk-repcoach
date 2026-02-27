@@ -12,6 +12,8 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
   const [updating, setUpdating] = useState<string | null>(null);
   const [editingName, setEditingName] = useState<string | null>(null);
   const [nameInput, setNameInput] = useState('');
+  const [editingBitrixId, setEditingBitrixId] = useState<string | null>(null);
+  const [bitrixIdInput, setBitrixIdInput] = useState('');
 
   const updateRole = async (profileId: string, newRole: UserRole) => {
     setUpdating(profileId);
@@ -94,6 +96,50 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
     }
   };
 
+  const startEditingBitrixId = (profile: Profile) => {
+    setEditingBitrixId(profile.id);
+    setBitrixIdInput(profile.bitrix_user_id || '');
+  };
+
+  const saveBitrixId = async (profileId: string) => {
+    setUpdating(profileId);
+
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profileId,
+          bitrix_user_id: bitrixIdInput.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        setProfiles((prev) =>
+          prev.map((p) =>
+            p.id === profileId ? { ...p, bitrix_user_id: bitrixIdInput.trim() || null } : p
+          )
+        );
+      } else {
+        alert('Failed to update Bitrix ID');
+      }
+    } catch (error) {
+      console.error('Failed to update Bitrix ID:', error);
+      alert('Failed to update Bitrix ID');
+    } finally {
+      setUpdating(null);
+      setEditingBitrixId(null);
+    }
+  };
+
+  const handleBitrixKeyDown = (e: React.KeyboardEvent, profileId: string) => {
+    if (e.key === 'Enter') {
+      saveBitrixId(profileId);
+    } else if (e.key === 'Escape') {
+      setEditingBitrixId(null);
+    }
+  };
+
   return (
     <div className="card">
       <h3 className="card-header">Team Members</h3>
@@ -104,6 +150,7 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
             <tr>
               <th>Name</th>
               <th>Email</th>
+              <th>Bitrix ID</th>
               <th>Role</th>
             </tr>
           </thead>
@@ -140,6 +187,28 @@ export function UserManagement({ profiles: initialProfiles }: UserManagementProp
                   </div>
                 </td>
                 <td className="text-sm text-gray-600">{profile.email}</td>
+                <td>
+                  {editingBitrixId === profile.id ? (
+                    <input
+                      type="text"
+                      value={bitrixIdInput}
+                      onChange={(e) => setBitrixIdInput(e.target.value)}
+                      onBlur={() => saveBitrixId(profile.id)}
+                      onKeyDown={(e) => handleBitrixKeyDown(e, profile.id)}
+                      className="input py-1 px-2 text-sm w-28"
+                      autoFocus
+                      placeholder="Bitrix ID"
+                    />
+                  ) : (
+                    <button
+                      onClick={() => startEditingBitrixId(profile)}
+                      className="text-sm text-left hover:text-primary"
+                      title="Click to edit Bitrix ID"
+                    >
+                      {profile.bitrix_user_id || <span className="text-gray-400 italic">—</span>}
+                    </button>
+                  )}
+                </td>
                 <td>
                   <select
                     value={profile.role}

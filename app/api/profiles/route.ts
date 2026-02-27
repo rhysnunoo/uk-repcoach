@@ -50,14 +50,14 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { profileId, full_name, role } = body;
+    const { profileId, full_name, role, bitrix_user_id } = body;
 
     if (!profileId) {
       return NextResponse.json({ error: 'Missing profileId' }, { status: 400 });
     }
 
     const adminClient = createAdminClient();
-    const updates: { full_name?: string; role?: UserRole } = {};
+    const updates: { full_name?: string; role?: UserRole; bitrix_user_id?: string | null } = {};
 
     if (full_name !== undefined) {
       updates.full_name = full_name;
@@ -73,6 +73,10 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
       }
       updates.role = role as UserRole;
+    }
+
+    if (bitrix_user_id !== undefined) {
+      updates.bitrix_user_id = bitrix_user_id || null;
     }
 
     if (Object.keys(updates).length === 0) {
