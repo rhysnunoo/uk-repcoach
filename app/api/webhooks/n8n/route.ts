@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { transcribeWithWhisper } from '@/lib/openai/transcribe';
 import { findDuplicateCall } from '@/lib/utils/deduplication';
 
+// Allow up to 5 minutes for transcription + scoring of long calls
+export const maxDuration = 300;
+
 /**
  * n8n Webhook Endpoint for Bitrix24 Calls
  *
@@ -50,7 +53,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const payload: N8nWebhookPayload = await request.json();
+    let payload: N8nWebhookPayload;
+    try {
+      payload = await request.json();
+    } catch {
+      console.error('[n8n Webhook] Invalid or empty JSON body');
+      return NextResponse.json(
+        { error: 'Invalid or empty JSON body. Ensure Content-Type is application/json and body is valid JSON.' },
+        { status: 400 }
+      );
+    }
+
     console.log('[n8n Webhook] Payload:', JSON.stringify({
       bitrix_call_id: payload.bitrix_call_id,
       bitrix_user_id: payload.bitrix_user_id,
@@ -86,19 +99,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 'skipped', reason: 'Call already exists' });
     }
 
-    // Find rep by bitrix_user_id
-    const { data: profile } = await adminClient
+    // Find rep by bitrix_user_id in profiles table
+    const { data: rep } = await adminClient
       .from('profiles')
-      .select('id, full_name')
+      .select('id, bitrix_user_id, full_name, email')
       .eq('bitrix_user_id', payload.bitrix_user_id)
       .single();
 
-    if (!profile) {
+    if (!rep) {
       console.log('[n8n Webhook] No matching rep for bitrix_user_id:', payload.bitrix_user_id);
       return NextResponse.json({ status: 'skipped', reason: 'No matching rep found' });
     }
 
-    console.log('[n8n Webhook] Matched rep:', profile.full_name, '(', profile.id, ')');
+    console.log('[n8n Webhook] Matched rep:', rep.full_name, '(', rep.email, ')');
 
     // Check for duplicates from other sources
     const callDate = payload.call_date || new Date().toISOString();
@@ -118,7 +131,8 @@ export async function POST(request: NextRequest) {
     const { data: newCall, error: insertError } = await adminClient
       .from('calls')
       .insert({
-        rep_id: profile.id,
+        rep_id: rep.id,
+        bitrix_user_id: rep.bitrix_user_id,
         source: 'bitrix',
         status: 'transcribing',
         bitrix_call_id: payload.bitrix_call_id,
@@ -138,16 +152,26 @@ export async function POST(request: NextRequest) {
 
     console.log('[n8n Webhook] Created call:', newCall.id);
 
-    // Process asynchronously: transcribe → score
-    processCall(newCall.id, payload.recording_url).catch(err => {
-      console.error('[n8n Webhook] Processing failed:', err);
-    });
+    // Process synchronously — maxDuration=300 gives us up to 5 minutes.
+    // Awaiting ensures Vercel keeps the function alive until processing completes.
+    try {
+      await processCall(newCall.id, payload.recording_url);
+      console.log('[n8n Webhook] Processing complete for call:', newCall.id);
 
-    return NextResponse.json({
-      status: 'processing',
-      callId: newCall.id,
-      message: 'Call created, transcription and scoring in progress',
-    });
+      return NextResponse.json({
+        status: 'complete',
+        callId: newCall.id,
+        message: 'Call transcribed and scored successfully',
+      });
+    } catch (err) {
+      console.error('[n8n Webhook] Processing failed:', err);
+      // Call status is already set to 'error' inside processCall's catch block
+      return NextResponse.json({
+        status: 'error',
+        callId: newCall.id,
+        message: err instanceof Error ? err.message : 'Processing failed',
+      });
+    }
 
   } catch (error) {
     console.error('[n8n Webhook] Error:', error);

@@ -33,9 +33,10 @@ export const ManagerDashboard = memo(function ManagerDashboard({
 
     // Group calls by rep
     const repCalls: Record<string, Call[]> = {};
-    completedCalls.forEach((call) => {
-      if (!repCalls[call.rep_id]) repCalls[call.rep_id] = [];
-      repCalls[call.rep_id].push(call);
+    completedCalls.filter(c => c.rep_id).forEach((call) => {
+      const rid = call.rep_id!;
+      if (!repCalls[rid]) repCalls[rid] = [];
+      repCalls[rid].push(call);
     });
 
     // Calculate rep scores
@@ -233,7 +234,7 @@ export const ManagerDashboard = memo(function ManagerDashboard({
                 {recentCalls.slice(0, 10).map((call) => (
                   <tr key={call.id}>
                     <td>{format(new Date(call.call_date), 'MMM d, h:mm a')}</td>
-                    <td>{call.rep_id.slice(0, 8)}...</td>
+                    <td>{call.rep_id ? call.rep_id.slice(0, 8) + '...' : 'N/A'}</td>
                     <td>{call.contact_name || 'Unknown'}</td>
                     <td>
                       {call.overall_score !== null ? (

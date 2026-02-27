@@ -4,6 +4,9 @@ import { createClient } from '@/lib/supabase/server';
 import { transcribeWithWhisper } from '@/lib/openai/transcribe';
 import { scoreCall } from '@/lib/scoring/score';
 
+// Allow up to 5 minutes for transcription + scoring of long calls
+export const maxDuration = 300;
+
 interface TranscribeRouteParams {
   params: Promise<{ id: string }>;
 }

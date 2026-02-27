@@ -7,7 +7,10 @@ import type { ScriptContent, TranscriptSegment } from '@/types/database';
 
 let _openai: OpenAI | null = null;
 function getOpenAI() {
-  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  if (!_openai) _openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    timeout: 90_000, // 90s hard timeout per request — prevents hanging forever
+  });
   return _openai;
 }
 
@@ -44,7 +47,7 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
   // Fetch call with transcript
   const { data: call, error: callError } = await adminClient
     .from('calls')
-    .select('*, scripts(*)')
+    .select('*')
     .eq('id', callId)
     .single();
 
@@ -56,9 +59,18 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
     throw new Error('No transcript available for scoring');
   }
 
-  // Get script content - use empty object if no script (defaults will be used)
-  const scripts = call.scripts as unknown as { content: ScriptContent }[] | null;
-  const scriptContent = scripts?.[0]?.content || {} as ScriptContent;
+  // Get script content if the call has a linked script
+  let scriptContent = {} as ScriptContent;
+  if (call.script_id) {
+    const { data: script } = await adminClient
+      .from('scripts')
+      .select('content')
+      .eq('id', call.script_id)
+      .single();
+    if (script?.content) {
+      scriptContent = script.content;
+    }
+  }
 
   // Update status
   await adminClient

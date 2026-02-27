@@ -81,11 +81,11 @@ export async function GET() {
     // Fetch rep names if manager
     let repNames: Record<string, string> = {};
     if (isManager) {
-      const repIds = [...new Set(typedCalls.map(c => c.rep_id))];
-      const { data: profiles } = await adminClient
+      const repIds = [...new Set(typedCalls.map(c => c.rep_id).filter((id): id is string => id !== null))];
+      const { data: profiles } = repIds.length > 0 ? await adminClient
         .from('profiles')
         .select('id, full_name, email')
-        .in('id', repIds);
+        .in('id', repIds) : { data: null };
 
       if (profiles) {
         profiles.forEach((p: { id: string; full_name: string | null; email: string }) => {
@@ -189,13 +189,14 @@ function calculateOutcomeAnalytics(
   // Rep performance (if manager)
   const repPerformance = Object.keys(repNames).length > 0
     ? Object.entries(
-        completedCalls.reduce((acc, c) => {
-          if (!acc[c.rep_id]) {
-            acc[c.rep_id] = { total: 0, closed: 0, totalScore: 0 };
+        completedCalls.filter(c => c.rep_id).reduce((acc, c) => {
+          const rid = c.rep_id!;
+          if (!acc[rid]) {
+            acc[rid] = { total: 0, closed: 0, totalScore: 0 };
           }
-          acc[c.rep_id].total++;
-          if (closedOutcomes.includes(c.outcome!)) acc[c.rep_id].closed++;
-          acc[c.rep_id].totalScore += c.overall_score || 0;
+          acc[rid].total++;
+          if (closedOutcomes.includes(c.outcome!)) acc[rid].closed++;
+          acc[rid].totalScore += c.overall_score || 0;
           return acc;
         }, {} as Record<string, { total: number; closed: number; totalScore: number }>)
       ).map(([repId, stats]) => ({

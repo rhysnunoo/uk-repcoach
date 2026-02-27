@@ -14,7 +14,7 @@ const phaseScoreSchema = z.object({
   highlights: z.array(z.string()).default([]),
   improvements: z.array(z.string()).default([]),
   quotes: z.array(quoteSchema).default([]),
-});
+}).passthrough(); // Allow extra fields GPT may return (rubric_score, required_elements_present, etc.)
 
 const objectionSchema = z.object({
   objection: z.string(),
@@ -29,7 +29,7 @@ const scoringResponseSchema = z.object({
   scores: z.array(phaseScoreSchema),
   objections_detected: z.array(objectionSchema).default([]),
   summary: z.string(),
-});
+}).passthrough(); // Allow extra fields like banned_phrases_used, critical_issues
 
 export type ScoringResponse = z.infer<typeof scoringResponseSchema>;
 export type PhaseScore = z.infer<typeof phaseScoreSchema>;
@@ -51,12 +51,20 @@ export function parseScoringResponse(response: string): ScoringResponse | null {
     // Parse JSON
     const parsed = JSON.parse(jsonStr);
 
-    // Validate with Zod
-    const validated = scoringResponseSchema.parse(parsed);
+    // Validate with Zod (safeParse for better error reporting)
+    const result = scoringResponseSchema.safeParse(parsed);
 
-    return validated;
+    if (!result.success) {
+      console.error('[parseScoringResponse] Zod validation failed:', JSON.stringify(result.error.issues, null, 2));
+      console.error('[parseScoringResponse] Raw keys:', Object.keys(parsed));
+      console.error('[parseScoringResponse] Scores count:', parsed?.scores?.length, 'phases:', parsed?.scores?.map((s: { phase: string }) => s.phase));
+      return null;
+    }
+
+    return result.data;
   } catch (error) {
-    console.error('Failed to parse scoring response:', error);
+    console.error('[parseScoringResponse] Failed to parse:', error);
+    console.error('[parseScoringResponse] Response preview:', response.substring(0, 500));
     return null;
   }
 }

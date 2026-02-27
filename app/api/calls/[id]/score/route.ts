@@ -3,6 +3,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import { scoreCall, rescoreCall } from '@/lib/scoring/score';
 
+// Allow up to 5 minutes for scoring (GPT-4 can take 40-60s per attempt, with retries)
+export const maxDuration = 300;
+
 interface ScoreRouteParams {
   params: Promise<{ id: string }>;
 }

@@ -11,13 +11,13 @@ interface Rep {
 
 interface CallRepSelectorProps {
   callId: string;
-  currentRepId: string;
+  currentRepId: string | null;
   reps: Rep[];
 }
 
 export function CallRepSelector({ callId, currentRepId, reps }: CallRepSelectorProps) {
   const router = useRouter();
-  const [selectedRep, setSelectedRep] = useState(currentRepId);
+  const [selectedRep, setSelectedRep] = useState(currentRepId || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -60,7 +60,7 @@ export function CallRepSelector({ callId, currentRepId, reps }: CallRepSelectorP
       timeoutRef.current = setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reassign');
-      setSelectedRep(currentRepId); // Revert on error
+      setSelectedRep(currentRepId || ''); // Revert on error
     } finally {
       setSaving(false);
     }
