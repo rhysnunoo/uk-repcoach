@@ -58,6 +58,7 @@ export interface CloserPhases {
   label?: FrameworkPhase;
   overview?: FrameworkPhase;
   sell_vacation?: FrameworkPhase;
+  price_presentation?: FrameworkPhase;
   explain?: FrameworkPhase;
   reinforce?: FrameworkPhase;
 }
