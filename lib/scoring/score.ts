@@ -1,9 +1,9 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import OpenAI from 'openai';
-import { createScoringSystemPrompt, createScoringUserPrompt } from './prompt';
+import { createScoringSystemPrompt, createScoringUserPrompt, getExcludedPhases } from './prompt';
 import { parseScoringResponse, calculateOverallScore, generateFallbackScores } from './parse';
 import { invalidateCallCache, invalidateTeamCache } from '@/lib/cache/simple-cache';
-import type { ScriptContent, TranscriptSegment } from '@/types/database';
+import type { ScriptContent, TranscriptSegment, CallContext } from '@/types/database';
 
 let _openai: OpenAI | null = null;
 function getOpenAI() {
@@ -59,6 +59,9 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
     throw new Error('No transcript available for scoring');
   }
 
+  const callContext = (call.call_context as CallContext) || 'new_lead';
+  const excludedPhases = getExcludedPhases(callContext);
+
   // Get script content if the call has a linked script
   let scriptContent = {} as ScriptContent;
   if (call.script_id) {
@@ -78,9 +81,11 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
     .update({ status: 'scoring' })
     .eq('id', callId);
 
-  // Create prompts
-  const systemPrompt = createScoringSystemPrompt(scriptContent);
-  const userPrompt = createScoringUserPrompt(call.transcript as TranscriptSegment[]);
+  // Create prompts — context-aware
+  const systemPrompt = createScoringSystemPrompt(scriptContent, callContext);
+  const userPrompt = createScoringUserPrompt(call.transcript as TranscriptSegment[], callContext);
+
+  console.log(`[scoreCall] Scoring call ${callId} with context: ${callContext}, excluded phases: [${excludedPhases.join(', ')}]`);
 
   // Call GPT-4 with retries
   let scoringResponse = null;
@@ -118,7 +123,7 @@ export async function scoreCall(callId: string): Promise<ScoreResult> {
   // Use fallback if all attempts failed
   if (!scoringResponse) {
     console.error('[scoreCall] All scoring attempts failed:', lastError);
-    scoringResponse = generateFallbackScores();
+    scoringResponse = generateFallbackScores(excludedPhases);
   }
 
   // Calculate final overall score

@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { scoreCall } from '@/lib/scoring/score';
 import OpenAI from 'openai';
-import type { CallStatus } from '@/types/database';
+import type { CallContext, CallStatus } from '@/types/database';
 
 let _openai: OpenAI | null = null;
 function getOpenAI() {
@@ -94,6 +94,11 @@ export async function POST(request: NextRequest) {
     const contactName = formData.get('contactName') as string;
     const callDate = formData.get('callDate') as string;
     const repIdFromForm = formData.get('repId') as string | null;
+    const callContextRaw = formData.get('callContext') as string | null;
+    const validContexts: CallContext[] = ['new_lead', 'booked_call', 'warm_lead', 'follow_up'];
+    const callContext: CallContext = validContexts.includes(callContextRaw as CallContext)
+      ? (callContextRaw as CallContext)
+      : 'new_lead';
 
     const adminClient = createAdminClient();
 
@@ -157,6 +162,7 @@ export async function POST(request: NextRequest) {
           transcript,
           call_date: callDate || new Date().toISOString(),
           contact_name: contactName || null,
+          call_context: callContext,
         })
         .select()
         .single();
@@ -229,6 +235,7 @@ export async function POST(request: NextRequest) {
         storage_path: fileName,
         call_date: callDate || new Date().toISOString(),
         contact_name: contactName || null,
+        call_context: callContext,
       })
       .select()
       .single();

@@ -1,6 +1,7 @@
 export type UserRole = 'rep' | 'manager' | 'admin';
 export type CallSource = 'manual' | 'bitrix';
 export type CallStatus = 'pending' | 'transcribing' | 'scoring' | 'complete' | 'error';
+export type CallContext = 'new_lead' | 'booked_call' | 'warm_lead' | 'follow_up';
 export type PracticeStatus = 'active' | 'completed' | 'abandoned';
 export type PersonaType = 'skeptical_parent' | 'price_sensitive' | 'engaged_ready' | 'spouse_blocker' | 'math_hater';
 
@@ -119,6 +120,7 @@ export interface Call {
   script_id: string | null;
   source: CallSource;
   status: CallStatus;
+  call_context: CallContext;
   bitrix_call_id: string | null;
   recording_url: string | null;
   storage_path: string | null;
@@ -412,6 +414,7 @@ export type Database = {
           script_id: string | null;
           source: CallSource;
           status: CallStatus;
+          call_context: CallContext;
           bitrix_call_id: string | null;
           recording_url: string | null;
           storage_path: string | null;
@@ -434,6 +437,7 @@ export type Database = {
           script_id?: string | null;
           source: CallSource;
           status?: CallStatus;
+          call_context?: CallContext;
           bitrix_call_id?: string | null;
           recording_url?: string | null;
           storage_path?: string | null;
@@ -454,6 +458,7 @@ export type Database = {
           script_id?: string | null;
           source?: CallSource;
           status?: CallStatus;
+          call_context?: CallContext;
           bitrix_call_id?: string | null;
           recording_url?: string | null;
           storage_path?: string | null;

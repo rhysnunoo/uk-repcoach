@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
+import type { CallContext } from '@/types/database';
 
 interface RepOption {
   id: string;
@@ -31,6 +32,7 @@ export function CallUploader({ isManager = false, reps = [], currentUserId }: Ca
     new Date().toISOString().split('T')[0]
   );
   const [selectedRepId, setSelectedRepId] = useState<string>(currentUserId || '');
+  const [callContext, setCallContext] = useState<CallContext>('new_lead');
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
@@ -122,6 +124,7 @@ export function CallUploader({ isManager = false, reps = [], currentUserId }: Ca
       formData.append('mode', mode);
       formData.append('contactName', contactName);
       formData.append('callDate', callDate);
+      formData.append('callContext', callContext);
 
       // If manager is uploading for a specific rep
       if (isManager && selectedRepId) {
@@ -401,6 +404,26 @@ REP: Great! So what's going on with math that made you reach out?
               onChange={(e) => setCallDate(e.target.value)}
               className="input"
             />
+          </div>
+
+          <div>
+            <label htmlFor="callContext" className="label">
+              Call Type
+            </label>
+            <select
+              id="callContext"
+              value={callContext}
+              onChange={(e) => setCallContext(e.target.value as CallContext)}
+              className="input"
+            >
+              <option value="new_lead">New Lead — first ever interaction</option>
+              <option value="booked_call">Booked Call — they booked a call, we have some info</option>
+              <option value="warm_lead">Warm Lead — already been messaging/chatting</option>
+              <option value="follow_up">Follow-Up — returning from a previous call</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              This adjusts which phases are scored. Warm leads and follow-ups skip discovery phases.
+            </p>
           </div>
         </div>
       </div>

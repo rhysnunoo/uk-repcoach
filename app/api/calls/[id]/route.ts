@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import type { CallContext } from '@/types/database';
 
 interface CallRouteParams {
   params: Promise<{ id: string }>;
@@ -113,12 +114,27 @@ export async function PATCH(request: NextRequest, { params }: CallRouteParams) {
       }
     }
 
+    // call_context can only be changed by managers/admins
+    let contextChanged = false;
+    if (body.call_context !== undefined) {
+      if (!isManager) {
+        return NextResponse.json({ error: 'Only managers and admins can change call context' }, { status: 403 });
+      }
+      const validContexts: CallContext[] = ['new_lead', 'booked_call', 'warm_lead', 'follow_up'];
+      if (!validContexts.includes(body.call_context)) {
+        return NextResponse.json({ error: 'Invalid call context' }, { status: 400 });
+      }
+      updates.call_context = body.call_context;
+      contextChanged = true;
+    }
+
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
-    // Update call
-    const { data: call, error: updateError } = await supabase
+    // Use admin client for the update so RLS doesn't block call_context changes
+    const adminClient = createAdminClient();
+    const { data: call, error: updateError } = await adminClient
       .from('calls')
       .update(updates)
       .eq('id', callId)
@@ -130,7 +146,17 @@ export async function PATCH(request: NextRequest, { params }: CallRouteParams) {
       return NextResponse.json({ error: 'Failed to update call' }, { status: 500 });
     }
 
-    return NextResponse.json({ call });
+    // If call context changed and the call has been scored, trigger a re-score
+    if (contextChanged && call.status === 'complete' && call.transcript) {
+      // Re-score asynchronously — don't block the response
+      import('@/lib/scoring/score').then(({ rescoreCall }) => {
+        rescoreCall(callId).catch(err =>
+          console.error(`[PATCH /calls/${callId}] Re-score failed:`, err)
+        );
+      });
+    }
+
+    return NextResponse.json({ call, rescoring: contextChanged });
   } catch (error) {
     console.error('Error updating call:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

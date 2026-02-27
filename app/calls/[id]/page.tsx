@@ -13,7 +13,8 @@ import { SpeakerCorrection } from '@/components/calls/speaker-correction';
 import { CallErrorState } from '@/components/calls/call-error-state';
 import { CallOutcomeSelector, OutcomeBadge } from '@/components/calls/call-outcome-selector';
 import { CallRepSelector } from '@/components/calls/call-rep-selector';
-import type { Score, TranscriptSegment } from '@/types/database';
+import { CallContextSelector } from '@/components/calls/call-context-selector';
+import type { CallContext, Score, TranscriptSegment } from '@/types/database';
 import { StatusBadge } from '@/components/ui/shared';
 import { getScoreColor, formatDuration } from '@/lib/utils/format';
 
@@ -226,6 +227,15 @@ export default async function CallDetailPage({ params }: CallDetailPageProps) {
                   />
                 </div>
               )}
+
+              <div className="mb-4 pb-4 border-b border-gray-200">
+                <dt className="text-sm text-gray-500 mb-1">Call Type</dt>
+                <CallContextSelector
+                  callId={id}
+                  currentContext={(call.call_context as CallContext) || 'new_lead'}
+                  canEdit={isManager}
+                />
+              </div>
 
               <dl className="space-y-3 text-sm">
                 <div className="flex justify-between">

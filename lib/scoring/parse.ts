@@ -7,8 +7,10 @@ const quoteSchema = z.object({
   timestamp: z.number().optional(),
 });
 
+const ALL_PHASES = ['opening', 'clarify', 'label', 'overview', 'sell_vacation', 'price_presentation', 'explain', 'reinforce'] as const;
+
 const phaseScoreSchema = z.object({
-  phase: z.enum(['opening', 'clarify', 'label', 'overview', 'sell_vacation', 'price_presentation', 'explain', 'reinforce']),
+  phase: z.enum(ALL_PHASES),
   score: z.number().min(0).max(100),
   feedback: z.string(),
   highlights: z.array(z.string()).default([]),
@@ -84,6 +86,9 @@ export function calculateOverallScore(scores: PhaseScore[]): number {
     reinforce: 0.10,
   };
 
+  // Only sum weights for phases that were actually scored.
+  // Excluded phases won't be in the scores array, so totalWeight
+  // will be less than 1.0 — the division normalizes automatically.
   let weightedSum = 0;
   let totalWeight = 0;
 
@@ -103,19 +108,18 @@ export function getScoreLevel(score: number): 'excellent' | 'good' | 'needs_work
   return 'poor';
 }
 
-export function generateFallbackScores(): ScoringResponse {
+export function generateFallbackScores(excludedPhases: string[] = []): ScoringResponse {
+  const scoredPhases = ALL_PHASES.filter(p => !excludedPhases.includes(p));
   return {
     overall_score: 0,
-    scores: [
-      { phase: 'opening', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-      { phase: 'clarify', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-      { phase: 'label', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-      { phase: 'overview', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-      { phase: 'sell_vacation', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-      { phase: 'price_presentation', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-      { phase: 'explain', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-      { phase: 'reinforce', score: 0, feedback: 'Unable to analyze', highlights: [], improvements: [], quotes: [] },
-    ],
+    scores: scoredPhases.map(phase => ({
+      phase,
+      score: 0,
+      feedback: 'Unable to analyze',
+      highlights: [],
+      improvements: [],
+      quotes: [],
+    })),
     objections_detected: [],
     summary: 'Unable to analyze this call. Please try again or contact support.',
   };

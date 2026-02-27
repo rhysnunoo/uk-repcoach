@@ -1,11 +1,55 @@
-import type { ScriptContent, TranscriptSegment } from '@/types/database';
+import type { ScriptContent, TranscriptSegment, CallContext } from '@/types/database';
 
-export function createScoringSystemPrompt(scriptContent: ScriptContent): string {
+/**
+ * Defines which phases are excluded for each call context,
+ * and any adapted criteria for phases that remain but change.
+ */
+const CONTEXT_CONFIG: Record<CallContext, {
+  excludedPhases: string[];
+  adaptedCriteria: Record<string, string>;
+  contextDescription: string;
+}> = {
+  new_lead: {
+    excludedPhases: [],
+    adaptedCriteria: {},
+    contextDescription: 'This is a FIRST CONTACT with a brand new lead. The rep has no prior information about this person. Score all phases fully against the standard CLOSER framework.',
+  },
+  booked_call: {
+    excludedPhases: [],
+    adaptedCriteria: {
+      clarify: `**ADAPTED FOR BOOKED CALL:** The prospect booked this call themselves and may have provided some info (year group, etc.) on the form. Do NOT penalise the rep for not asking questions whose answers were already provided at booking (e.g. year group, subjects). DO still expect them to dig deeper — ask WHY they booked, what's driving urgency, what success looks like. Score based on whether they deepened understanding beyond what was already known.`,
+    },
+    contextDescription: 'This is a BOOKED CALL — the prospect actively booked a call and may have provided basic info (year group, subject). The rep should still do thorough discovery but won\'t need to ask for info that was already given.',
+  },
+  warm_lead: {
+    excludedPhases: ['clarify', 'label', 'overview'],
+    adaptedCriteria: {
+      opening: `**ADAPTED FOR WARM LEAD:** The rep has been in active conversation with this prospect (e.g. messaging, WhatsApp, email). Do NOT score on proof/credibility elements — the prospect already knows who we are. Instead score on: (1) Referencing the prior conversation naturally, (2) Setting a clear agenda for THIS call, (3) Getting a micro-commitment to proceed. Red flag: treating it like a cold call and re-introducing the company from scratch.`,
+      sell_vacation: `**ADAPTED FOR WARM LEAD:** Since Clarify/Label/Overview are excluded, the rep should naturally weave in references to the prospect's known situation when pitching. Score on whether the pitch connects to the specific pain/context they already know about from prior conversations.`,
+    },
+    contextDescription: 'This is a WARM LEAD — the rep has already been in conversation with this prospect (messaging, WhatsApp, email, etc.) and already knows their situation, pain points, and context. Phases that would re-discover known information are EXCLUDED. The focus should be on pitching, pricing, objection handling, and closing.',
+  },
+  follow_up: {
+    excludedPhases: ['clarify', 'label', 'overview'],
+    adaptedCriteria: {
+      opening: `**ADAPTED FOR FOLLOW-UP:** This is a return call — the rep has spoken to this prospect before. Do NOT score on proof/credibility. Instead score on: (1) Recapping the previous conversation ("Last time we spoke about X..."), (2) Acknowledging where they left off, (3) Setting a clear agenda for THIS call ("Today I wanted to..."), (4) Getting a micro-commitment. Red flag: starting from scratch as if they've never spoken.`,
+      sell_vacation: `**ADAPTED FOR FOLLOW-UP:** Should be a shorter, targeted recap — not a full pitch from scratch. Score on whether the rep efficiently reconnected the prospect to the value proposition and addressed any specific concerns from last time.`,
+    },
+    contextDescription: 'This is a FOLLOW-UP call — the rep has already spoken to this prospect before and is returning to continue the conversation or close. Discovery and pain exploration from previous calls should NOT be repeated. The focus should be on recapping, addressing outstanding concerns, and closing.',
+  },
+};
+
+export function getExcludedPhases(callContext: CallContext): string[] {
+  return CONTEXT_CONFIG[callContext].excludedPhases;
+}
+
+export function createScoringSystemPrompt(scriptContent: ScriptContent, callContext: CallContext = 'new_lead'): string {
   const closerPhases = scriptContent.closer_phases || {};
   const bannedPhrases = scriptContent.conviction_tonality?.banned_phrases ||
                         scriptContent.banned_phrases || [];
   const courseDetails = scriptContent.course_details || {};
   const pricing = scriptContent.pricing || {};
+  const config = CONTEXT_CONFIG[callContext];
 
   // Extract actual script lines for each phase
   const getExactScript = (phase: string): string => {
@@ -53,7 +97,18 @@ ${getExactScript('explain') || 'Not specified'}
 ${getExactScript('reinforce') || 'Not specified'}
 `;
 
+  // Build context-aware phase criteria
+  const phaseCriteria = buildPhaseCriteria(closerPhases, config);
+
+  // Build exclusion notice
+  const exclusionNotice = config.excludedPhases.length > 0
+    ? `\n## EXCLUDED PHASES (DO NOT SCORE THESE)\nThe following phases are EXCLUDED for this call type and should NOT appear in your scores array:\n${config.excludedPhases.map(p => `- **${p}**`).join('\n')}\n\nOnly score the phases listed in PHASE SCORING CRITERIA below. If the rep happens to do elements from excluded phases (e.g. naturally referencing pain they already know), that's fine — note it positively in other phase feedback, but do NOT create a separate score for excluded phases.\n`
+    : '';
+
   return `You are a STRICT sales coach scoring calls against the Hormozi CLOSER framework for MyEdSpace.
+
+## CALL CONTEXT
+${config.contextDescription}
 
 ${scriptReference}
 
@@ -64,11 +119,45 @@ ${scriptReference}
 3. **Use the 1-5 scale** - Map to percentages: 5=100%, 4=80%, 3=60%, 2=40%, 1=20%
 4. **If they didn't do something, score it LOW** - Don't give benefit of the doubt
 5. **Quote specific evidence** - Show exactly what they said or DIDN'T say
-
+${exclusionNotice}
 ## PHASE SCORING CRITERIA
 
-### Opening (Proof-Promise-Plan)
-**Required Elements:**
+${phaseCriteria}
+
+## BANNED PHRASES (Deduct points if used)
+${Array.isArray(bannedPhrases) && bannedPhrases.length > 0 ? bannedPhrases.join(', ') : 'Personalised learning, Maths can be fun!, World-class, Unlock potential, Learning journey, Empower, SUPER excited!, AMAZING!, How are you today?'}
+
+## OVERALL SCORING
+- Only score the phases listed above (excluded phases are not counted)
+- The overall score is the weighted average of scored phases only
+${callContext === 'new_lead' || callContext === 'booked_call' ? '- Weight Overview (Pain Cycle) at 25% - it\'s the most critical\n- If Overview scores 1-2, flag as CRITICAL issue regardless of other scores' : '- Weight Price Presentation and Reinforce more heavily — closing is the main goal for this call type'}
+- Map 1-5 scores to percentages for consistency
+
+## YOUR TASK
+Score each INCLUDED phase STRICTLY against these criteria. For each phase:
+1. Give a 1-5 score based on the rubric above (then convert to percentage)
+2. List which required elements were PRESENT
+3. List which required elements were MISSING
+4. Quote specific evidence from the transcript
+5. Be specific about what they should have said - **USE THE ACTUAL SCRIPT CONTENT PROVIDED ABOVE, do NOT make up different wording**
+
+## CRITICAL: Use Actual Script Content
+When suggesting what the rep "should have said", ONLY use the exact wording from the ACTUAL SCRIPT CONTENT section above. Do NOT invent or make up script lines. If the script describes the teachers with specific credentials, use those exact credentials - do not add or change details unless they are in the actual script.`;
+}
+
+function buildPhaseCriteria(
+  closerPhases: ScriptContent['closer_phases'],
+  config: { excludedPhases: string[]; adaptedCriteria: Record<string, string> }
+): string {
+  const phases: Array<{ key: string; criteria: string }> = [];
+
+  // Opening
+  if (!config.excludedPhases.includes('opening')) {
+    const adapted = config.adaptedCriteria.opening || '';
+    phases.push({
+      key: 'opening',
+      criteria: `### Opening (Proof-Promise-Plan)
+${adapted ? adapted + '\n' : ''}**Required Elements:**
 - Greet + thank them for booking
 - Brief proof/credibility ("thousands of parents")
 - Promise outcome (understand situation, show how to help, see if it makes sense)
@@ -86,10 +175,17 @@ ${scriptReference}
 - 4 (80%): Has most elements but missing one (e.g., no micro-commitment)
 - 3 (60%): Has agenda but missing proof OR promise
 - 2 (40%): Long company intro, no clear agenda
-- 1 (20%): "How are you today?" opener, launches into pitch, no agenda
+- 1 (20%): "How are you today?" opener, launches into pitch, no agenda`,
+    });
+  }
 
-### Clarify (C)
-**Required Elements:**
+  // Clarify
+  if (!config.excludedPhases.includes('clarify')) {
+    const adapted = config.adaptedCriteria.clarify || '';
+    phases.push({
+      key: 'clarify',
+      criteria: `### Clarify (C)
+${adapted ? adapted + '\n' : ''}**Required Elements:**
 - Ask why they reached out (open-ended question)
 - Get them to state their problem in their OWN words
 - Cover child's year group and subjects
@@ -107,9 +203,15 @@ ${scriptReference}
 - 4 (80%): Good discovery but misses one element (e.g., no urgency question)
 - 3 (60%): Some discovery but relies on closed yes/no questions
 - 2 (40%): Minimal discovery, moves quickly to pitch
-- 1 (20%): Assumes problem without asking, talks more than listens
+- 1 (20%): Assumes problem without asking, talks more than listens`,
+    });
+  }
 
-### Label (L)
+  // Label
+  if (!config.excludedPhases.includes('label')) {
+    phases.push({
+      key: 'label',
+      criteria: `### Label (L)
 **Required Elements:**
 - Restate problem using THEIR exact words
 - Include year group, subjects, specific challenge, AND goal
@@ -127,10 +229,16 @@ ${scriptReference}
 - 4 (80%): Good summary but confirmation was weak
 - 3 (60%): Acknowledges but doesn't get explicit confirmation
 - 2 (40%): Parrots their words without synthesis
-- 1 (20%): Skips labeling entirely, moves straight to pitch
+- 1 (20%): Skips labeling entirely, moves straight to pitch`,
+    });
+  }
 
-### Overview / Pain Cycle (O) - **MOST IMPORTANT PHASE**
-${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.importance}**` : '**CRITICAL: Prospects don\'t buy without pain. This phase is weighted heavily.**'}
+  // Overview
+  if (!config.excludedPhases.includes('overview')) {
+    phases.push({
+      key: 'overview',
+      criteria: `### Overview / Pain Cycle (O) - **MOST IMPORTANT PHASE**
+${closerPhases?.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.importance}**` : '**CRITICAL: Prospects don\'t buy without pain. This phase is weighted heavily.**'}
 
 **Required Elements (ALL MUST BE PRESENT FOR HIGH SCORE):**
 1. Ask about ALL past attempts ("What have you done so far to help [Child] with maths?")
@@ -154,10 +262,17 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 - 2 (40%): Minimal exploration, token question about past attempts
 - 1 (20%): Skips pain cycle entirely, goes straight to pitch (CRITICAL FAILURE)
 
-**STRICT CHECK:** If rep did NOT ask "What else have you tried?" multiple times AND did NOT ask about consequences, score CANNOT be above 3.
+**STRICT CHECK:** If rep did NOT ask "What else have you tried?" multiple times AND did NOT ask about consequences, score CANNOT be above 3.`,
+    });
+  }
 
-### Sell the Vacation (S)
-**Required Elements:**
+  // Sell the Vacation
+  if (!config.excludedPhases.includes('sell_vacation')) {
+    const adapted = config.adaptedCriteria.sell_vacation || '';
+    phases.push({
+      key: 'sell_vacation',
+      criteria: `### Sell the Vacation (S)
+${adapted ? adapted + '\n' : ''}**Required Elements:**
 - Lead with teacher credentials (top 1%, Oxford/Cambridge/UCL/Imperial/Warwick, combined 100+ years)
 - Bridge from their SPECIFIC pain point (not generic pitch)
 - Paint outcome picture (confident kid, easier homework - NOT features)
@@ -176,9 +291,15 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 - 4 (80%): Good pitch but teacher credentials buried or generic proof point
 - 3 (60%): Mentions our teachers but generic pitch not tailored to their situation
 - 2 (40%): Feature dump, no connection to their pain
-- 1 (20%): No mention of the teachers, no proof points, robotic feature list
+- 1 (20%): No mention of the teachers, no proof points, robotic feature list`,
+    });
+  }
 
-### Price Presentation (P)
+  // Price Presentation
+  if (!config.excludedPhases.includes('price_presentation')) {
+    phases.push({
+      key: 'price_presentation',
+      criteria: `### Price Presentation (P)
 **Required Elements:**
 - Check for buy-in BEFORE presenting price ("Does this sound like it could help?")
 - Lead with Annual plan (£319+) - highest value anchor
@@ -198,9 +319,15 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 - 4 (80%): Good presentation but missed buy-in question OR rushed slightly
 - 3 (60%): Presents pricing but skipped buy-in or led with monthly
 - 2 (40%): Presents all tiers at once, no value framing, or apologetic about price
-- 1 (20%): Leads with £10 trial, no buy-in check, or skips pricing entirely
+- 1 (20%): Leads with £10 trial, no buy-in check, or skips pricing entirely`,
+    });
+  }
 
-### Explain / AAA Objection Handling (E)
+  // Explain
+  if (!config.excludedPhases.includes('explain')) {
+    phases.push({
+      key: 'explain',
+      criteria: `### Explain / AAA Objection Handling (E)
 **Required Elements:**
 - Use AAA framework for objections:
   - Acknowledge: Repeat concern neutrally
@@ -226,9 +353,15 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 - 2 (40%): Gets flustered by objections, defensive responses
 - 1 (20%): No objection handling, argues with prospect, or avoids objections
 
-**Note:** If NO objections were raised (prospect was fully bought in), score this phase based on whether the rep checked for concerns or moved smoothly to close. A call with no objections can still score 80-100% here.
+**Note:** If NO objections were raised (prospect was fully bought in), score this phase based on whether the rep checked for concerns or moved smoothly to close. A call with no objections can still score 80-100% here.`,
+    });
+  }
 
-### Reinforce + Close (R)
+  // Reinforce
+  if (!config.excludedPhases.includes('reinforce')) {
+    phases.push({
+      key: 'reinforce',
+      criteria: `### Reinforce + Close (R)
 **Required Elements:**
 - Once they agree, STOP SELLING immediately
 - Confirm the decision positively
@@ -248,29 +381,14 @@ ${closerPhases.overview?.importance ? `**IMPORTANCE: ${closerPhases.overview.imp
 - 4 (80%): Good close but slightly awkward transition or missed one next step
 - 3 (60%): Gets the sale but fumbles next steps or keeps selling
 - 2 (40%): Weak close, unclear next steps, keeps pitching after agreement
-- 1 (20%): No close attempt, loses the sale after they were ready, or high-pressure tactics
+- 1 (20%): No close attempt, loses the sale after they were ready, or high-pressure tactics`,
+    });
+  }
 
-## BANNED PHRASES (Deduct points if used)
-${Array.isArray(bannedPhrases) && bannedPhrases.length > 0 ? bannedPhrases.join(', ') : 'Personalised learning, Maths can be fun!, World-class, Unlock potential, Learning journey, Empower, SUPER excited!, AMAZING!, How are you today?'}
-
-## OVERALL SCORING
-- Weight Overview (Pain Cycle) at 25% - it's the most critical
-- If Overview scores 1-2, flag as CRITICAL issue regardless of other scores
-- Map 1-5 scores to percentages for consistency
-
-## YOUR TASK
-Score each phase STRICTLY against these criteria. For each phase:
-1. Give a 1-5 score based on the rubric above (then convert to percentage)
-2. List which required elements were PRESENT
-3. List which required elements were MISSING
-4. Quote specific evidence from the transcript
-5. Be specific about what they should have said - **USE THE ACTUAL SCRIPT CONTENT PROVIDED ABOVE, do NOT make up different wording**
-
-## CRITICAL: Use Actual Script Content
-When suggesting what the rep "should have said", ONLY use the exact wording from the ACTUAL SCRIPT CONTENT section above. Do NOT invent or make up script lines. If the script describes the teachers with specific credentials, use those exact credentials - do not add or change details unless they are in the actual script.`;
+  return phases.map(p => p.criteria).join('\n\n');
 }
 
-export function createScoringUserPrompt(transcript: TranscriptSegment[]): string {
+export function createScoringUserPrompt(transcript: TranscriptSegment[], callContext: CallContext = 'new_lead'): string {
   const formattedTranscript = transcript
     .map((segment) => {
       const speaker = segment.speaker === 'rep' ? 'REP' : 'PROSPECT';
@@ -279,8 +397,48 @@ export function createScoringUserPrompt(transcript: TranscriptSegment[]): string
     })
     .join('\n');
 
+  const config = CONTEXT_CONFIG[callContext];
+  const scoredPhases = ['opening', 'clarify', 'label', 'overview', 'sell_vacation', 'price_presentation', 'explain', 'reinforce']
+    .filter(p => !config.excludedPhases.includes(p));
+
+  // Build the JSON template with only scored phases
+  const phaseTemplates = scoredPhases.map(phase => {
+    const phaseHints: Record<string, string> = {
+      opening: 'exact quote showing how they opened',
+      clarify: 'quote showing their discovery questions or lack thereof',
+      label: 'quote showing their label/summary attempt',
+      overview: 'quote showing their pain exploration or lack thereof',
+      sell_vacation: 'quote showing their pitch/presentation',
+      price_presentation: 'quote showing how they presented price or buy-in question',
+      explain: 'quote showing their objection response, or their check for concerns',
+      reinforce: 'quote showing their close or next steps',
+    };
+    const strictNote = phase === 'overview' ? ' - BE STRICT ON THIS PHASE' : '';
+    const detailedNote = phase === 'overview' ? 'DETAILED feedback - this is the most important phase' : 'feedback';
+    return `    {
+      "phase": "${phase}",
+      "score": <number 0-100${strictNote}>,
+      "rubric_score": <1-5 based on exact criteria>,
+      "feedback": "<${detailedNote}>",
+      "required_elements_present": ["<elements they hit>"],
+      "required_elements_missing": ["<elements they missed>"],
+      "highlights": ["<what was done well>"],
+      "improvements": ["<specific things they should have said>"],
+      "quotes": [{"text": "<REQUIRED: ${phaseHints[phase] || 'relevant quote'}>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
+    }`;
+  });
+
+  const contextLabel = {
+    new_lead: 'NEW LEAD (first contact)',
+    booked_call: 'BOOKED CALL (prospect booked this call)',
+    warm_lead: 'WARM LEAD (already been messaging)',
+    follow_up: 'FOLLOW-UP (returning call)',
+  }[callContext];
+
   return `Score this sales call transcript STRICTLY against the CLOSER framework.
 
+## Call Context: ${contextLabel}
+${config.excludedPhases.length > 0 ? `\n**EXCLUDED PHASES (do NOT score):** ${config.excludedPhases.join(', ')}\nOnly include scores for the phases listed in the JSON template below.\n` : ''}
 ## Transcript
 
 ${formattedTranscript}
@@ -288,99 +446,12 @@ ${formattedTranscript}
 ## Required Response Format
 
 Respond with a JSON object. Be STRICT - if they didn't do something, score it low.
-
+${config.excludedPhases.length > 0 ? `\n**IMPORTANT:** Only include the ${scoredPhases.length} phases shown below. Do NOT include scores for excluded phases (${config.excludedPhases.join(', ')}).\n` : ''}
 \`\`\`json
 {
-  "overall_score": <weighted average, number 0-100>,
+  "overall_score": <weighted average of scored phases only, number 0-100>,
   "scores": [
-    {
-      "phase": "opening",
-      "score": <number 0-100, based on 1-5 rubric: 5=100, 4=80, 3=60, 2=40, 1=20>,
-      "rubric_score": <1-5 based on exact criteria>,
-      "feedback": "<specific feedback referencing what they DID and DIDN'T do>",
-      "required_elements_present": ["<elements they hit>"],
-      "required_elements_missing": ["<elements they missed>"],
-      "highlights": ["<what was done well>"],
-      "improvements": ["<specific things they should have said>"],
-      "quotes": [{"text": "<REQUIRED: exact quote showing how they opened>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    },
-    {
-      "phase": "clarify",
-      "score": <number>,
-      "rubric_score": <1-5>,
-      "feedback": "<feedback>",
-      "required_elements_present": [],
-      "required_elements_missing": [],
-      "highlights": [],
-      "improvements": [],
-      "quotes": [{"text": "<REQUIRED: quote showing their discovery questions or lack thereof>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    },
-    {
-      "phase": "label",
-      "score": <number>,
-      "rubric_score": <1-5>,
-      "feedback": "<feedback>",
-      "required_elements_present": [],
-      "required_elements_missing": [],
-      "highlights": [],
-      "improvements": [],
-      "quotes": [{"text": "<REQUIRED: quote showing their label/summary attempt>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    },
-    {
-      "phase": "overview",
-      "score": <number - BE STRICT ON THIS PHASE>,
-      "rubric_score": <1-5>,
-      "feedback": "<DETAILED feedback - this is the most important phase>",
-      "required_elements_present": [],
-      "required_elements_missing": [],
-      "highlights": [],
-      "improvements": ["<specific questions they should have asked>"],
-      "quotes": [{"text": "<REQUIRED: quote showing their pain exploration or lack thereof>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    },
-    {
-      "phase": "sell_vacation",
-      "score": <number>,
-      "rubric_score": <1-5>,
-      "feedback": "<feedback>",
-      "required_elements_present": [],
-      "required_elements_missing": [],
-      "highlights": [],
-      "improvements": [],
-      "quotes": [{"text": "<REQUIRED: quote showing their pitch/presentation>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    },
-    {
-      "phase": "price_presentation",
-      "score": <number>,
-      "rubric_score": <1-5>,
-      "feedback": "<feedback on how they presented pricing>",
-      "required_elements_present": [],
-      "required_elements_missing": [],
-      "highlights": [],
-      "improvements": [],
-      "quotes": [{"text": "<REQUIRED: quote showing how they presented price or buy-in question>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    },
-    {
-      "phase": "explain",
-      "score": <number>,
-      "rubric_score": <1-5>,
-      "feedback": "<feedback on objection handling - if no objections raised, note that>",
-      "required_elements_present": [],
-      "required_elements_missing": [],
-      "highlights": [],
-      "improvements": [],
-      "quotes": [{"text": "<REQUIRED: quote showing their objection response, or their check for concerns>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    },
-    {
-      "phase": "reinforce",
-      "score": <number>,
-      "rubric_score": <1-5>,
-      "feedback": "<feedback on closing and next steps AFTER agreement>",
-      "required_elements_present": [],
-      "required_elements_missing": [],
-      "highlights": [],
-      "improvements": [],
-      "quotes": [{"text": "<REQUIRED: quote showing their close or next steps>", "sentiment": "positive|negative|neutral", "timestamp": 0}]
-    }
+${phaseTemplates.join(',\n')}
   ],
   "objections_detected": [
     {
@@ -392,15 +463,15 @@ Respond with a JSON object. Be STRICT - if they didn't do something, score it lo
     }
   ],
   "banned_phrases_used": ["<any banned phrases detected>"],
-  "critical_issues": ["<if Overview scored 1-2, flag here>", "<other critical issues>"],
+  "critical_issues": ["<any critical issues>"],
   "summary": "<2-3 sentence summary focusing on the BIGGEST gaps and what to fix>"
 }
 \`\`\`
 
 **IMPORTANT SCORING REMINDERS:**
-- If they didn't ask "What else have you tried?" multiple times in Overview, score cannot be above 60%
-- If they didn't ask about consequences ("If nothing changes, what happens?"), deduct from Overview
-- If they led with the £10 trial instead of Annual, Reinforce score cannot be above 40%
+${callContext === 'new_lead' || callContext === 'booked_call' ? `- If they didn't ask "What else have you tried?" multiple times in Overview, score cannot be above 60%
+- If they didn't ask about consequences ("If nothing changes, what happens?"), deduct from Overview` : '- Discovery phases are excluded for this call type — do NOT penalise for missing discovery'}
+- If they led with the £10 trial instead of Annual, Price Presentation score cannot be above 40%
 - If they used "How are you today?" opener, Opening score = 20%
 - Be specific about what's MISSING, not just what's there
 
@@ -408,7 +479,7 @@ Respond with a JSON object. Be STRICT - if they didn't do something, score it lo
 When providing "improvements" (what they should have said), ONLY use the exact wording from the ACTUAL SCRIPT CONTENT provided in the system prompt. Do NOT invent script lines or add details not in the script. For example, if the script describes teacher credentials, use those exact credentials - do NOT add or change details unless they are explicitly in the script.
 
 **CRITICAL - QUOTES REQUIREMENT (DO NOT SKIP):**
-For EVERY single phase, you MUST include 1-2 quotes in the "quotes" array. This is MANDATORY - the UI displays "You Said" vs "Script Says" for each phase, and it breaks if quotes are missing.
+For EVERY single scored phase, you MUST include 1-2 quotes in the "quotes" array. This is MANDATORY - the UI displays "You Said" vs "Script Says" for each phase, and it breaks if quotes are missing.
 
 For each phase:
 1. Find 1-2 specific things the rep said during that phase
@@ -418,7 +489,7 @@ For each phase:
 
 If the rep skipped a phase entirely, include a quote from where they SHOULD have done that phase but didn't, and mark it "negative".
 
-IMPORTANT: Empty quotes arrays are NOT acceptable. Every phase MUST have at least one quote.`;
+IMPORTANT: Empty quotes arrays are NOT acceptable. Every scored phase MUST have at least one quote.`;
 }
 
 function formatTime(seconds: number): string {
